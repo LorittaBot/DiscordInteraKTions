@@ -1,15 +1,15 @@
 package net.perfectdreams.discordinteraktions.declarations.slash
 
-open class CommandChoice(
-    val name: String
-)
+interface CommandChoice<T> {
 
-class StringCommandChoice(
-    name: String,
-    val value: String
-) : CommandChoice(name)
+	val name: String
 
-class IntegerCommandChoice(
-    name: String,
-    val value: Int
-) : CommandChoice(name)
+	val value: T
+
+}
+
+data class DefaultCommandChoice<T>(override val name: String, override val value: T): CommandChoice<T>
+
+data class StringCommandChoice(override val name: String, override val value: String): CommandChoice<String>
+
+data class IntegerCommandChoice(override val name: String, override val value: Int): CommandChoice<Int>
