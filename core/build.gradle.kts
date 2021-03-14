@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization") version "1.4.30"
+    `maven-publish`
 }
 
 group = "net.perfectdreams.discordinteraktions"
@@ -37,5 +38,13 @@ tasks {
     }
     compileTestKotlin {
         kotlinOptions.jvmTarget = "1.8"
+    }
+}
+
+publishing {
+    publications {
+        register("PerfectDreams", MavenPublication::class.java) {
+            from(components["java"])
+        }
     }
 }

@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm")
+    `maven-publish`
 }
 
 group = "net.perfectdreams.discordinteraktions"
@@ -22,4 +23,12 @@ tasks.test {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "11"
+}
+
+publishing {
+    publications {
+        register("PerfectDreams", MavenPublication::class.java) {
+            from(components["java"])
+        }
+    }
 }
