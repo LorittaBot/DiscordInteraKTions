@@ -36,12 +36,13 @@ class CommandManager(val m: InteractionsServer) {
         guildId: Snowflake,
         deleteUnknownCommands: Boolean = true
     ) {
-        val currentlyRegisteredCommands = m.rest.interaction.getGuildApplicationCommands(
-            Snowflake(m.applicationId),
-            guildId
-        )
-
         if (deleteUnknownCommands) {
+            // If we want to check if we should delete commands, we need to get them first!
+            val currentlyRegisteredCommands = m.rest.interaction.getGuildApplicationCommands(
+                Snowflake(m.applicationId),
+                guildId
+            )
+
             // This will remove all commands that do not match any label of the currently registered commands
             // We don't need to remove commands that have the same label because the PUT request will replace them automatically
             val allCommandsLabels = commands.map { it.declaration.name }
