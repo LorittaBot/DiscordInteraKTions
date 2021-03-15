@@ -11,7 +11,7 @@ import net.perfectdreams.discordinteraktions.internal.entities.KordChannel
 import net.perfectdreams.discordinteraktions.internal.entities.KordRole
 import net.perfectdreams.discordinteraktions.internal.entities.KordUser
 
-fun <T> CommandOption<T>.get(context: SlashCommandContext) = (context.request.data.options.value?.first { it.name == this.name } as CommandArgument?)
+fun <T> CommandOption<T>.get(context: SlashCommandContext) = (context.request.data.options.value?.firstOrNull { it.name == this.name } as CommandArgument?)
     ?.value?.value as T
 
 @JvmName("getUser")
