@@ -16,10 +16,14 @@ import kotlinx.serialization.json.put
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.context.GuildSlashCommandContext
 import net.perfectdreams.discordinteraktions.context.HttpRequestManager
+import net.perfectdreams.discordinteraktions.context.InteractionRequestState
+import net.perfectdreams.discordinteraktions.context.RequestBridge
 import net.perfectdreams.discordinteraktions.context.SlashCommandContext
 import net.perfectdreams.discordinteraktions.context.WebServerRequestManager
 import net.perfectdreams.discordinteraktions.entities.CommandInteraction
 import net.perfectdreams.discordinteraktions.entities.PingInteraction
+import net.perfectdreams.discordinteraktions.utils.Observable
+import kotlin.properties.ObservableProperty
 
 /**
  * This is the default implementation of [InteractionRequestHandler],
@@ -70,24 +74,29 @@ class DefaultInteractionRequestHandler(val m: InteractionsServer) : InteractionR
 
         println("Command: $command")
 
-        val notificationChannel = Channel<Unit>(0)
+        val observableState = Observable(InteractionRequestState.NOT_REPLIED_YET)
+        val bridge = RequestBridge(observableState)
+
         val requestManager = WebServerRequestManager(
+            bridge,
             m.rest,
             Snowflake(m.applicationId),
             request.token,
-            call,
-            notificationChannel
+            request,
+            call
         )
+
+        bridge.manager = requestManager
 
         val commandContext = if (request.guildId.value != null) {
             GuildSlashCommandContext(
                 request,
-                requestManager
+                bridge
             )
         } else {
             SlashCommandContext(
                 request,
-                requestManager
+                bridge
             )
         }
 
@@ -96,16 +105,7 @@ class DefaultInteractionRequestHandler(val m: InteractionsServer) : InteractionR
             println("Finished execution!")
         }
 
-        notificationChannel.receiveOrNull()
-        logger.info { "Switching Request Manager..." }
-        commandContext.manager = HttpRequestManager(
-            m.rest,
-            Snowflake(m.applicationId),
-            request.token,
-            request
-        )
-
-        // Send a notification indicating that the code can continue
-        notificationChannel.send(Unit)
+        observableState.awaitChange()
+        logger.info { "State was changed to ${observableState.value}, so this means we already replied via the Web Server! Leaving request scope..." }
     }
 }

@@ -10,7 +10,7 @@ import net.perfectdreams.discordinteraktions.utils.buildMessage
 
 open class SlashCommandContext(
     val request: CommandInteraction,
-    internal var manager: RequestManager
+    internal var bridge: RequestBridge
 ) {
     var isDeferred = false
         private set
@@ -18,7 +18,7 @@ open class SlashCommandContext(
     val user: User = KordUser(request.member.value?.user?.value ?: request.user.value ?: throw IllegalArgumentException("There isn't a user object present! Discord Bug?"))
 
     suspend fun defer() {
-        manager.defer()
+        bridge.manager.defer()
         isDeferred = true
     }
 
@@ -28,6 +28,6 @@ open class SlashCommandContext(
     }
 
     suspend fun sendMessage(message: InteractionMessage): Message {
-        return manager.sendMessage(message)
+        return bridge.manager.sendMessage(message)
     }
 }

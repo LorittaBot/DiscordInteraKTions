@@ -27,23 +27,35 @@ import net.perfectdreams.discordinteraktions.utils.InteractionMessage
  * @param request The interaction (wrapped by the [InteractionRequestHandler]
  */
 class InitialHttpRequestManager(
+    bridge: RequestBridge,
     val rest: RestClient,
     val applicationId: Snowflake,
     val interactionToken: String,
     val request: CommandInteraction
-) : RequestManager {
+) : RequestManager(bridge) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    override suspend fun defer() = rest.interaction.createInteractionResponse(
-        request.id,
-        interactionToken,
-        InteractionResponseCreateRequest(InteractionResponseType.DeferredChannelMessageWithSource)
-    )
+    override suspend fun defer() {
+        rest.interaction.createInteractionResponse(
+            request.id,
+            interactionToken,
+            InteractionResponseCreateRequest(InteractionResponseType.DeferredChannelMessageWithSource)
+        )
+
+        bridge.state.value = InteractionRequestState.DEFERRED
+
+        bridge.manager = HttpRequestManager(
+            bridge,
+            rest,
+            applicationId,
+            interactionToken,
+            request
+        )
+    }
 
     override suspend fun sendMessage(message: InteractionMessage): Message {
-        // *Technically* we can respond to the initial interaction via HTTP too
         rest.interaction.createInteractionResponse(
             request.id,
             interactionToken,
@@ -57,6 +69,16 @@ class InitialHttpRequestManager(
                     }.build()
                 )
             )
+        )
+
+        bridge.state.value = InteractionRequestState.ALREADY_REPLIED
+
+        bridge.manager = HttpRequestManager(
+            bridge,
+            rest,
+            applicationId,
+            interactionToken,
+            request
         )
 
         return InitialResponseMessage(rest, applicationId, interactionToken, message.content)

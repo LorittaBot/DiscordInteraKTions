@@ -12,7 +12,7 @@ import net.perfectdreams.discordinteraktions.utils.buildMessage
 
 class GuildSlashCommandContext(
     request: CommandInteraction,
-    manager: RequestManager
-) : SlashCommandContext(request, manager) {
+    bridge: RequestBridge
+) : SlashCommandContext(request, bridge) {
     val member: Member = KordMember(request.member.value ?: throw IllegalArgumentException("There isn't a member object present! Discord Bug?"))
 }

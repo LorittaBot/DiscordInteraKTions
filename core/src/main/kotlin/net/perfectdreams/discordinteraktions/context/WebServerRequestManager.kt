@@ -14,7 +14,9 @@ import kotlinx.serialization.json.put
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.internal.entities.InitialResponseMessage
 import net.perfectdreams.discordinteraktions.api.entities.Message
+import net.perfectdreams.discordinteraktions.entities.CommandInteraction
 import net.perfectdreams.discordinteraktions.utils.InteractionMessage
+import net.perfectdreams.discordinteraktions.utils.Observable
 
 /**
  * On this request manager we'll handle the requests
@@ -27,12 +29,13 @@ import net.perfectdreams.discordinteraktions.utils.InteractionMessage
  * @param notificationChannel The notification pipe that we use for notifying events
  */
 class WebServerRequestManager(
+    bridge: RequestBridge,
     val rest: RestClient,
     val applicationId: Snowflake,
     val interactionToken: String,
-    val call: ApplicationCall,
-    val notificationChannel: Channel<Unit>
-) : RequestManager {
+    val request: CommandInteraction,
+    val call: ApplicationCall
+) : RequestManager(bridge) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -46,9 +49,16 @@ class WebServerRequestManager(
             }.toString(),
             ContentType.Application.Json
         )
-        notificationChannel.send(Unit)
-        // Wait until the we receive a notification back, this is useful to wait until the manager is replaced
-        notificationChannel.receive()
+
+        bridge.state.value = InteractionRequestState.DEFERRED
+
+        bridge.manager = HttpRequestManager(
+            bridge,
+            rest,
+            applicationId,
+            interactionToken,
+            request
+        )
     }
 
     override suspend fun sendMessage(message: InteractionMessage): Message {
@@ -68,9 +78,15 @@ class WebServerRequestManager(
             ContentType.Application.Json
         )
 
-        notificationChannel.send(Unit)
-        // Wait until the we receive a notification back, this is useful to wait until the manager is replaced
-        notificationChannel.receive()
+        bridge.state.value = InteractionRequestState.ALREADY_REPLIED
+
+        bridge.manager = HttpRequestManager(
+            bridge,
+            rest,
+            applicationId,
+            interactionToken,
+            request
+        )
 
         return InitialResponseMessage(
             rest,
@@ -78,6 +94,5 @@ class WebServerRequestManager(
             interactionToken,
             message.content
         )
-        // return OriginalMessage(message.content)
     }
 }
