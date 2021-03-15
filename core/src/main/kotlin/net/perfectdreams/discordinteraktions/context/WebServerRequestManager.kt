@@ -16,6 +16,16 @@ import net.perfectdreams.discordinteraktions.internal.entities.InitialResponseMe
 import net.perfectdreams.discordinteraktions.api.entities.Message
 import net.perfectdreams.discordinteraktions.utils.InteractionMessage
 
+/**
+ * On this request manager we'll handle the requests
+ * by directly interacting with the Discord Rest API.
+ *
+ * @param rest The application rest client
+ * @param applicationId The bot's application id
+ * @param interactionToken The request's token
+ * @param call The request data
+ * @param notificationChannel The notification pipe that we use for notifying events
+ */
 class WebServerRequestManager(
     val rest: RestClient,
     val applicationId: Snowflake,
