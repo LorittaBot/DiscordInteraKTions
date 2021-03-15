@@ -13,6 +13,15 @@ class CommandManager(val m: InteractionsServer) {
     fun register(command: SlashCommand) =
         commands.add(command)
 
+    fun registerAll(vararg commands: SlashCommand) =
+        commands.forEach { register(it) }
+
+    fun unregister(command: SlashCommand) =
+        commands.remove(command)
+
+    fun unregisterAll(command: SlashCommand) =
+        commands.forEach { unregister(it) }
+
     /* suspend fun updateAllGlobalCommands() {}
 
     suspend fun updateAllCommandsInGuild(
