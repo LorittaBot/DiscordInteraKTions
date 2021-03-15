@@ -8,7 +8,6 @@ plugins {
 group = "net.perfectdreams.discordinteraktions"
 
 repositories {
-    maven("https://oss.sonatype.org/content/repositories/snapshots")
     mavenCentral()
     maven("https://oss.sonatype.org/content/repositories/snapshots")
 }
@@ -16,7 +15,7 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
     // Used for the *snowflakes*
-    api("dev.kord:kord-core:0.7.0-SNAPSHOT")
+    api("dev.kord:kord-common:0.7.0-SNAPSHOT")
 }
 
 tasks.test {
