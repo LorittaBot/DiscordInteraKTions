@@ -193,7 +193,15 @@ val interactions = InteractionsServer(
 )
 
 // Register the command...
-interactions.commandManager.commands.add(CharacterCommand())
+interactions.commandManager.register(CharacterCommand())
+
+// And now register all commands registered in our command manager!
+interactions.commandManager.updateAllCommandsInGuild(
+    Snowflake(40028922L), // Change to your Guild ID
+    // This compares the currently registered commands on Discord with the commands in the Command Manager
+    // If a command is missing from the Command Manager but is present on Discord, it is deleted from Discord!
+    deleteUnknownCommands = true
+)
 
 interactions.start() // This starts the interactions web server on port 12212!
 
@@ -201,6 +209,4 @@ interactions.start() // This starts the interactions web server on port 12212!
 //
 // Don't forget that your Web Server should be accessible from the outside world!
 // If you are doing this for tests & stuff, you can use ngrok or a SSH Reverse Tunnel
-//
-// Currently you still need to register the commands manually on Discord via curl
 ```

@@ -1,7 +1,17 @@
 package net.perfectdreams.discordinteraktions.commands
 
+import dev.kord.common.entity.ApplicationCommandOption
+import dev.kord.common.entity.ApplicationCommandOptionType
+import dev.kord.common.entity.Choice
+import dev.kord.common.entity.Snowflake
+import dev.kord.common.entity.optional.Optional
+import dev.kord.common.entity.optional.OptionalBoolean
+import dev.kord.rest.json.request.ApplicationCommandCreateRequest
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.InteractionsServer
+import net.perfectdreams.discordinteraktions.declarations.slash.IntegerCommandChoice
+import net.perfectdreams.discordinteraktions.declarations.slash.StringCommandChoice
+import java.lang.IllegalArgumentException
 
 class CommandManager(val m: InteractionsServer) {
     companion object {
@@ -22,73 +32,75 @@ class CommandManager(val m: InteractionsServer) {
     fun unregisterAll(command: SlashCommand) =
         commands.forEach { unregister(it) }
 
-    /* suspend fun updateAllGlobalCommands() {}
-
     suspend fun updateAllCommandsInGuild(
-        guildId: Long,
-        removeUnknownCommands: Boolean = true
+        guildId: Snowflake,
+        deleteUnknownCommands: Boolean = true
     ) {
-        val response = m.http.get<String>("https://discord.com/api/v8/applications/${m.applicationId}/guilds/$guildId/commands") {
-            header("Authorization", "Bot ${m.token}")
-            header("User-Agent", "Discord InteraKTions (Application ID: ${m.applicationId})")
-        }
+        val currentlyRegisteredCommands = m.rest.interaction.getGuildApplicationCommands(
+            Snowflake(m.applicationId),
+            guildId
+        )
 
-        println(response)
-
-        val registeredCommands = InteractionsServer.json.decodeFromString<List<GuildApplicationCommand>>(response)
-
-        if (removeUnknownCommands) {
+        if (deleteUnknownCommands) {
             // This will remove all commands that do not match any label of the currently registered commands
             // We don't need to remove commands that have the same label because the PUT request will replace them automatically
-            val allCommandsLabels = commands.map { it.label }
+            val allCommandsLabels = commands.map { it.declaration.name }
 
-            val commandsToBeRemoved = registeredCommands
+            val commandsToBeRemoved = commands
                 .filter {
-                    it.name !in allCommandsLabels
+                    it.declaration.name !in allCommandsLabels
                 }
 
             commandsToBeRemoved.forEach {
-                logger.info { "Removing command ${it.name} because there isn't any matching registered command..." }
-
-                m.http.delete<String>("https://discord.com/api/v8/applications/${m.applicationId}/guilds/$guildId/commands/${it.id}") {
-                    header("Authorization", "Bot ${m.token}")
-                    header("User-Agent", DKTConstants.USER_AGENT.format(m.applicationId))
+                val command = currentlyRegisteredCommands.first { registeredCommand ->
+                    registeredCommand.name == it.declaration.name
                 }
+
+                logger.info { "Deleting command ${it.declaration.name} (${command.id}) because there isn't any matching registered command..." }
+
+                m.rest.interaction.deleteGuildApplicationCommand(
+                    Snowflake(m.applicationId),
+                    guildId,
+                    command.id
+                )
             }
         }
 
-        // Create command objects
-        val commandsToBeRegistered = commands.map {
-            val options = it.arguments.map {
+        val commandsToBeRegistered = mutableListOf<ApplicationCommandCreateRequest>()
+
+        for (slash in commands) {
+            // A very weird code that converts our declarations to Kord's command declarations
+            val kordArguments = slash.declaration.options.arguments.map {
+                val choices = it.choices.map {
+                    if (it is StringCommandChoice) {
+                        Choice.StringChoice(it.name, it.value)
+                    } else if (it is IntegerCommandChoice) {
+                        Choice.IntChoice(it.name, it.value)
+                    } else throw IllegalArgumentException("I don't know how to handle a $it!")
+                }
+
                 ApplicationCommandOption(
-                    it.type,
+                    ApplicationCommandOptionType.Unknown(it.type),
                     it.name,
                     it.description,
-                    it.required,
-                    it.choices.map {
-                        ApplicationCommandOptionChoice(
-                            it.name,
-                            it.value
-                        )
-                    },
-                    null
+                    required = OptionalBoolean.Value(it.required),
+                    choices = Optional(choices)
                 )
             }
 
-            ApplicationCommandBase(
-                it.label,
-                it.description,
-                options
+            commandsToBeRegistered.add(
+                ApplicationCommandCreateRequest(
+                    slash.declaration.name,
+                    slash.declaration.description,
+                    Optional(kordArguments)
+                )
             )
         }
 
-        val response2 = m.http.put<String>("https://discord.com/api/v8/applications/${m.applicationId}/guilds/297732013006389252/commands") {
-            header("Authorization", "Bot ${m.token}")
-            header("User-Agent", DKTConstants.USER_AGENT.format(m.applicationId))
-
-            body = TextContent(InteractionsServer.json.encodeToString(commandsToBeRegistered), ContentType.Application.Json)
-        }
-
-        println(response2)
-    } */
+        m.rest.interaction.createGuildApplicationCommands(
+            Snowflake(m.applicationId),
+            guildId,
+            commandsToBeRegistered
+        )
+    }
 }
