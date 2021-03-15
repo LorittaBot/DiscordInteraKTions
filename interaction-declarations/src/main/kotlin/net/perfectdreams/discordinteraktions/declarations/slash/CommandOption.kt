@@ -4,12 +4,12 @@ import net.perfectdreams.discordinteraktions.api.entities.Channel
 import net.perfectdreams.discordinteraktions.api.entities.Role
 import net.perfectdreams.discordinteraktions.api.entities.User
 
-open class CommandOption<T>(
+data class CommandOption<T>(
     val type: Int,
     val name: String,
     val description: String,
     val required: Boolean,
-    val choices: List<CommandChoice>
+    val choices: List<CommandChoice<*>>
 )
 
 // ===[ REQUIRED ]===

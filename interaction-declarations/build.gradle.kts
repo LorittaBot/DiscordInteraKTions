@@ -8,6 +8,7 @@ plugins {
 group = "net.perfectdreams.discordinteraktions"
 
 repositories {
+    maven("https://oss.sonatype.org/content/repositories/snapshots")
     mavenCentral()
     maven("https://oss.sonatype.org/content/repositories/snapshots")
 }
