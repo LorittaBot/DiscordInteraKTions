@@ -145,9 +145,9 @@ class CharacterCommand : SlashCommand(CharacterCommand) {
         object Options : SlashCommandDeclaration.Options() {
             val character = string("character", "Select a Character!") // Here we are creating a String option
                 .required() // ...and it is required
-                .choice("loritta", "Loritta Morenitta \uD83D\uDE18") // ...with custom choices!
-                .choice("pantufa", "Pantufa")
-                .choice("gabriela", "Gabriela")
+                .choice("loritta", "Loritta Morenitta :3") // ...with custom choices!
+                .choice("pantufa", "Pantufa ;w;")
+                .choice("gabriela", "Gabriela ^-^")
                 .register() // Don't forget to register!
 
             val repeat = integer("repeat", "How many times the character name should be repeated") // Here we are creating a Int option
