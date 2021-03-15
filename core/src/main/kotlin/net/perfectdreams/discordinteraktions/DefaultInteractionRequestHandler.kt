@@ -87,13 +87,7 @@ class DefaultInteractionRequestHandler(val m: InteractionsServer) : InteractionR
         } else {
             SlashCommandContext(
                 request,
-                WebServerRequestManager(
-                    m.rest,
-                    Snowflake(m.applicationId),
-                    request.token,
-                    call,
-                    notificationChannel
-                )
+                requestManager
             )
         }
 
