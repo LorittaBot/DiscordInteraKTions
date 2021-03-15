@@ -8,7 +8,7 @@ import net.perfectdreams.discordinteraktions.utils.InteractionMessage
 import net.perfectdreams.discordinteraktions.utils.MessageBuilder
 import net.perfectdreams.discordinteraktions.utils.buildMessage
 
-class SlashCommandContext(
+open class SlashCommandContext(
     val request: CommandInteraction,
     internal var manager: RequestManager
 ) {

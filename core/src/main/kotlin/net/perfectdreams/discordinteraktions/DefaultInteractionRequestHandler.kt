@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import mu.KotlinLogging
+import net.perfectdreams.discordinteraktions.context.GuildSlashCommandContext
 import net.perfectdreams.discordinteraktions.context.HttpRequestManager
 import net.perfectdreams.discordinteraktions.context.SlashCommandContext
 import net.perfectdreams.discordinteraktions.context.WebServerRequestManager
@@ -41,16 +42,31 @@ class DefaultInteractionRequestHandler(val m: InteractionsServer) : InteractionR
         println("Command: $command")
 
         val notificationChannel = Channel<Unit>(0)
-        val commandContext = SlashCommandContext(
-            request,
-            WebServerRequestManager(
-                m.rest,
-                Snowflake(m.applicationId),
-                request.token,
-                call,
-                notificationChannel
-            )
+        val requestManager = WebServerRequestManager(
+            m.rest,
+            Snowflake(m.applicationId),
+            request.token,
+            call,
+            notificationChannel
         )
+
+        val commandContext = if (request.guildId.value != null) {
+            GuildSlashCommandContext(
+                request,
+                requestManager
+            )
+        } else {
+            SlashCommandContext(
+                request,
+                WebServerRequestManager(
+                    m.rest,
+                    Snowflake(m.applicationId),
+                    request.token,
+                    call,
+                    notificationChannel
+                )
+            )
+        }
 
         GlobalScope.launch {
             command.executes(commandContext)
