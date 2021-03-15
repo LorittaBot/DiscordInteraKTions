@@ -10,6 +10,9 @@ class CommandManager(val m: InteractionsServer) {
 
     val commands = mutableListOf<SlashCommand>()
 
+    fun register(command: SlashCommand) =
+        commands.add(command)
+
     /* suspend fun updateAllGlobalCommands() {}
 
     suspend fun updateAllCommandsInGuild(
