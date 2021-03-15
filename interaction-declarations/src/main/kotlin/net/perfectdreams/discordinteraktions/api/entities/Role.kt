@@ -14,5 +14,3 @@ interface Role {
 	val mentionable: Boolean
 	val tags: Any
 }
-
-inline val Role.idLong get() = id.value

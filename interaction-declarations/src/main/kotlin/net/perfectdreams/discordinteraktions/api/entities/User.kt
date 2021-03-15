@@ -9,5 +9,3 @@ interface User {
     val avatar: String?
     val bot: Boolean
 }
-
-inline val User.idLong get() = id.value

@@ -7,5 +7,3 @@ interface Channel {
     val id: Snowflake
 
 }
-
-inline val Channel.idLong get() = id.value
