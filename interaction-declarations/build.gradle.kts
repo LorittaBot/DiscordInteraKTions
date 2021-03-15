@@ -7,11 +7,6 @@ plugins {
 
 group = "net.perfectdreams.discordinteraktions"
 
-repositories {
-    mavenCentral()
-    maven("https://oss.sonatype.org/content/repositories/snapshots")
-}
-
 dependencies {
     implementation(kotlin("stdlib"))
     // Used for the *snowflakes*

@@ -7,11 +7,6 @@ plugins {
 
 group = "net.perfectdreams.discordinteraktions"
 
-repositories {
-    mavenCentral()
-    maven("https://oss.sonatype.org/content/repositories/snapshots")
-}
-
 dependencies {
     api(project(":core"))
     implementation("dev.kord:kord-core:0.7.0-SNAPSHOT")

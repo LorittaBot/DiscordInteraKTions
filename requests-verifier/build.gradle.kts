@@ -7,10 +7,6 @@ plugins {
 
 group = "net.perfectdreams.discordinteraktions"
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     implementation(kotlin("stdlib"))
     implementation("org.bouncycastle:bcprov-jdk15on:1.67")

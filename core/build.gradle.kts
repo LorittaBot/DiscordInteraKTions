@@ -6,10 +6,6 @@ plugins {
 
 group = "net.perfectdreams.discordinteraktions"
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(project(":requests-verifier"))
