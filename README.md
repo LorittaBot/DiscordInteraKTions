@@ -185,6 +185,10 @@ class CharacterCommand : SlashCommand(CharacterCommand) {
 }
 ```
 
+After that, you have two options on how to process and handle the interactions...
+
+#### Interactions via HTTP POST
+
 ```kotlin
 val interactions = InteractionsServer(
     applicationId = 12345L, // Change the Application ID to your Bot's Application ID
@@ -209,4 +213,48 @@ interactions.start() // This starts the interactions web server on port 12212!
 //
 // Don't forget that your Web Server should be accessible from the outside world!
 // If you are doing this for tests & stuff, you can use ngrok or a SSH Reverse Tunnel
+```
+
+#### Interactions via the Gateway 
+
+##### Kord
+
+Add the Kord Gateway Support module to your project
+
+```kotlin
+dependencies {
+    ...
+    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.2-SNAPSHOT")
+    ...
+}
+```
+
+```kotlin
+suspend fun main() {
+    val applicationId = Snowflake(12345L) // Change the Application ID to your Bot's Application ID
+    val client = Kord("bot_token_here")
+
+    val commandManager = CommandManager(
+        client.rest,
+        applicationId
+    )
+
+    commandManager.register(CharacterCommand())
+
+    // And now register all commands registered in our command manager!
+    interactions.commandManager.updateAllCommandsInGuild(
+        Snowflake(40028922L), // Change to your Guild ID
+        // This compares the currently registered commands on Discord with the commands in the Command Manager
+        // If a command is missing from the Command Manager but is present on Discord, it is deleted from Discord!
+        deleteUnknownCommands = true
+    )
+
+    client.gateway.gateways.forEach {
+        it.value.installDiscordInteraKTions( // We will install the Discord InteraKTions listener on every gateway
+            commandManager
+        )
+    }
+    
+    client.login()
+}
 ```
