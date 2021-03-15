@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "net.perfectdreams.discordinteraktions"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.2-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -17,7 +17,7 @@ tasks.test {
     useJUnitPlatform()
 }
 
-tasks.withType<KotlinCompile>() {
+tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "11"
 }
 
