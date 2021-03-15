@@ -22,17 +22,13 @@ tasks.withType<KotlinCompile> {
 
 allprojects {
     repositories {
+        mavenCentral()
         maven("https://oss.sonatype.org/content/repositories/snapshots")
         maven("https://repo.perfectdreams.net")
     }
 }
 
 subprojects {
-    repositories {
-        maven("https://oss.sonatype.org/content/repositories/snapshots")
-        maven("https://repo.perfectdreams.net")
-    }
-    
     apply<MavenPublishPlugin>()
     version = "0.0.2-SNAPSHOT"
 
