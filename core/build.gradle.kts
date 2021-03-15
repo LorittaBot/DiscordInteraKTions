@@ -8,7 +8,6 @@ group = "net.perfectdreams.discordinteraktions"
 
 repositories {
     mavenCentral()
-    maven("https://oss.sonatype.org/content/repositories/snapshots")
 }
 
 dependencies {
@@ -16,10 +15,10 @@ dependencies {
     implementation(project(":requests-verifier"))
     api(project(":interaction-declarations"))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0")
-    api("io.ktor:ktor-server-core:1.5.0")
-    api("io.ktor:ktor-server-netty:1.5.0")
-    api("io.ktor:ktor-client-core:1.5.0")
-    implementation("io.ktor:ktor-client-cio:1.5.0")
+    api("io.ktor:ktor-server-core:1.4.1")
+    api("io.ktor:ktor-server-netty:1.4.1")
+    api("io.ktor:ktor-client-core:1.4.1")
+    implementation("io.ktor:ktor-client-cio:1.4.1")
     implementation("org.bouncycastle:bcprov-jdk15on:1.67")
     api("dev.kord:kord-rest:0.7.0-SNAPSHOT")
 

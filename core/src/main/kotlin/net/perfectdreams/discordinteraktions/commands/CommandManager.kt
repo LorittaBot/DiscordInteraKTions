@@ -7,13 +7,15 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.optional.Optional
 import dev.kord.common.entity.optional.OptionalBoolean
 import dev.kord.rest.json.request.ApplicationCommandCreateRequest
+import dev.kord.rest.service.RestClient
 import mu.KotlinLogging
-import net.perfectdreams.discordinteraktions.InteractionsServer
 import net.perfectdreams.discordinteraktions.declarations.slash.IntegerCommandChoice
 import net.perfectdreams.discordinteraktions.declarations.slash.StringCommandChoice
-import java.lang.IllegalArgumentException
 
-class CommandManager(val m: InteractionsServer) {
+class CommandManager(
+    val rest: RestClient,
+    val applicationId: Snowflake
+) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -38,8 +40,8 @@ class CommandManager(val m: InteractionsServer) {
     ) {
         if (deleteUnknownCommands) {
             // If we want to check if we should delete commands, we need to get them first!
-            val currentlyRegisteredCommands = m.rest.interaction.getGuildApplicationCommands(
-                Snowflake(m.applicationId),
+            val currentlyRegisteredCommands = rest.interaction.getGuildApplicationCommands(
+                applicationId,
                 guildId
             )
 
@@ -59,8 +61,8 @@ class CommandManager(val m: InteractionsServer) {
 
                 logger.info { "Deleting command ${it.declaration.name} (${command.id}) because there isn't any matching registered command..." }
 
-                m.rest.interaction.deleteGuildApplicationCommand(
-                    Snowflake(m.applicationId),
+                rest.interaction.deleteGuildApplicationCommand(
+                    applicationId,
                     guildId,
                     command.id
                 )
@@ -98,8 +100,8 @@ class CommandManager(val m: InteractionsServer) {
             )
         }
 
-        m.rest.interaction.createGuildApplicationCommands(
-            Snowflake(m.applicationId),
+        rest.interaction.createGuildApplicationCommands(
+            applicationId,
             guildId,
             commandsToBeRegistered
         )

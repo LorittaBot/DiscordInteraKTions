@@ -1,5 +1,6 @@
 package net.perfectdreams.discordinteraktions
 
+import dev.kord.common.entity.Snowflake
 import dev.kord.rest.service.RestClient
 import io.ktor.application.*
 import io.ktor.client.*
@@ -38,10 +39,10 @@ class InteractionsServer(
         private val logger = KotlinLogging.logger {}
     }
 
-    val commandManager = CommandManager(this)
     val interactionRequestHandler: InteractionRequestHandler = DefaultInteractionRequestHandler(this)
     val http = HttpClient {}
     val rest = RestClient(token)
+    val commandManager = CommandManager(rest, Snowflake(applicationId))
 
     /**
      * You can use this method to start the interactions server,
