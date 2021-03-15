@@ -4,11 +4,21 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.rest.builder.interaction.FollowupMessageCreateBuilder
 import dev.kord.rest.service.RestClient
 import mu.KotlinLogging
+import net.perfectdreams.discordinteraktions.InteractionRequestHandler
 import net.perfectdreams.discordinteraktions.entities.CommandInteraction
 import net.perfectdreams.discordinteraktions.internal.entities.KordMessage
 import net.perfectdreams.discordinteraktions.api.entities.Message
 import net.perfectdreams.discordinteraktions.utils.InteractionMessage
 
+/**
+ * On this request manager we'll handle the requests
+ * by directly interacting with the Discord Rest API.
+ *
+ * @param rest The application rest client
+ * @param applicationId The bot's application id
+ * @param interactionToken The request's token
+ * @param request The interaction (wrapped by the [InteractionRequestHandler]
+ */
 class HttpRequestManager(
     val rest: RestClient,
     val applicationId: Snowflake,

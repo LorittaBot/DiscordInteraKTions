@@ -15,6 +15,16 @@ import kotlinx.serialization.json.jsonPrimitive
 import net.perfectdreams.discordinteraktions.entities.Interaction
 import net.perfectdreams.discordinteraktions.verifier.InteractionRequestVerifier
 
+/**
+ * On this method we'll install the **POST** route that'll handle
+ * post requests to our defined route.
+ *
+ * @param publicKey The public key of your bot (https://i.imgur.com/xDZnJ5J.png)
+ * @param path The location that we'll listing the requests.
+ * @param handler The class that we use to handle these requests.
+ *
+ * @see InteractionsServer
+ */
 fun Routing.installDiscordInteractions(
     publicKey: String,
     path: String,
@@ -61,7 +71,6 @@ fun Routing.installDiscordInteractions(
         val interaction = InteractionsServer.json.decodeFromString<Interaction>(text)
 
         println(interaction)
-
         println(interaction::class)
 
         handler.onRequest(call, interaction)
