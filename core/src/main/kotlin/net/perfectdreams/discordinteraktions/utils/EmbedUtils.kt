@@ -98,13 +98,13 @@ class Author: RestWrapper<DiscordEmbed.Author>, BuilderWrapper<EmbedBuilder.Auth
     // Optional
     var url: String? = null
     // Optional
-    var image: String? = null
+    var icon: String? = null
 
     override fun intoSerial(): DiscordEmbed.Author? {
         return DiscordEmbed.Author(
             (name ?: return null).optional(),
             url.optional(),
-            image.optional()
+            icon.optional()
         )
     }
 
@@ -112,7 +112,7 @@ class Author: RestWrapper<DiscordEmbed.Author>, BuilderWrapper<EmbedBuilder.Auth
         return EmbedBuilder.Author().also {
             it.name = name ?: return null
             it.url = url
-            it.icon = image
+            it.icon = icon
         }
     }
 }
@@ -176,18 +176,18 @@ class Footer: RestWrapper<DiscordEmbed.Footer>, BuilderWrapper<EmbedBuilder.Foot
     // Required
     var text: String? = null
     // Optional
-    var url: String? = null
+    var icon: String? = null
     // Optional
     var timestamp: Instant? = null
 
     override fun intoSerial(): DiscordEmbed.Footer? {
-        return DiscordEmbed.Footer(text ?: return null, url.optional())
+        return DiscordEmbed.Footer(text ?: return null, icon.optional())
     }
 
     override fun intoBuilder(): EmbedBuilder.Footer? {
         return EmbedBuilder.Footer().also {
             it.text = text ?: return null
-            it.icon = url
+            it.icon = icon
         }
     }
 }
