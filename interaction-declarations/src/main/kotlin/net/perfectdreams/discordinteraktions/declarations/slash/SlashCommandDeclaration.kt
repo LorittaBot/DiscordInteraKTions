@@ -4,9 +4,10 @@ import net.perfectdreams.discordinteraktions.api.entities.Channel
 import net.perfectdreams.discordinteraktions.api.entities.Role
 import net.perfectdreams.discordinteraktions.api.entities.User
 
-abstract class SlashCommandDeclaration {
-    abstract val name: String
-    abstract val description: String
+abstract class SlashCommandDeclaration(
+    val name: String,
+    val description: String
+) {
     open val options: Options = Options.NO_OPTIONS
 
     abstract class Options {
@@ -15,6 +16,28 @@ abstract class SlashCommandDeclaration {
         }
         
         val arguments = mutableListOf<CommandOption<*>>()
+        val subcommands = mutableListOf<SlashCommandDeclaration>()
+        val subcommandGroups = mutableListOf<SlashCommandGroupDeclaration>()
+
+        // ===[ SUBCOMMAND ]===
+        fun <T : SlashCommandDeclaration> subcommand(declaration: T): T {
+            return declaration
+        }
+
+        fun <T : SlashCommandDeclaration> T.register(): T {
+            subcommands.add(this)
+            return this
+        }
+
+        // ===[ SUBCOMMAND GROUP ]===
+        fun <T : SlashCommandGroupDeclaration> subcommandGroup(groupDeclaration: T): T {
+            return groupDeclaration
+        }
+
+        fun <T : SlashCommandGroupDeclaration> T.register(): T {
+            subcommandGroups.add(this)
+            return this
+        }
 
         fun string(name: String, description: String) = CommandOption<String?>(
             3,

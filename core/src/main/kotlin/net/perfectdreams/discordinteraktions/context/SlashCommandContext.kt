@@ -1,15 +1,19 @@
 package net.perfectdreams.discordinteraktions.context
 
+import dev.kord.common.entity.Option
 import net.perfectdreams.discordinteraktions.api.entities.User
 import net.perfectdreams.discordinteraktions.entities.CommandInteraction
 import net.perfectdreams.discordinteraktions.internal.entities.KordUser
 import net.perfectdreams.discordinteraktions.api.entities.Message
+import net.perfectdreams.discordinteraktions.commands.SlashCommand
 import net.perfectdreams.discordinteraktions.utils.InteractionMessage
 import net.perfectdreams.discordinteraktions.utils.MessageBuilder
 import net.perfectdreams.discordinteraktions.utils.buildMessage
 
 open class SlashCommandContext(
+    val command: SlashCommand,
     val request: CommandInteraction,
+    val relativeOptions: List<Option>?,
     internal var bridge: RequestBridge
 ) {
     var isDeferred = false

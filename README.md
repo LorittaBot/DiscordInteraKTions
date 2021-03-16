@@ -14,7 +14,8 @@ Nothing works yet so you shouldn't use it!! (Okay *technically* sending messages
 * [X] Sending Messages
 * [X] Sending Messages Directly on Discord's POST Request
 * [X] Sending Follow Up Messages via REST
-* [ ] Registering Slash Commands on Discord
+* [X] Registering Slash Commands on Discord
+* [X] Subcommands and Subcommand Groups
 * [ ] Sending Embeds
 * [ ] Abstractions On Top of Kord
 * [ ] *Good* Documentation
@@ -131,14 +132,15 @@ First we need to create a Slash Command, here's a example of how you can create 
 
 ```kotlin
 class CharacterCommand : SlashCommand(CharacterCommand) {
-    companion object : SlashCommandDeclaration() {
-        // This is the slash command declaration, this is used when registering the command on Discord
-        //
-        // The reason it is a companion object is to allow you to register the command on Discord without
-        // needing to initialize the command class! (which can be a *pain* if your command requires dependency injection)
-        override val name = "character" // The command label
-        override val description = "So many choices, so little time..." // The command description shown in the Discord UI
+    // This is the slash command declaration, this is used when registering the command on Discord
+    //
+    // The reason it is a companion object is to allow you to register the command on Discord without
+    // needing to initialize the command class! (which can be a *pain* if your command requires dependency injection)
 
+    companion object : SlashCommandDeclaration(
+        name = "character", // The command label
+        description = "So many choices, so little time..." // The command description shown in the Discord UI
+    ) {
         // By default, if you don't override the options, no options will be set
         override val options = Options
 
@@ -242,7 +244,7 @@ suspend fun main() {
     commandManager.register(CharacterCommand())
 
     // And now register all commands registered in our command manager!
-    interactions.commandManager.updateAllCommandsInGuild(
+    commandManager.updateAllCommandsInGuild(
         Snowflake(40028922L), // Change to your Guild ID
         // This compares the currently registered commands on Discord with the commands in the Command Manager
         // If a command is missing from the Command Manager but is present on Discord, it is deleted from Discord!

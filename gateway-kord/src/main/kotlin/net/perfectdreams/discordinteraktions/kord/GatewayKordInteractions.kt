@@ -13,6 +13,7 @@ import net.perfectdreams.discordinteraktions.context.InteractionRequestState
 import net.perfectdreams.discordinteraktions.context.RequestBridge
 import net.perfectdreams.discordinteraktions.context.SlashCommandContext
 import net.perfectdreams.discordinteraktions.entities.CommandInteraction
+import net.perfectdreams.discordinteraktions.utils.CommandDeclarationUtils
 import net.perfectdreams.discordinteraktions.utils.Observable
 
 @KordPreview
@@ -35,7 +36,25 @@ fun Gateway.installDiscordInteraKTions(
             interactionData.version
         )
 
-        val command = commandManager.commands.first { it.declaration.name == request.data.name }
+        println(request)
+
+        // Processing subcommands is kinda hard, but not impossible!
+        val commandLabels = CommandDeclarationUtils.findAllSubcommandDeclarationNames(request)
+        val relativeOptions = CommandDeclarationUtils.getNestedOptions(request.data.options.value)
+
+        println("Subcommand Labels: $commandLabels; Root Options: $relativeOptions")
+
+        val command = commandManager.commands.first {
+            // This is very complex because this is the *advanced* stuff to check if the subcommand and command group matches
+            // First we need to get the root declaration and try following the labels until we find our declaration (or not!)
+            val rootDeclaration = it.rootDeclaration
+
+            CommandDeclarationUtils.areLabelsConnectedToCommandDeclaration(
+                commandLabels,
+                rootDeclaration,
+                it.declaration
+            )
+        }
 
         val observableState = Observable(InteractionRequestState.NOT_REPLIED_YET)
         val bridge = RequestBridge(observableState)
@@ -52,12 +71,16 @@ fun Gateway.installDiscordInteraKTions(
 
         val commandContext = if (request.guildId.value != null) {
             GuildSlashCommandContext(
+                command,
                 request,
+                relativeOptions,
                 bridge
             )
         } else {
             SlashCommandContext(
+                command,
                 request,
+                relativeOptions,
                 bridge
             )
         }

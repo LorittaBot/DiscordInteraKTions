@@ -11,8 +11,9 @@ import net.perfectdreams.discordinteraktions.internal.entities.KordChannel
 import net.perfectdreams.discordinteraktions.internal.entities.KordRole
 import net.perfectdreams.discordinteraktions.internal.entities.KordUser
 
-fun <T> CommandOption<T>.get(context: SlashCommandContext) = (context.request.data.options.value?.firstOrNull { it.name == this.name } as CommandArgument?)
-    ?.value?.value as T
+fun <T> CommandOption<T>.get(context: SlashCommandContext) =
+    (context.relativeOptions?.firstOrNull { it.name == this.name } as CommandArgument?)
+        ?.value?.value as T
 
 @JvmName("getUser")
 fun CommandOption<User>.get(context: SlashCommandContext): User {
@@ -69,7 +70,7 @@ fun CommandOption<Role?>.get(context: SlashCommandContext): Role? {
 fun <T> CommandOption<*>.getRawValue(context: SlashCommandContext) = getRawValueOrNull<T>(context) ?: throw IllegalArgumentException("Option \"$name\" was not found in the interaction response!")
 
 fun <T> CommandOption<*>.getRawValueOrNull(context: SlashCommandContext): T? {
-    val element = context.request.data.options.value?.firstOrNull { it.name == this.name } ?: return null
+    val element = context.relativeOptions?.firstOrNull { it.name == this.name } ?: return null
     val commandArgument = element as CommandArgument
 
     return commandArgument.value.value as T

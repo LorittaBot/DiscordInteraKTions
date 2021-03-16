@@ -10,7 +10,10 @@ import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDecl
  * It's recommended that the [declaration] parameter be
  * the class' companion object that extends [SlashCommandDeclaration].
  */
-abstract class SlashCommand(val declaration: SlashCommandDeclaration) {
+abstract class SlashCommand(
+    val declaration: SlashCommandDeclaration,
+    val rootDeclaration: SlashCommandDeclaration = declaration
+) {
 
     /**
      * This is the method that'll be called when this command

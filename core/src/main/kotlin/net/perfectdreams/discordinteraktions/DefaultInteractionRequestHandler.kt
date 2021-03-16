@@ -8,22 +8,19 @@ import io.ktor.http.*
 import io.ktor.response.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.receiveOrNull
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.context.GuildSlashCommandContext
-import net.perfectdreams.discordinteraktions.context.HttpRequestManager
 import net.perfectdreams.discordinteraktions.context.InteractionRequestState
 import net.perfectdreams.discordinteraktions.context.RequestBridge
 import net.perfectdreams.discordinteraktions.context.SlashCommandContext
 import net.perfectdreams.discordinteraktions.context.WebServerRequestManager
 import net.perfectdreams.discordinteraktions.entities.CommandInteraction
 import net.perfectdreams.discordinteraktions.entities.PingInteraction
+import net.perfectdreams.discordinteraktions.utils.CommandDeclarationUtils
 import net.perfectdreams.discordinteraktions.utils.Observable
-import kotlin.properties.ObservableProperty
 
 /**
  * This is the default implementation of [InteractionRequestHandler],
@@ -70,7 +67,23 @@ class DefaultInteractionRequestHandler(val m: InteractionsServer) : InteractionR
     override suspend fun onCommand(call: ApplicationCall, request: CommandInteraction) {
         println(request.data.name)
 
-        val command = m.commandManager.commands.first { it.declaration.name == request.data.name }
+        // Processing subcommands is kinda hard, but not impossible!
+        val commandLabels = CommandDeclarationUtils.findAllSubcommandDeclarationNames(request)
+        val relativeOptions = CommandDeclarationUtils.getNestedOptions(request.data.options.value)
+
+        println("Subcommand Labels: $commandLabels; Root Options: $relativeOptions")
+
+        val command = m.commandManager.commands.first {
+            // This is very complex because this is the *advanced* stuff to check if the subcommand and command group matches
+            // First we need to get the root declaration and try following the labels until we find our declaration (or not!)
+            val rootDeclaration = it.rootDeclaration
+
+            CommandDeclarationUtils.areLabelsConnectedToCommandDeclaration(
+                commandLabels,
+                rootDeclaration,
+                it.declaration
+            )
+        }
 
         println("Command: $command")
 
@@ -90,12 +103,16 @@ class DefaultInteractionRequestHandler(val m: InteractionsServer) : InteractionR
 
         val commandContext = if (request.guildId.value != null) {
             GuildSlashCommandContext(
+                command,
                 request,
+                relativeOptions,
                 bridge
             )
         } else {
             SlashCommandContext(
+                command,
                 request,
+                relativeOptions,
                 bridge
             )
         }
