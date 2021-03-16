@@ -87,6 +87,51 @@ class CommandManager(
         )
     }
 
+    suspend fun updateAllGlobalCommands(
+        deleteUnknownCommands: Boolean = true
+    ) {
+        if (deleteUnknownCommands) {
+            // If we want to check if we should delete commands, we need to get them first!
+            val currentlyRegisteredCommands = rest.interaction.getGlobalApplicationCommands(
+                applicationId
+            )
+
+            // This will remove all commands that do not match any label of the currently registered commands
+            // We don't need to remove commands that have the same label because the PUT request will replace them automatically
+            val allCommandsLabels = commands.map { it.rootDeclaration.name }
+
+            val commandsToBeRemoved = commands
+                .filter {
+                    it.rootDeclaration.name !in allCommandsLabels
+                }
+
+            commandsToBeRemoved.forEach {
+                val command = currentlyRegisteredCommands.first { registeredCommand ->
+                    registeredCommand.name == it.rootDeclaration.name
+                }
+
+                logger.info { "Deleting command ${it.rootDeclaration.name} (${command.id}) because there isn't any matching registered command..." }
+
+                rest.interaction.deleteGlobalApplicationCommand(
+                    applicationId,
+                    command.id
+                )
+            }
+        }
+
+        val commandsToBeRegistered = mutableListOf<ApplicationCommandCreateRequest>()
+
+        // If there are multiple commands, we need to do a distinct check based on the root declaration
+        for (slash in commands.distinctBy { it.rootDeclaration }) {
+            commandsToBeRegistered.add(convertDeclarationToKord(slash.rootDeclaration))
+        }
+
+        rest.interaction.createGlobalApplicationCommands(
+            applicationId,
+            commandsToBeRegistered
+        )
+    }
+
     private fun convertDeclarationToKordSubCommandOption(declaration: SlashCommandDeclaration): ApplicationCommandOption {
         return ApplicationCommandOption(
             ApplicationCommandOptionType.SubCommand,
