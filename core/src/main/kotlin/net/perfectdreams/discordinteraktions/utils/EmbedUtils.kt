@@ -1,7 +1,6 @@
 package net.perfectdreams.discordinteraktions.utils
 
 import dev.kord.common.entity.DiscordEmbed
-import dev.kord.common.entity.Option
 import dev.kord.common.entity.optional.Optional
 import dev.kord.common.entity.optional.OptionalBoolean
 import dev.kord.common.entity.optional.OptionalInt
@@ -10,31 +9,55 @@ import java.awt.Color
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 
-@SuppressWarnings("unused")
-class Embed: RestWrapper<DiscordEmbed, EmbedBuilder> {
+class Embed: RestWrapper<DiscordEmbed>, BuilderWrapper<EmbedBuilder> {
 
     var author: Author? = null
     var body: Body? = null
-    var fieldSet: FieldSet? = null
     var footer: Footer? = null
     var images: Images? = null
 
+    val fields = mutableListOf<Field>()
+
+    /**
+     * This is the method we can use
+     * for defining the embed's author
+     *
+     * @param callback Declaration of the author's data
+     */
     fun author(callback: Author.() -> Unit) {
         this.author = Author().apply(callback)
     }
 
+    /**
+     * This is the method we can use
+     * for defining the embed's body data (title, description, color).
+     *
+     * @param callback Declaration of the body's data
+     */
     fun body(callback: Body.() -> Unit) {
         this.body = Body().apply(callback)
     }
 
-    fun fieldSet(callback: FieldSet.() -> Unit) {
-        this.fieldSet = FieldSet().apply(callback)
+    fun field(callback: Field.() -> Unit) {
+        fields.add(Field().apply(callback))
     }
 
+    /**
+     * This is the method we can use
+     * for defining the embed's images (thumbnail, image).
+     *
+     * @param callback Declaration of the images
+     */
     fun images(callback: Author.() -> Unit) {
         this.author = Author().apply(callback)
     }
 
+    /**
+     * This is the method we can use
+     * for defining the embed's footer (also including the timestamp).
+     *
+     * @param callback Declaration of the footer's data
+     */
     fun footer(callback: Footer.() -> Unit) {
         this.footer = Footer().apply(callback)
     }
@@ -47,7 +70,7 @@ class Embed: RestWrapper<DiscordEmbed, EmbedBuilder> {
             it.footer = footer?.intoBuilder()
             it.image = images?.image
             it.thumbnail = images?.intoBuilder()
-            it.fields = fieldSet?.fields?.map { it.intoBuilder() }.orEmpty().toMutableList()
+            it.fields = fields.map { field -> field.intoBuilder() }.toMutableList()
             it.timestamp = footer?.timestamp
             it.title = body?.title
         }
@@ -59,7 +82,7 @@ class Embed: RestWrapper<DiscordEmbed, EmbedBuilder> {
             description = body?.description.optional(),
             author = author?.intoSerial().optional(),
             color = body?.color?.rgb.optionalInt(),
-            fields = fieldSet?.fields?.mapNotNull { it.intoSerial() }.optional(),
+            fields = fields.map { it.intoSerial() }.optional(),
             footer = footer?.intoSerial().optional(),
             image = DiscordEmbed.Image(images?.image.optional()).optional(),
             thumbnail = DiscordEmbed.Image(images?.thumbnail.optional()).optional(),
@@ -68,7 +91,7 @@ class Embed: RestWrapper<DiscordEmbed, EmbedBuilder> {
     }
 }
 
-class Author: RestWrapper<DiscordEmbed.Author, EmbedBuilder.Author> {
+class Author: RestWrapper<DiscordEmbed.Author>, BuilderWrapper<EmbedBuilder.Author> {
 
     // Required
     var name: String? = null
@@ -87,13 +110,25 @@ class Author: RestWrapper<DiscordEmbed.Author, EmbedBuilder.Author> {
 
     override fun intoBuilder(): EmbedBuilder.Author? {
         return EmbedBuilder.Author().also {
-            it.name = name ?: return@intoBuilder null
+            it.name = name ?: return null
             it.url = url
             it.icon = image
         }
     }
 }
 
+/**
+ * This is the body class (just something for improving
+ * our DSLs and making them prettier!)
+ *
+ * This includes the embed's:
+ *
+ * @property title
+ * @property description
+ * @property color
+ *
+ * None of them are actually required.
+ */
 class Body {
 
     var title: String? = null
@@ -102,38 +137,17 @@ class Body {
 
 }
 
-class FieldSet {
-
-    val fields = mutableListOf<Field>()
-
-    fun field(field: Field) {
-        fields.add(field)
-    }
-
-    fun field(callback: Field.() -> Unit) {
-        field(Field().apply(callback))
-    }
-
-    fun field(name: String, value: String, inline: Boolean) {
-        field {
-            this.name = name
-            this.value = value
-            this.inline = inline
-        }
-    }
-}
-
-class Field: RestWrapper<DiscordEmbed.Field, EmbedBuilder.Field> {
+class Field: RestWrapper<DiscordEmbed.Field>, BuilderWrapper<EmbedBuilder.Field> {
 
     // Required
     var name: String = EmbedBuilder.ZERO_WIDTH_SPACE
     // Required
     var value: String = EmbedBuilder.ZERO_WIDTH_SPACE
-    // Optional
+    // Optional (pre-defined)
     var inline: Boolean = true
 
-    override fun intoSerial(): DiscordEmbed.Field? {
-        return DiscordEmbed.Field(name ?: return null, value ?: return null, OptionalBoolean.Value(inline))
+    override fun intoSerial(): DiscordEmbed.Field {
+        return DiscordEmbed.Field(name, value, OptionalBoolean.Value(inline))
     }
 
     override fun intoBuilder(): EmbedBuilder.Field {
@@ -145,23 +159,19 @@ class Field: RestWrapper<DiscordEmbed.Field, EmbedBuilder.Field> {
     }
 }
 
-class Images: RestWrapper<Unit, EmbedBuilder.Thumbnail> {
+class Images: BuilderWrapper<EmbedBuilder.Thumbnail> {
 
     var image: String? = null
     var thumbnail: String? = null
 
-    override fun intoSerial(): Unit? {
-        TODO("Not yet implemented")
-    }
-
     override fun intoBuilder(): EmbedBuilder.Thumbnail? {
         return EmbedBuilder.Thumbnail().also {
-            it.url = thumbnail ?: return@intoBuilder null
+            it.url = thumbnail ?: return null
         }
     }
 }
 
-class Footer: RestWrapper<DiscordEmbed.Footer, EmbedBuilder.Footer> {
+class Footer: RestWrapper<DiscordEmbed.Footer>, BuilderWrapper<EmbedBuilder.Footer> {
 
     // Required
     var text: String? = null
@@ -176,12 +186,16 @@ class Footer: RestWrapper<DiscordEmbed.Footer, EmbedBuilder.Footer> {
 
     override fun intoBuilder(): EmbedBuilder.Footer? {
         return EmbedBuilder.Footer().also {
-            it.text = text ?: return@intoBuilder null
+            it.text = text ?: return null
             it.icon = url
         }
     }
 }
 
+/**
+ * Just a workaround to convert objects
+ * into [Optional] (object from Kord)
+ */
 private fun <T : Any> Any?.optional(): Optional<T> {
     return if (this == null) {
         Optional()
@@ -190,6 +204,10 @@ private fun <T : Any> Any?.optional(): Optional<T> {
     }
 }
 
+/**
+ * Just a workaround to convert integers
+ * into [OptionalInt] (object from Kord)
+ */
 private fun Int?.optionalInt(): OptionalInt {
     return if (this == null) {
         OptionalInt.Missing
@@ -198,22 +216,39 @@ private fun Int?.optionalInt(): OptionalInt {
     }
 }
 
-fun Instant.toTimestamp(): String = DateTimeFormatter.ISO_INSTANT.format(this)
-
 fun embed(embed: Embed.() -> Unit): Embed = Embed().apply(embed)
 
-interface RestWrapper<T, B> {
+/**
+ * Just a way of converting Instant objects into
+ * ISO8601 data format (the one which discord accepts)
+ */
+fun Instant.toTimestamp(): String = DateTimeFormatter.ISO_INSTANT.format(this)
+
+/**
+ * This represents an object that can be transformed
+ * into a serializable object (wrappers for the Discord API)
+ *
+ * We are currently using the Kord wrapper objects
+ * on the "common" module.
+ *
+ * @param T The object that it'll transform into
+ */
+interface RestWrapper<T> {
     fun intoSerial(): T?
-    fun intoBuilder(): B?
 }
 
-fun DiscordEmbed.asHybrid(): Embed = embed {
-    author {
-        name = this@asHybrid.author.value?.name?.value
-        url = this@asHybrid.author.value?.url?.value
-        image = this@asHybrid.author.value?.iconUrl?.value
-    }
-    body {
-
-    }
+/**
+ * This is just a temporary workaround for objects that can be
+ * transformed into Kord's Embed Builder class and inner classes too.
+ *
+ * (Since they can be transformed to EmbedRequests, so we don't
+ * need to create our own wrapper)
+ *
+ * This could be replaced if we were using Kord's
+ * core module, since we can use the EmbedData object.
+ *
+ * @param T
+ */
+interface BuilderWrapper<T> {
+    fun intoBuilder(): T?
 }
