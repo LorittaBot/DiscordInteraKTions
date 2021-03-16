@@ -3,6 +3,7 @@ package net.perfectdreams.discordinteraktions.utils
 import dev.kord.common.entity.AllowedMentions
 import dev.kord.common.entity.DiscordEmbed
 import dev.kord.common.entity.MessageFlags
+import dev.kord.rest.json.request.EmbedRequest
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -45,5 +46,8 @@ data class InteractionMessage(
     val flags: MessageFlags? = null,
     @Transient
     val files: Map<String, InputStream>? = null,
-    val embed: DiscordEmbed? = null
+    @SerialName("embed")
+    val kordEmbed: DiscordEmbed? = null,
+    @Transient
+    val embed: Embed? = null
 )

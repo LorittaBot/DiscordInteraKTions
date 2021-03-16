@@ -65,6 +65,7 @@ class InitialHttpRequestManager(
                     InteractionApplicationCommandCallbackDataBuilder().apply {
                         this.content = message.content
                         this.tts = message.tts
+                        this.embeds = listOfNotNull(message.embed?.intoBuilder()).toMutableList()
                         // this.allowedMentions = message.allowedMentions
                     }.build()
                 )

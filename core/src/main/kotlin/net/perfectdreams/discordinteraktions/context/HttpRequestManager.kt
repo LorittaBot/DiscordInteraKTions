@@ -67,6 +67,7 @@ class HttpRequestManager(
                     this.content = message.content
                     this.tts = message.tts
                     this.allowedMentions = message.allowedMentions
+                    this.embeds = listOfNotNull(message.embed?.intoBuilder()?.toRequest()).toMutableList()
 
                     // There are "username" and "avatar" flags, but they seem to be unused
                     // Also, what to do about message flags? Silently ignore them or throw a exception?
