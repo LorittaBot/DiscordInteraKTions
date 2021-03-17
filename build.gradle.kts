@@ -16,15 +16,15 @@ tasks.test {
     useJUnitPlatform()
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "11"
-}
-
 allprojects {
     repositories {
         mavenCentral()
         maven("https://oss.sonatype.org/content/repositories/snapshots")
         maven("https://repo.perfectdreams.net")
+    }
+
+    tasks.withType<KotlinCompile> {
+        kotlinOptions.jvmTarget = "11"
     }
 }
 
