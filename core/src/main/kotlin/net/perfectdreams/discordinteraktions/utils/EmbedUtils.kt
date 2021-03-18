@@ -1,13 +1,13 @@
 package net.perfectdreams.discordinteraktions.utils
 
 import dev.kord.common.entity.DiscordEmbed
-import dev.kord.common.entity.optional.Optional
-import dev.kord.common.entity.optional.OptionalBoolean
-import dev.kord.common.entity.optional.OptionalInt
+import dev.kord.common.entity.optional.*
 import dev.kord.rest.builder.message.EmbedBuilder
+import io.ktor.util.*
 import java.awt.Color
 import java.time.Instant
 import java.time.format.DateTimeFormatter
+import kotlin.reflect.KProperty
 
 class Embed: RestWrapper<DiscordEmbed>, BuilderWrapper<EmbedBuilder> {
 
@@ -81,11 +81,11 @@ class Embed: RestWrapper<DiscordEmbed>, BuilderWrapper<EmbedBuilder> {
             title = body?.title.optional(),
             description = body?.description.optional(),
             author = author?.intoSerial().optional(),
-            color = body?.color?.rgb.optionalInt(),
+            color = body?.color?.rgb?.let { OptionalInt.Value(it) } ?: OptionalInt.Missing,
             fields = fields.map { it.intoSerial() }.optional(),
             footer = footer?.intoSerial().optional(),
-            image = DiscordEmbed.Image(images?.image.optional()).optional(),
-            thumbnail = DiscordEmbed.Image(images?.thumbnail.optional()).optional(),
+            image = images?.image?.let { DiscordEmbed.Image(it.optional()) }.optional(),
+            thumbnail = images?.thumbnail?.let { DiscordEmbed.Thumbnail(it.optional()) }.optional(),
             timestamp = footer?.timestamp?.toTimestamp().optional()
         )
     }
@@ -93,24 +93,21 @@ class Embed: RestWrapper<DiscordEmbed>, BuilderWrapper<EmbedBuilder> {
 
 class Author: RestWrapper<DiscordEmbed.Author>, BuilderWrapper<EmbedBuilder.Author> {
 
-    // Required
-    var name: String? = null
-    // Optional
-    var url: String? = null
-    // Optional
-    var icon: String? = null
+    var name: String? by Component(false)
+    var url: String? by Component(false)
+    var icon: String? by Component(false)
 
-    override fun intoSerial(): DiscordEmbed.Author? {
+    override fun intoSerial(): DiscordEmbed.Author {
         return DiscordEmbed.Author(
-            (name ?: return null).optional(),
+            name.optional(),
             url.optional(),
             icon.optional()
         )
     }
 
-    override fun intoBuilder(): EmbedBuilder.Author? {
+    override fun intoBuilder(): EmbedBuilder.Author {
         return EmbedBuilder.Author().also {
-            it.name = name ?: return null
+            it.name = name
             it.url = url
             it.icon = icon
         }
@@ -131,29 +128,30 @@ class Author: RestWrapper<DiscordEmbed.Author>, BuilderWrapper<EmbedBuilder.Auth
  */
 class Body {
 
-    var title: String? = null
-    var description: String? = null
-    var color: Color? = null
+    var title: String? by Component(false)
+    var description: String? by Component(false)
+    var color: Color? by Component(false)
 
 }
 
 class Field: RestWrapper<DiscordEmbed.Field>, BuilderWrapper<EmbedBuilder.Field> {
 
-    // Required
-    var name: String = EmbedBuilder.ZERO_WIDTH_SPACE
-    // Required
-    var value: String = EmbedBuilder.ZERO_WIDTH_SPACE
-    // Optional (pre-defined)
-    var inline: Boolean = true
+    var name: String? by Component(true)
+    var value: String? by Component(true)
+    var inline: Boolean? by Component(false)
 
     override fun intoSerial(): DiscordEmbed.Field {
-        return DiscordEmbed.Field(name, value, OptionalBoolean.Value(inline))
+        return DiscordEmbed.Field(
+            name!!,
+            value!!,
+            OptionalBoolean.Value(inline ?: false)
+        )
     }
 
     override fun intoBuilder(): EmbedBuilder.Field {
         return EmbedBuilder.Field().also {
-            it.name = name
-            it.value = value
+            it.name = name!!
+            it.value = value!!
             it.inline = inline
         }
     }
@@ -161,8 +159,8 @@ class Field: RestWrapper<DiscordEmbed.Field>, BuilderWrapper<EmbedBuilder.Field>
 
 class Images: BuilderWrapper<EmbedBuilder.Thumbnail> {
 
-    var image: String? = null
-    var thumbnail: String? = null
+    var image: String? by Component(false)
+    var thumbnail: String? by Component(false)
 
     override fun intoBuilder(): EmbedBuilder.Thumbnail? {
         return EmbedBuilder.Thumbnail().also {
@@ -173,46 +171,22 @@ class Images: BuilderWrapper<EmbedBuilder.Thumbnail> {
 
 class Footer: RestWrapper<DiscordEmbed.Footer>, BuilderWrapper<EmbedBuilder.Footer> {
 
-    // Required
-    var text: String? = null
-    // Optional
-    var icon: String? = null
-    // Optional
-    var timestamp: Instant? = null
+    var text: String? by Component(true)
+    var icon: String? by Component(false)
+    var timestamp: Instant? by Component(false)
 
-    override fun intoSerial(): DiscordEmbed.Footer? {
-        return DiscordEmbed.Footer(text ?: return null, icon.optional())
+    override fun intoSerial(): DiscordEmbed.Footer {
+        return DiscordEmbed.Footer(
+            text!!,
+            icon.optional()
+        )
     }
 
-    override fun intoBuilder(): EmbedBuilder.Footer? {
+    override fun intoBuilder(): EmbedBuilder.Footer {
         return EmbedBuilder.Footer().also {
-            it.text = text ?: return null
+            it.text = text!!
             it.icon = icon
         }
-    }
-}
-
-/**
- * Just a workaround to convert objects
- * into [Optional] (object from Kord)
- */
-private fun <T : Any> Any?.optional(): Optional<T> {
-    return if (this == null) {
-        Optional()
-    } else {
-        Optional(this as T)
-    }
-}
-
-/**
- * Just a workaround to convert integers
- * into [OptionalInt] (object from Kord)
- */
-private fun Int?.optionalInt(): OptionalInt {
-    return if (this == null) {
-        OptionalInt.Missing
-    } else {
-        OptionalInt.Value(this)
     }
 }
 
@@ -234,7 +208,7 @@ fun Instant.toTimestamp(): String = DateTimeFormatter.ISO_INSTANT.format(this)
  * @param T The object that it'll transform into
  */
 interface RestWrapper<T> {
-    fun intoSerial(): T?
+    fun intoSerial(): T
 }
 
 /**
@@ -252,3 +226,20 @@ interface RestWrapper<T> {
 interface BuilderWrapper<T> {
     fun intoBuilder(): T?
 }
+
+class Component<V>(val required: Boolean) {
+    private var value: V? = null
+
+    operator fun getValue(thisRef: Any?, property: KProperty<*>): V? {
+        if (required && value == null)
+            error("Value '${property.name}' is required.")
+        else return value
+    }
+
+    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: V) {
+        this.value = value
+    }
+}
+
+private fun <T> T?.optional(): Optional<T> =
+    if (this != null) Optional.Value(this) else Optional.Missing()

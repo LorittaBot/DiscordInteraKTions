@@ -18,7 +18,8 @@ fun buildMessage(block: MessageBuilder.() -> (Unit)): InteractionMessage {
         result.allowedMentions,
         result.flags,
         result.files,
-        result.embed?.intoSerial()
+        result.embed?.intoSerial(),
+        result.embed
     )
 }
 
