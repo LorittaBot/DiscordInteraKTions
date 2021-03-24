@@ -75,7 +75,7 @@ fun CommandOption<String>.choice(value: String, name: String) = CommandOption<St
     type,
     this.name,
     description,
-    true,
+    required,
     choices + StringCommandChoice(name, value)
 )
 
@@ -84,7 +84,7 @@ fun CommandOption<String?>.choice(value: String, name: String) = CommandOption<S
     type,
     this.name,
     description,
-    true,
+    required,
     choices + StringCommandChoice(name, value)
 )
 
@@ -93,7 +93,7 @@ fun CommandOption<Int>.choice(value: Int, name: String) = CommandOption<Int>(
     type,
     this.name,
     description,
-    true,
+    required,
     choices + IntegerCommandChoice(name, value)
 )
 
@@ -103,6 +103,6 @@ fun CommandOption<Int?>.choice(value: Int, name: String) = CommandOption<Int>(
     type,
     this.name,
     description,
-    true,
+    required,
     choices + IntegerCommandChoice(name, value)
 )
