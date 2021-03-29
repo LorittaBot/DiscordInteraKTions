@@ -65,6 +65,7 @@ class InitialHttpRequestManager(
                     InteractionApplicationCommandCallbackDataBuilder().apply {
                         this.content = message.content
                         this.tts = message.tts
+                        this.flags = message.flags
                         // this.allowedMentions = message.allowedMentions
                     }.build()
                 )
