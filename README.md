@@ -121,7 +121,7 @@ Then add the Discord InteraKTions dependency!
 ```kotlin
 dependencies {
     ...
-    implementation("net.perfectdreams.discordinteraktions:core:0.0.2-SNAPSHOT")
+    implementation("net.perfectdreams.discordinteraktions:core:0.0.3-SNAPSHOT")
     ...
 }
 ```
@@ -226,7 +226,7 @@ Add the Kord Gateway Support module to your project
 ```kotlin
 dependencies {
     ...
-    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.2-SNAPSHOT")
+    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.3-SNAPSHOT")
     ...
 }
 ```
