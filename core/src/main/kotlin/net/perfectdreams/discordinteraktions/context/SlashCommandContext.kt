@@ -16,14 +16,13 @@ open class SlashCommandContext(
     val relativeOptions: List<Option>?,
     internal var bridge: RequestBridge
 ) {
-    var isDeferred = false
-        private set
+    val isDeferred
+        get() = bridge.state.value != InteractionRequestState.NOT_REPLIED_YET
 
     val user: User = KordUser(request.member.value?.user?.value ?: request.user.value ?: throw IllegalArgumentException("There isn't a user object present! Discord Bug?"))
 
     suspend fun defer() {
         bridge.manager.defer()
-        isDeferred = true
     }
 
     suspend fun sendMessage(block: MessageBuilder.() -> (Unit)): Message {
@@ -32,6 +31,12 @@ open class SlashCommandContext(
     }
 
     suspend fun sendMessage(message: InteractionMessage): Message {
+        if (message.files?.isNotEmpty() == true && !isDeferred) {
+            // If the message has files and our current bridge state is "NOT_REPLIED_YET", then it means that we need to defer before sending the file!
+            // (Because currently you can only send files by editing the original interaction message or with a follow up message
+            defer()
+        }
+
         return bridge.manager.sendMessage(message)
     }
 }

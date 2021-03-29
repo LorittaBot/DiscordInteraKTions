@@ -3,6 +3,7 @@ package net.perfectdreams.discordinteraktions.context
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.builder.interaction.FollowupMessageCreateBuilder
 import dev.kord.rest.builder.interaction.InteractionResponseModifyBuilder
+import dev.kord.rest.json.request.MultipartInteractionResponseModifyRequest
 import dev.kord.rest.service.RestClient
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.InteractionRequestHandler
@@ -10,6 +11,7 @@ import net.perfectdreams.discordinteraktions.entities.CommandInteraction
 import net.perfectdreams.discordinteraktions.internal.entities.KordMessage
 import net.perfectdreams.discordinteraktions.api.entities.Message
 import net.perfectdreams.discordinteraktions.utils.InteractionMessage
+import java.io.File
 
 /**
  * On this request manager we'll handle the requests
@@ -43,16 +45,18 @@ class HttpRequestManager(
             // If it was deferred, we are going to edit the original message
             val kordMessage = rest.interaction.modifyInteractionResponse(
                 applicationId,
-                request.token,
-                InteractionResponseModifyBuilder().apply {
-                    this.content = message.content
-                    // this.tts = message.tts
-                    // this.allowedMentions = message.allowedMentions
+                request.token
+            ) {
+                this.content = message.content
+                val filePairs = message.files?.map { it.key to it.value }
+                if (filePairs != null)
+                    files.addAll(filePairs)
+                // this.tts = message.tts
+                // this.allowedMentions = message.allowedMentions
 
-                    // There are "username" and "avatar" flags, but they seem to be unused
-                    // Also, what to do about message flags? Silently ignore them or throw a exception?
-                }.toRequest()
-            )
+                // There are "username" and "avatar" flags, but they seem to be unused
+                // Also, what to do about message flags? Silently ignore them or throw a exception?
+            }
 
             // And also change the state to "ALREADY_REPLIED"
             bridge.state.value = InteractionRequestState.ALREADY_REPLIED
@@ -67,6 +71,10 @@ class HttpRequestManager(
                     this.content = message.content
                     this.tts = message.tts
                     this.allowedMentions = message.allowedMentions
+
+                    val filePairs = message.files?.map { it.key to it.value }
+                    if (filePairs != null)
+                        files.addAll(filePairs)
 
                     // There are "username" and "avatar" flags, but they seem to be unused
                     // Also, what to do about message flags? Silently ignore them or throw a exception?
