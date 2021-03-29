@@ -51,13 +51,13 @@ class InteractionsServer(
     fun start() {
         val server = embeddedServer(Netty, port = 12212) {
             routing {
-                get("/api/discord/interactions") {
+                get("/") {
                     call.respondText("Hello, Discord Interactions!")
                 }
 
                 installDiscordInteractions(
                     publicKey,
-                    "/api/discord/interactions",
+                    "/",
                     interactionRequestHandler
                 )
             }
