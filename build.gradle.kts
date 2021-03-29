@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "net.perfectdreams.discordinteraktions"
-version = "0.0.2-SNAPSHOT"
+version = "0.0.2"
 
 repositories {
     mavenCentral()
