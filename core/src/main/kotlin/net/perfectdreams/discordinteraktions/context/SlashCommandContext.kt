@@ -22,7 +22,8 @@ open class SlashCommandContext(
     val user: User = KordUser(request.member.value?.user?.value ?: request.user.value ?: throw IllegalArgumentException("There isn't a user object present! Discord Bug?"))
 
     suspend fun defer() {
-        bridge.manager.defer()
+        if (!isDeferred)
+            bridge.manager.defer()
     }
 
     suspend fun sendMessage(block: MessageBuilder.() -> (Unit)): Message {
