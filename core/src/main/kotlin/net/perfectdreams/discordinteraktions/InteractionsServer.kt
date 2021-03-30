@@ -25,6 +25,7 @@ import net.perfectdreams.discordinteraktions.commands.SlashCommand
  * @param applicationId Your bot ID/Client ID (https://i.imgur.com/075OBWk.png)
  * @param publicKey The public key of your bot (https://i.imgur.com/xDZnJ5J.png)
  * @param token Your bot token (https://i.imgur.com/VXLOFte.png)
+ * @param port HTTP server port to bind
  */
 class InteractionsServer(
     val applicationId: Long,
