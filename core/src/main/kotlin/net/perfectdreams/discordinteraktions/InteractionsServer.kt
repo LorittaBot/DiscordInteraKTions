@@ -29,7 +29,8 @@ import net.perfectdreams.discordinteraktions.commands.SlashCommand
 class InteractionsServer(
     val applicationId: Long,
     val publicKey: String,
-    val token: String
+    val token: String,
+    val port: Int = 12212
 ) {
     companion object {
         val json = Json {
@@ -49,7 +50,7 @@ class InteractionsServer(
      * which will open an connection on the 12212 port with the **Netty** engine.
      */
     fun start() {
-        val server = embeddedServer(Netty, port = 12212) {
+        val server = embeddedServer(Netty, port = port) {
             routing {
                 get("/") {
                     call.respondText("Hello, Discord Interactions!")
