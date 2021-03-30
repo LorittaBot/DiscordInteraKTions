@@ -71,7 +71,7 @@ fun CommandOption<Role?>.required() = CommandOption<Role>(
 
 // ===[ CHOICE ]===
 @JvmName("choiceString")
-fun CommandOption<String>.choice(value: String, name: String) = CommandOption<String?>(
+fun CommandOption<String>.choice(value: String, name: String) = CommandOption<String>(
     type,
     this.name,
     description,
@@ -99,7 +99,7 @@ fun CommandOption<Int>.choice(value: Int, name: String) = CommandOption<Int>(
 
 
 @JvmName("choiceInt?")
-fun CommandOption<Int?>.choice(value: Int, name: String) = CommandOption<Int>(
+fun CommandOption<Int?>.choice(value: Int, name: String) = CommandOption<Int?>(
     type,
     this.name,
     description,

@@ -1,11 +1,8 @@
 package net.perfectdreams.discordinteraktions.declarations.slash
 
 interface CommandChoice<T> {
-
 	val name: String
-
 	val value: T
-
 }
 
 data class DefaultCommandChoice<T>(override val name: String, override val value: T): CommandChoice<T>
