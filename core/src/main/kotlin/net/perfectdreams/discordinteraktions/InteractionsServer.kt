@@ -25,11 +25,13 @@ import net.perfectdreams.discordinteraktions.commands.SlashCommand
  * @param applicationId Your bot ID/Client ID (https://i.imgur.com/075OBWk.png)
  * @param publicKey The public key of your bot (https://i.imgur.com/xDZnJ5J.png)
  * @param token Your bot token (https://i.imgur.com/VXLOFte.png)
+ * @param port HTTP server port to bind
  */
 class InteractionsServer(
     val applicationId: Long,
     val publicKey: String,
-    val token: String
+    val token: String,
+    val port: Int = 12212
 ) {
     companion object {
         val json = Json {
@@ -49,7 +51,7 @@ class InteractionsServer(
      * which will open an connection on the 12212 port with the **Netty** engine.
      */
     fun start() {
-        val server = embeddedServer(Netty, port = 12212) {
+        val server = embeddedServer(Netty, port = port) {
             routing {
                 get("/") {
                     call.respondText("Hello, Discord Interactions!")
