@@ -30,7 +30,7 @@ allprojects {
 
 subprojects {
     apply<MavenPublishPlugin>()
-    version = "0.0.3-SNAPSHOT"
+    version = "0.0.3"
 
     publishing {
         repositories {
