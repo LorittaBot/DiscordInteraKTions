@@ -96,7 +96,7 @@ class DefaultInteractionRequestHandler(val m: InteractionsServer) : InteractionR
 
         val executorDeclaration = command.executor ?: return
         val executor = m.commandManager.executors.first {
-            it::class == executorDeclaration.parent
+            it.signature() == executorDeclaration.parent
         }
 
         // Convert the Nested Options into a map, then we can access them with our Discord InteraKTion options!
