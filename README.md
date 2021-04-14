@@ -30,7 +30,7 @@ Discord InteraKTions uses [Kord](https://github.com/kordlib/kord)'s `common` and
 Discord Interactions has a very nice thing that you can reply to a interaction directly on Discord's POST request, but you can also defer the message (if you are going to take more than three seconds to process it) and/or send follow up messages. Discord InteraKTions automatically handles deferring and message follow ups via REST, so if your command is like this:
 
 ```kotlin
-override suspend fun executes(context: SlashCommandContext) {
+override suspend fun execute(context: SlashCommandContext, args: SlashCommandArguments) {
     context.sendMessage {
         content = "Hello World! Loritta is very cute!! :3"
     }
@@ -41,7 +41,7 @@ Discord InteraKTions will handle this as "reply directly on Discord's POST reque
 
 But if your command is like this
 ```kotlin
-override suspend fun executes(context: SlashCommandContext) {
+override suspend fun execute(context: SlashCommandContext, args: SlashCommandArguments) {
     context.sendMessage {
         content = "Hello World! Loritta is very cute!! :3"
     }
@@ -55,7 +55,7 @@ The first `sendMessage` will be processed as a "reply directly on Discord's POST
 
 You can of course handle deferring yourself, if you already know that your command replies will need to be deferred due to your processing taking too long (example: image processing, pulling stuff from a external slow API, etc)
 ```kotlin
-override suspend fun executes(context: SlashCommandContext) {
+override suspend fun execute(context: SlashCommandContext, args: SlashCommandArguments) {
     context.defer() // Defer the message, we will follow up later
 
     delay(10_000) // Very slow task here
@@ -121,7 +121,7 @@ Then add the Discord InteraKTions dependency!
 ```kotlin
 dependencies {
     ...
-    implementation("net.perfectdreams.discordinteraktions:core:0.0.3-SNAPSHOT")
+    implementation("net.perfectdreams.discordinteraktions:core:0.0.4-SNAPSHOT")
     ...
 }
 ```
@@ -131,35 +131,37 @@ dependencies {
 First we need to create a Slash Command, here's a example of how you can create your own
 
 ```kotlin
-class CharacterCommand : SlashCommand(CharacterCommand) {
-    // This is the slash command declaration, this is used when registering the command on Discord
-    //
-    // The reason it is a companion object is to allow you to register the command on Discord without
-    // needing to initialize the command class! (which can be a *pain* if your command requires dependency injection)
-
-    companion object : SlashCommandDeclaration(
-        name = "character", // The command label
+// This is the slash command declaration, this is used when registering the command on Discord
+//
+// The reason it is a companion object is to allow you to register the command on Discord without
+// needing to initialize the command class! (which can be a *pain* if your command requires dependency injection)
+object CharacterCommand : SlashCommandDeclaration {
+    override fun declaration() = slashCommand("character") { // The command label
         description = "So many choices, so little time..." // The command description shown in the Discord UI
-    ) {
-        // By default, if you don't override the options, no options will be set
-        override val options = Options
+        executor = CharacterExecutor // This is a reference to what executor should execute the command
+    }
+}
 
-        object Options : SlashCommandDeclaration.Options() {
+class CharacterExecutor : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(CharacterExecutor::class) { // This needs to be a class reference to the executor class!
+        // By default, if you don't override the options, no options will be set
+        override val options = Option
+
+        object Option : CommandOptions() {
             val character = string("character", "Select a Character!") // Here we are creating a String option
-                .required() // ...and it is required
                 .choice("loritta", "Loritta Morenitta :3") // ...with custom choices!
                 .choice("pantufa", "Pantufa ;w;")
                 .choice("gabriela", "Gabriela ^-^")
                 .register() // Don't forget to register!
 
-            val repeat = integer("repeat", "How many times the character name should be repeated") // Here we are creating a Int option
+            val repeat = optionalInteger("repeat", "How many times the character name should be repeated") // Here we are creating a Int option
                 .register() // This isn't required (so it is optional!) and, as always, don't forget to register!
         }
     }
 
-    override suspend fun executes(context: SlashCommandContext) {
-        val character = options.character.get(context) // This is a "String" because the option is required
-        val repeatCount = options.repeat.get(context) ?: 1 // This is a "Int?" because the option is not required (optional)
+    override suspend fun execute(context: SlashCommandContext, args: SlashCommandArguments) {
+        val character = args[options.character] // This is a "String" because the option is required
+        val repeatCount = args[options.repeat] ?: 1 // This is a "Int?" because the option is not required (optional)
 
         val characterName = when (character) {
             "loritta" -> "Loritta Morenitta"
@@ -171,8 +173,9 @@ class CharacterCommand : SlashCommand(CharacterCommand) {
         val builder = StringBuilder("You selected... ")
         repeat(repeatCount) {
             builder.append(characterName)
+            builder.append(' ')
         }
-        
+
         context.sendMessage {
             // Sends a message
             //
@@ -199,7 +202,11 @@ val interactions = InteractionsServer(
 )
 
 // Register the command...
-interactions.commandManager.register(CharacterCommand())
+// Keep in mind that you need to register all the executors used in the declarations!
+interactions.commandManager.register(
+    CharacterCommand,
+    CharacterExecutor()
+)
 
 // And now register all commands registered in our command manager!
 interactions.commandManager.updateAllCommandsInGuild(
@@ -226,7 +233,7 @@ Add the Kord Gateway Support module to your project
 ```kotlin
 dependencies {
     ...
-    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.3-SNAPSHOT")
+    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.4-SNAPSHOT")
     ...
 }
 ```

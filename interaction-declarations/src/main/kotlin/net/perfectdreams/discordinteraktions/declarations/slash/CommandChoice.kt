@@ -1,12 +1,10 @@
 package net.perfectdreams.discordinteraktions.declarations.slash
 
-interface CommandChoice<T> {
-	val name: String
+import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOptionType
+
+class CommandChoice<T>(
+	// We need to store the command option type due to type erasure
+	val type: CommandOptionType,
+	val name: String,
 	val value: T
-}
-
-data class DefaultCommandChoice<T>(override val name: String, override val value: T): CommandChoice<T>
-
-data class StringCommandChoice(override val name: String, override val value: String): CommandChoice<String>
-
-data class IntegerCommandChoice(override val name: String, override val value: Int): CommandChoice<Int>
+)

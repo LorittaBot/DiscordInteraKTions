@@ -1,18 +1,28 @@
 package net.perfectdreams.discordinteraktions.kord
 
 import dev.kord.common.annotation.KordPreview
+import dev.kord.common.entity.CommandArgument
+import dev.kord.common.entity.Option
+import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.Gateway
 import dev.kord.gateway.InteractionCreate
 import dev.kord.gateway.on
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.perfectdreams.discordinteraktions.commands.CommandManager
+import net.perfectdreams.discordinteraktions.commands.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.context.GuildSlashCommandContext
 import net.perfectdreams.discordinteraktions.context.InitialHttpRequestManager
 import net.perfectdreams.discordinteraktions.context.InteractionRequestState
 import net.perfectdreams.discordinteraktions.context.RequestBridge
 import net.perfectdreams.discordinteraktions.context.SlashCommandContext
+import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandExecutorDeclaration
+import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOption
+import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOptionType
 import net.perfectdreams.discordinteraktions.entities.CommandInteraction
+import net.perfectdreams.discordinteraktions.internal.entities.KordChannel
+import net.perfectdreams.discordinteraktions.internal.entities.KordRole
+import net.perfectdreams.discordinteraktions.internal.entities.KordUser
 import net.perfectdreams.discordinteraktions.utils.CommandDeclarationUtils
 import net.perfectdreams.discordinteraktions.utils.Observable
 
@@ -44,17 +54,27 @@ fun Gateway.installDiscordInteraKTions(
 
         println("Subcommand Labels: $commandLabels; Root Options: $relativeOptions")
 
-        val command = commandManager.commands.first {
-            // This is very complex because this is the *advanced* stuff to check if the subcommand and command group matches
-            // First we need to get the root declaration and try following the labels until we find our declaration (or not!)
-            val rootDeclaration = it.rootDeclaration
+        val command = commandManager.declarations
+            .asSequence()
+            .mapNotNull {
+                CommandDeclarationUtils.getLabelsConnectedToCommandDeclaration(
+                    commandLabels,
+                    it
+                )
+            }
+            .first()
 
-            CommandDeclarationUtils.areLabelsConnectedToCommandDeclaration(
-                commandLabels,
-                rootDeclaration,
-                it.declaration
-            )
+        val executorDeclaration = command.executor ?: return@on
+        val executor = commandManager.executors.first {
+            it::class == executorDeclaration.parent
         }
+
+        // Convert the Nested Options into a map, then we can access them with our Discord InteraKTion options!
+        val arguments = convertOptions(
+            request,
+            executorDeclaration,
+            relativeOptions ?: listOf()
+        )
 
         val observableState = Observable(InteractionRequestState.NOT_REPLIED_YET)
         val bridge = RequestBridge(observableState)
@@ -71,14 +91,12 @@ fun Gateway.installDiscordInteraKTions(
 
         val commandContext = if (request.guildId.value != null) {
             GuildSlashCommandContext(
-                command,
                 request,
                 relativeOptions,
                 bridge
             )
         } else {
             SlashCommandContext(
-                command,
                 request,
                 relativeOptions,
                 bridge
@@ -86,7 +104,68 @@ fun Gateway.installDiscordInteraKTions(
         }
 
         GlobalScope.launch {
-            command.executes(commandContext)
+            executor.execute(
+                commandContext,
+                SlashCommandArguments(
+                    arguments
+                )
+            )
         }
+    }
+}
+
+
+private fun convertOptions(request: CommandInteraction, executorDeclaration: SlashCommandExecutorDeclaration, relativeOptions: List<Option>): Map<CommandOption<*>, Any?> {
+    val arguments = mutableMapOf<CommandOption<*>, Any?>()
+
+    for (option in relativeOptions) {
+        val interaKTionOption = executorDeclaration.options.arguments
+            .firstOrNull { it.name == option.name } ?: continue
+
+        val argument = option as CommandArgument
+
+        arguments[interaKTionOption] = convertOption(
+            interaKTionOption,
+            argument,
+            request
+        )
+    }
+
+    return arguments
+}
+
+private fun convertOption(interaKTionOption: CommandOption<*>, argument: CommandArgument, request: CommandInteraction): Any? {
+    return when (interaKTionOption.type) {
+        CommandOptionType.User, CommandOptionType.NullableUser -> {
+            val userId = argument.value.value as String
+
+            val resolved = request.data.resolved.value ?: return null
+            val resolvedMap = resolved.users.value ?: return null
+            val kordInstance = resolvedMap[Snowflake(userId)] ?: return null
+
+            // Now we need to wrap the kord user in our own implementation!
+            return KordUser(kordInstance)
+        }
+        CommandOptionType.Channel, CommandOptionType.NullableChannel -> {
+            val userId = argument.value.value as String
+
+            val resolved = request.data.resolved.value ?: return null
+            val resolvedMap = resolved.channels.value ?: return null
+            val kordInstance = resolvedMap[Snowflake(userId)] ?: return null
+
+            // Now we need to wrap the kord user in our own implementation!
+            return KordChannel(kordInstance)
+        }
+        CommandOptionType.Role, CommandOptionType.NullableRole -> {
+            val userId = argument.value.value as String
+
+            val resolved = request.data.resolved.value ?: return null
+            val resolvedMap = resolved.roles.value ?: return null
+            val kordInstance = resolvedMap[Snowflake(userId)] ?: return null
+
+            // Now we need to wrap the kord user in our own implementation!
+            return KordRole(kordInstance)
+        }
+        else -> { argument.value.value }
     }
 }

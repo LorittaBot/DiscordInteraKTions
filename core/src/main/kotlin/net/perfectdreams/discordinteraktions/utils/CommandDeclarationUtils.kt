@@ -4,6 +4,7 @@ import dev.kord.common.entity.CommandGroup
 import dev.kord.common.entity.Option
 import dev.kord.common.entity.SubCommand
 import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclaration
+import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclarationBuilder
 import net.perfectdreams.discordinteraktions.entities.CommandInteraction
 
 object CommandDeclarationUtils {
@@ -15,13 +16,13 @@ object CommandDeclarationUtils {
      * If a command has multiple subcommands and subgroups (example: `/loritta morenitta/cute`, where `morenitta/cute` is two subcommands) then the list
      * will have a [CommandLabel] and a [SubCommandLabel]
      *
-     * @see areLabelsConnectedToCommandDeclaration
+     * @see getLabelsConnectedToCommandDeclaration
      *
      * @param request the command interaction
      * @return a list with all of the labels
      */
     fun findAllSubcommandDeclarationNames(request: CommandInteraction): List<CommandLabel> {
-        val commandLabels = mutableListOf(CommandLabel(request.data.name))
+        val commandLabels = mutableListOf<CommandLabel>(RootCommandLabel(request.data.name))
         val result = findAllSubcommandDeclarationNames(commandLabels, request.data.options.value)
         return result
     }
@@ -72,73 +73,51 @@ object CommandDeclarationUtils {
      * @param labels          the request labels in order
      * @param rootDeclaration the root declaration
      * @param declaration     the declaration that must be found
-     * @return if the labels are connected or not
+     * @return the matched declaration
      */
-    fun areLabelsConnectedToCommandDeclaration(labels: List<CommandLabel>, rootDeclaration: SlashCommandDeclaration, declaration: SlashCommandDeclaration): Boolean {
-        println("Labels: ${labels.size} (${labels.joinToString { it.label }}); Root Declaration: $rootDeclaration; Declaration: $declaration")
+    fun getLabelsConnectedToCommandDeclaration(labels: List<CommandLabel>, declaration: SlashCommandDeclarationBuilder): SlashCommandDeclarationBuilder? {
+        // Let's not over complicate this, we already know that Discord only supports one level deep of nesting
+        // (so group -> subcommand)
+        // So let's do easy and quick checks
+        if (labels.first() is RootCommandLabel && labels.first().label == declaration.name) {
+            // Matches the root label! Yay!
+            if (labels.size == 1) {
+                // If there is only a Root Label, then it means we found our root declaration!
+                return declaration
+            } else {
+                val secondLabel = labels[1]
 
-        // If there aren't any more labels...
-        val label = labels.firstOrNull() ?: run {
-            // Then if the rootDeclaration is our declaration, then it means that we found it!
-            // If it isn't, then F
-            return rootDeclaration == declaration
-        }
-
-        println("Checking ${label} - ${label.label}")
-
-        return when (label) {
-            is SubCommandLabel -> {
-                println("Matched with Sub Command Label!")
-                if (rootDeclaration.name == label.label) {
-                    areLabelsConnectedToCommandDeclaration(
-                        labels.drop(1),
-                        rootDeclaration,
-                        declaration
-                    )
+                // If not, let's check subcommand groups and subcommands
+                // Thankfully we know when a label is a subcommand or a group!
+                if (secondLabel is SubCommandLabel) {
+                    for (subcommand in declaration.subcommands) {
+                        if (secondLabel.label == subcommand.name) {
+                            // Matches, then return this!
+                            return subcommand
+                        }
+                    }
+                    // Nothing found, return...
+                    return null
                 } else {
-                    val subCommandOption =
-                        rootDeclaration.options.subcommands.firstOrNull { it.name == label.label } ?: return false
+                    val thirdLabel = labels[2]
 
-                    if (subCommandOption.name == label.label) {
-                        areLabelsConnectedToCommandDeclaration(
-                            labels.drop(1),
-                            subCommandOption,
-                            declaration
-                        )
-                    } else false
+                    for (group in declaration.subcommandGroups) {
+                        for (subcommand in group.subcommands) {
+                            if (thirdLabel.label == subcommand.name) {
+                                // Matches, then return this!
+                                return subcommand
+                            }
+                        }
+                    }
+                    return null
                 }
             }
-
-            is CommandGroupLabel -> {
-                println("Matched with Command Group Label!")
-                val subCommandOption = rootDeclaration.options.subcommandGroups.firstOrNull { it.name == label.label } ?: return false
-
-                if (subCommandOption.name == label.label) {
-                    subCommandOption.subcommands.any {
-                        areLabelsConnectedToCommandDeclaration(
-                            labels.drop(1),
-                            it,
-                            declaration
-                        )
-                    }
-                } else false
-            }
-
-            // This is the default "CommandLabel"
-            else -> {
-                println("Matched with Default Label!")
-                if (rootDeclaration.name == label.label)
-                    areLabelsConnectedToCommandDeclaration(
-                        labels.drop(1),
-                        rootDeclaration,
-                        declaration
-                    )
-                else false
-            }
         }
+        return null
     }
 
     open class CommandLabel(val label: String)
+    class RootCommandLabel(label: String) : CommandLabel(label)
     class SubCommandLabel(label: String) : CommandLabel(label)
     class CommandGroupLabel(label: String) : CommandLabel(label)
 }
