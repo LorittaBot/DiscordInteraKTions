@@ -102,10 +102,12 @@ object CommandDeclarationUtils {
                     val thirdLabel = labels[2]
 
                     for (group in declaration.subcommandGroups) {
-                        for (subcommand in group.subcommands) {
-                            if (thirdLabel.label == subcommand.name) {
-                                // Matches, then return this!
-                                return subcommand
+                        if (group.name == secondLabel.label) {
+                            for (subcommand in group.subcommands) {
+                                if (thirdLabel.label == subcommand.name) {
+                                    // Matches, then return this!
+                                    return subcommand
+                                }
                             }
                         }
                     }
