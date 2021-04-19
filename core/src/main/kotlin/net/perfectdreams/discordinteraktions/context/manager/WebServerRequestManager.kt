@@ -1,4 +1,4 @@
-package net.perfectdreams.discordinteraktions.context
+package net.perfectdreams.discordinteraktions.context.manager
 
 import dev.kord.common.entity.InteractionResponseType
 import dev.kord.common.entity.Snowflake
@@ -14,6 +14,8 @@ import kotlinx.serialization.json.put
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.internal.entities.InitialResponseMessage
 import net.perfectdreams.discordinteraktions.api.entities.Message
+import net.perfectdreams.discordinteraktions.context.InteractionRequestState
+import net.perfectdreams.discordinteraktions.context.RequestBridge
 import net.perfectdreams.discordinteraktions.entities.CommandInteraction
 import net.perfectdreams.discordinteraktions.utils.InteractionMessage
 import net.perfectdreams.discordinteraktions.utils.Observable

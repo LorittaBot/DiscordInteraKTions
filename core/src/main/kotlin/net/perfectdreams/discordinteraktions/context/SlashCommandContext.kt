@@ -6,6 +6,7 @@ import net.perfectdreams.discordinteraktions.entities.CommandInteraction
 import net.perfectdreams.discordinteraktions.internal.entities.KordUser
 import net.perfectdreams.discordinteraktions.api.entities.Message
 import net.perfectdreams.discordinteraktions.commands.SlashCommandExecutor
+import net.perfectdreams.discordinteraktions.utils.EphemeralMessageBuilder
 import net.perfectdreams.discordinteraktions.utils.InteractionMessage
 import net.perfectdreams.discordinteraktions.utils.MessageBuilder
 import net.perfectdreams.discordinteraktions.utils.buildMessage
@@ -38,5 +39,12 @@ open class SlashCommandContext(
         }
 
         return bridge.manager.sendMessage(message)
+    }
+
+    suspend fun sendEphemeralMessage(block: EphemeralMessageBuilder.() -> (Unit)) = sendMessage {
+        val ephemeralMessage = EphemeralMessageBuilder().apply(block)
+
+        content = ephemeralMessage.content
+        allowedMentions = ephemeralMessage.allowedMentions
     }
 }

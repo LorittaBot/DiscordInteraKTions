@@ -19,9 +19,7 @@ import net.perfectdreams.discordinteraktions.context.GuildSlashCommandContext
 import net.perfectdreams.discordinteraktions.context.InteractionRequestState
 import net.perfectdreams.discordinteraktions.context.RequestBridge
 import net.perfectdreams.discordinteraktions.context.SlashCommandContext
-import net.perfectdreams.discordinteraktions.context.WebServerRequestManager
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclaration
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclarationBuilder
+import net.perfectdreams.discordinteraktions.context.manager.WebServerRequestManager
 import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOption
 import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOptionType

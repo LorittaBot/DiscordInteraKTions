@@ -1,6 +1,8 @@
-package net.perfectdreams.discordinteraktions.context
+package net.perfectdreams.discordinteraktions.context.manager
 
 import dev.kord.common.entity.Snowflake
+import dev.kord.rest.builder.interaction.EphemeralFollowupMessageCreateBuilder
+import dev.kord.rest.builder.interaction.EphemeralInteractionResponseCreateBuilder
 import dev.kord.rest.builder.interaction.PublicFollowupMessageCreateBuilder
 import dev.kord.rest.builder.interaction.PublicInteractionResponseModifyBuilder
 import dev.kord.rest.service.RestClient
@@ -9,8 +11,10 @@ import net.perfectdreams.discordinteraktions.InteractionRequestHandler
 import net.perfectdreams.discordinteraktions.entities.CommandInteraction
 import net.perfectdreams.discordinteraktions.internal.entities.KordMessage
 import net.perfectdreams.discordinteraktions.api.entities.Message
+import net.perfectdreams.discordinteraktions.context.InteractionRequestState
+import net.perfectdreams.discordinteraktions.context.RequestBridge
+import net.perfectdreams.discordinteraktions.utils.EphemeralMessageBuilder
 import net.perfectdreams.discordinteraktions.utils.InteractionMessage
-import java.io.File
 
 /**
  * On this request manager we'll handle the requests

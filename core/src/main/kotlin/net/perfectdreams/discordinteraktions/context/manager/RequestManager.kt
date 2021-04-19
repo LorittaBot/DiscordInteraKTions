@@ -1,6 +1,7 @@
-package net.perfectdreams.discordinteraktions.context
+package net.perfectdreams.discordinteraktions.context.manager
 
 import net.perfectdreams.discordinteraktions.api.entities.Message
+import net.perfectdreams.discordinteraktions.context.RequestBridge
 import net.perfectdreams.discordinteraktions.utils.InteractionMessage
 import net.perfectdreams.discordinteraktions.utils.Observable
 
@@ -14,8 +15,7 @@ abstract class RequestManager(val bridge: RequestBridge) {
     abstract suspend fun defer()
 
     /**
-     * The usual way of sending messages to a specific channel/
-     * user.
+     * The usual way of sending messages to a specific channel/user.
      */
     abstract suspend fun sendMessage(message: InteractionMessage): Message
 }

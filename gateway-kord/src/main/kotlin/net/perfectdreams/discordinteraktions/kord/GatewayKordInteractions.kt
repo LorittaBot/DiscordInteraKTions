@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import net.perfectdreams.discordinteraktions.commands.CommandManager
 import net.perfectdreams.discordinteraktions.commands.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.context.GuildSlashCommandContext
-import net.perfectdreams.discordinteraktions.context.InitialHttpRequestManager
+import net.perfectdreams.discordinteraktions.context.manager.InitialHttpRequestManager
 import net.perfectdreams.discordinteraktions.context.InteractionRequestState
 import net.perfectdreams.discordinteraktions.context.RequestBridge
 import net.perfectdreams.discordinteraktions.context.SlashCommandContext

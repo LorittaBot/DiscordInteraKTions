@@ -1,14 +1,15 @@
-package net.perfectdreams.discordinteraktions.context
+package net.perfectdreams.discordinteraktions.context.manager
 
 import dev.kord.common.entity.InteractionResponseType
 import dev.kord.common.entity.Snowflake
-import dev.kord.common.entity.optional.Optional
 import dev.kord.rest.builder.interaction.PublicInteractionResponseCreateBuilder
 import dev.kord.rest.json.request.InteractionResponseCreateRequest
 import dev.kord.rest.service.RestClient
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.InteractionRequestHandler
 import net.perfectdreams.discordinteraktions.api.entities.Message
+import net.perfectdreams.discordinteraktions.context.InteractionRequestState
+import net.perfectdreams.discordinteraktions.context.RequestBridge
 import net.perfectdreams.discordinteraktions.entities.CommandInteraction
 import net.perfectdreams.discordinteraktions.internal.entities.InitialResponseMessage
 import net.perfectdreams.discordinteraktions.utils.InteractionMessage
