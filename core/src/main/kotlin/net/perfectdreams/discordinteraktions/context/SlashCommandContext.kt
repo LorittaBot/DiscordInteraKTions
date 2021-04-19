@@ -1,5 +1,7 @@
 package net.perfectdreams.discordinteraktions.context
 
+import dev.kord.common.entity.MessageFlag
+import dev.kord.common.entity.MessageFlags
 import dev.kord.common.entity.Option
 import net.perfectdreams.discordinteraktions.api.entities.User
 import net.perfectdreams.discordinteraktions.entities.CommandInteraction
@@ -46,5 +48,6 @@ open class SlashCommandContext(
 
         content = ephemeralMessage.content
         allowedMentions = ephemeralMessage.allowedMentions
+        flags = MessageFlags(MessageFlag.Ephemeral)
     }
 }
