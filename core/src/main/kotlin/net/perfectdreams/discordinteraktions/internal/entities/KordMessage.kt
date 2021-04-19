@@ -13,8 +13,7 @@ class KordMessage(
     val interactionToken: String,
     val message: DiscordMessage
 ) : Message {
-    override val content: String
-        get() = message.content
+    override val content by message::content
 
     override suspend fun editMessage(message: InteractionMessage): Message {
         val result = rest.interaction.modifyFollowupMessage(

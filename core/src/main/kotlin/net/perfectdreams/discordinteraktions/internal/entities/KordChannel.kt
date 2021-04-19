@@ -14,6 +14,5 @@ open class KordChannel(val handle: DiscordChannel) : Channel {
             }
         }
     }
-    override val id: Snowflake
-        get() = handle.id
+    override val id by handle::id
 }
