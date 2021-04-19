@@ -16,7 +16,7 @@ dependencies {
     api("io.ktor:ktor-client-core:1.4.1")
     implementation("io.ktor:ktor-client-cio:1.4.1")
     implementation("org.bouncycastle:bcprov-jdk15on:1.67")
-    api("dev.kord:kord-rest:0.7.x-RC2")
+    api("dev.kord:kord-rest:0.7.x-SNAPSHOT")
 
     implementation("ch.qos.logback:logback-classic:1.3.0-alpha5")
     api("io.github.microutils:kotlin-logging:2.0.3")

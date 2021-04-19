@@ -9,7 +9,7 @@ group = "net.perfectdreams.discordinteraktions"
 
 dependencies {
     api(project(":core"))
-    implementation("dev.kord:kord-core:0.7.x-RC2")
+    implementation("dev.kord:kord-core:0.7.x-SNAPSHOT")
 }
 
 tasks.test {
