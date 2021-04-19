@@ -3,17 +3,13 @@ package net.perfectdreams.discordinteraktions.context
 import dev.kord.common.entity.InteractionResponseType
 import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.optional.Optional
-import dev.kord.rest.builder.interaction.FollowupMessageCreateBuilder
-import dev.kord.rest.builder.interaction.InteractionApplicationCommandCallbackDataBuilder
-import dev.kord.rest.builder.interaction.InteractionResponseModifyBuilder
-import dev.kord.rest.json.request.InteractionApplicationCommandCallbackData
+import dev.kord.rest.builder.interaction.PublicInteractionResponseCreateBuilder
 import dev.kord.rest.json.request.InteractionResponseCreateRequest
 import dev.kord.rest.service.RestClient
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.InteractionRequestHandler
-import net.perfectdreams.discordinteraktions.entities.CommandInteraction
-import net.perfectdreams.discordinteraktions.internal.entities.KordMessage
 import net.perfectdreams.discordinteraktions.api.entities.Message
+import net.perfectdreams.discordinteraktions.entities.CommandInteraction
 import net.perfectdreams.discordinteraktions.internal.entities.InitialResponseMessage
 import net.perfectdreams.discordinteraktions.utils.InteractionMessage
 
@@ -59,17 +55,10 @@ class InitialHttpRequestManager(
         rest.interaction.createInteractionResponse(
             request.id,
             interactionToken,
-            InteractionResponseCreateRequest(
-                InteractionResponseType.ChannelMessageWithSource,
-                Optional(
-                    InteractionApplicationCommandCallbackDataBuilder().apply {
-                        this.content = message.content
-                        this.tts = message.tts
-                        this.flags = message.flags
-                        // this.allowedMentions = message.allowedMentions
-                    }.build()
-                )
-            )
+            PublicInteractionResponseCreateBuilder().apply {
+                this.content = message.content
+                this.tts = message.tts
+            }.toRequest()
         )
 
         bridge.state.value = InteractionRequestState.ALREADY_REPLIED

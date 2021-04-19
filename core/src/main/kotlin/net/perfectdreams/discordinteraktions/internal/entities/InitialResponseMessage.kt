@@ -1,7 +1,7 @@
 package net.perfectdreams.discordinteraktions.internal.entities
 
 import dev.kord.common.entity.Snowflake
-import dev.kord.rest.builder.interaction.InteractionResponseModifyBuilder
+import dev.kord.rest.builder.interaction.PublicInteractionResponseModifyBuilder
 import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.api.entities.Message
 import net.perfectdreams.discordinteraktions.utils.InteractionMessage
@@ -16,7 +16,7 @@ class InitialResponseMessage(
         val kordMessage = rest.interaction.modifyInteractionResponse(
             applicationId,
             interactionToken,
-            InteractionResponseModifyBuilder().apply {
+            PublicInteractionResponseModifyBuilder().apply {
                 this.content = message.content
                 // TODO: Fix this and add embeds
                 // this.allowedMentions = message.allowedMentions
