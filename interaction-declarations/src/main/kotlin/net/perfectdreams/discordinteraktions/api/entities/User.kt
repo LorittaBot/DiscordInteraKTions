@@ -4,8 +4,8 @@ import dev.kord.common.entity.Snowflake
 
 interface User {
     val id: Snowflake
-    val username: String
+    val user: String
     val discriminator: String
-    val avatar: String?
+    val avatar: UserAvatar
     val bot: Boolean
 }
