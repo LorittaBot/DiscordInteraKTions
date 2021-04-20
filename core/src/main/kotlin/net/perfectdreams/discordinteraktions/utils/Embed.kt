@@ -64,7 +64,7 @@ class Embed: RestWrapper<DiscordEmbed>, BuilderWrapper<EmbedBuilder> {
     override fun intoBuilder(): EmbedBuilder {
         return EmbedBuilder().also {
             it.author = author?.intoBuilder()
-            it.color = body?.color?.rgb?.let { it1 -> dev.kord.common.Color(it1) }
+            it.color = body?.color?.let { it1 -> Color(it1) }
             it.description = body?.description
             it.footer = footer?.intoBuilder()
             it.image = images?.image
@@ -80,7 +80,7 @@ class Embed: RestWrapper<DiscordEmbed>, BuilderWrapper<EmbedBuilder> {
             title = body?.title.optional(),
             description = body?.description.optional(),
             author = author?.intoSerial().optional(),
-            color = body?.color?.rgb?.let { OptionalInt.Value(it) } ?: OptionalInt.Missing,
+            color = body?.color?.let { OptionalInt.Value(it) } ?: OptionalInt.Missing,
             fields = fields.map { it.intoSerial() }.optional(),
             footer = footer?.intoSerial().optional(),
             image = images?.image?.let { DiscordEmbed.Image(it.optional()) }.optional(),
@@ -127,7 +127,7 @@ class Author: RestWrapper<DiscordEmbed.Author>, BuilderWrapper<EmbedBuilder.Auth
 class Body {
     var title: String? by EmbedOptional()
     var description: String? by EmbedOptional()
-    var color: Color? by EmbedOptional()
+    var color: Int? by EmbedOptional()
 }
 
 class Field(val name: String, val value: String): RestWrapper<DiscordEmbed.Field>, BuilderWrapper<EmbedBuilder.Field> {
