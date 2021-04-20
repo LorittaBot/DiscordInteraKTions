@@ -59,6 +59,7 @@ class InitialHttpRequestManager(
             PublicInteractionResponseCreateBuilder().apply {
                 this.content = message.content
                 this.tts = message.tts
+                this.embeds = listOfNotNull(message.abstractEmbed?.intoBuilder()).toMutableList()
             }.toRequest()
         )
 
