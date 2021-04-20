@@ -35,11 +35,15 @@ class InteractionsServer(
         private val logger = KotlinLogging.logger {}
     }
 
-    val interactionRequestHandler: InteractionRequestHandler = DefaultInteractionRequestHandler(this)
     val http = HttpClient {}
     val rest = RestClient(token)
     val commandManager = CommandManager(rest, Snowflake(applicationId))
-
+    val interactionRequestHandler: InteractionRequestHandler = DefaultInteractionRequestHandler(
+        Snowflake(applicationId),
+        commandManager,
+        rest
+    )
+    
     /**
      * You can use this method to start the interactions server,
      * which will open an connection on the 12212 port with the **Netty** engine.

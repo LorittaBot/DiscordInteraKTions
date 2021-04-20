@@ -5,6 +5,7 @@ import dev.kord.common.entity.CommandArgument
 import dev.kord.common.entity.InteractionResponseType
 import dev.kord.common.entity.Option
 import dev.kord.common.entity.Snowflake
+import dev.kord.rest.service.RestClient
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
@@ -14,6 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import mu.KotlinLogging
+import net.perfectdreams.discordinteraktions.commands.CommandManager
 import net.perfectdreams.discordinteraktions.commands.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.context.GuildSlashCommandContext
 import net.perfectdreams.discordinteraktions.context.InteractionRequestState
@@ -38,7 +40,11 @@ import net.perfectdreams.discordinteraktions.utils.Observable
  * @param m The server that we'll handle the requests for.
  */
 @OptIn(KordPreview::class, ExperimentalCoroutinesApi::class)
-class DefaultInteractionRequestHandler(val m: InteractionsServer) : InteractionRequestHandler() {
+class DefaultInteractionRequestHandler(
+    val applicationId: Snowflake,
+    val commandManager: CommandManager,
+    val rest: RestClient
+) : InteractionRequestHandler() {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -82,7 +88,7 @@ class DefaultInteractionRequestHandler(val m: InteractionsServer) : InteractionR
 
         println("Subcommand Labels: $commandLabels; Root Options: $relativeOptions")
 
-        val command = m.commandManager.declarations
+        val command = commandManager.declarations
             .asSequence()
             .mapNotNull {
                 CommandDeclarationUtils.getLabelsConnectedToCommandDeclaration(
@@ -93,7 +99,7 @@ class DefaultInteractionRequestHandler(val m: InteractionsServer) : InteractionR
             .first()
 
         val executorDeclaration = command.executor ?: return
-        val executor = m.commandManager.executors.first {
+        val executor = commandManager.executors.first {
             it.signature() == executorDeclaration.parent
         }
 
@@ -109,8 +115,8 @@ class DefaultInteractionRequestHandler(val m: InteractionsServer) : InteractionR
 
         val requestManager = WebServerRequestManager(
             bridge,
-            m.rest,
-            Snowflake(m.applicationId),
+            rest,
+            applicationId,
             request.token,
             request,
             call
