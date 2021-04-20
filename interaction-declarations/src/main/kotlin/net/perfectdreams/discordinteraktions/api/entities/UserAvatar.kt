@@ -35,7 +35,7 @@ class UserAvatar(val userId: Long, val discriminator: Int, val avatarId: String?
     /**
      * Gets the avatar url in a supported format (defined by [format]) and default size.
      */
-    val url: String get() = if (isCustom) "https://cdn.discordapp.com/avatars/userId/$avatarId.$formatExtension" else defaultUrl
+    val url: String get() = if (isCustom) "https://cdn.discordapp.com/avatars/$userId/$avatarId.$formatExtension" else defaultUrl
 
     enum class ImageFormat {
         PNG,
