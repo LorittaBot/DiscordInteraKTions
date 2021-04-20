@@ -8,7 +8,7 @@ class KordUser(val handle: DiscordUser) : User {
     override val id by handle::id
     override val username by handle::username
     override val discriminator by handle::discriminator
-    override val avatar by handle::avatar
+    override val avatar = "https://cdn.discordapp.com/avatars/${id.asString}/${handle.avatar}.png"
     override val bot: Boolean
         get() = handle.bot.discordBoolean
 }

@@ -1,9 +1,9 @@
 package net.perfectdreams.discordinteraktions.utils
 
+import dev.kord.common.Color
 import dev.kord.common.entity.DiscordEmbed
 import dev.kord.common.entity.optional.*
 import dev.kord.rest.builder.message.EmbedBuilder
-import java.awt.Color
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 import kotlin.reflect.KProperty
