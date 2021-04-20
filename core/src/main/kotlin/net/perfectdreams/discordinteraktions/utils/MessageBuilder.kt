@@ -1,6 +1,7 @@
 package net.perfectdreams.discordinteraktions.utils
 
 import dev.kord.common.entity.AllowedMentions
+import dev.kord.common.entity.DiscordEmbed
 import dev.kord.common.entity.MessageFlags
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -41,6 +42,8 @@ data class InteractionMessage(
     val allowedMentions: AllowedMentions? = null,
     val flags: MessageFlags? = null,
     @Transient
-    val files: Map<String, InputStream>? = null
-    // embeds
+    val files: Map<String, InputStream>? = null,
+    @Transient
+    val abstractEmbed: Embed? = null,
+    val embed: DiscordEmbed? = abstractEmbed?.intoSerial()
 )
