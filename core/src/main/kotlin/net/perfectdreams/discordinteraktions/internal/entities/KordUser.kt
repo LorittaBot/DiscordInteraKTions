@@ -7,7 +7,7 @@ import net.perfectdreams.discordinteraktions.api.entities.UserAvatar
 
 class KordUser(val handle: DiscordUser) : User {
     override val id by handle::id
-    override val user by handle::username
+    override val name by handle::username
     override val discriminator by handle::discriminator
     override val avatar = UserAvatar(
         id.value,
