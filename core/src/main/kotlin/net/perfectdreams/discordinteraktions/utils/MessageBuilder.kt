@@ -1,6 +1,7 @@
 package net.perfectdreams.discordinteraktions.utils
 
 import dev.kord.common.entity.AllowedMentions
+import dev.kord.common.entity.DiscordEmbed
 import dev.kord.common.entity.MessageFlags
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -11,11 +12,13 @@ fun buildMessage(block: MessageBuilder.() -> (Unit)): InteractionMessage {
     val result = MessageBuilder().apply(block)
 
     return InteractionMessage(
-        result.content!!,
+        result.content.orEmpty(),
         result.tts,
         result.allowedMentions,
         result.flags,
-        result.files
+        result.files,
+        result.embed,
+        listOfNotNull(result.embed?.intoSerial())
     )
 }
 
@@ -25,8 +28,13 @@ class MessageBuilder {
     // var embeds: List<S>
     var allowedMentions: AllowedMentions? = null
     var flags: MessageFlags? = null
+    var embed: Embed? = null
 
     var files = mutableMapOf<String, InputStream>()
+
+    fun embed(declaration: Embed.() -> Unit) {
+        this.embed = Embed().apply(declaration)
+    }
 
     fun addFile(fileName: String, stream: InputStream) {
         files[fileName] = stream
@@ -41,6 +49,8 @@ data class InteractionMessage(
     val allowedMentions: AllowedMentions? = null,
     val flags: MessageFlags? = null,
     @Transient
-    val files: Map<String, InputStream>? = null
-    // embeds
+    val files: Map<String, InputStream>? = null,
+    @Transient
+    val abstractEmbed: Embed? = null,
+    val embeds: List<DiscordEmbed> = listOf()
 )

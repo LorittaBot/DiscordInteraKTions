@@ -51,6 +51,7 @@ class HttpRequestManager(
                 request.token,
                 PublicInteractionResponseModifyBuilder().apply {
                     this.content = message.content
+                    this.embeds = listOfNotNull(message.abstractEmbed?.intoBuilder()).toMutableList()
                     val filePairs = message.files?.map { it.key to it.value }
                     if (filePairs != null)
                         files.addAll(filePairs)
@@ -75,6 +76,7 @@ class HttpRequestManager(
                     this.content = message.content
                     this.tts = message.tts
                     this.allowedMentions = message.allowedMentions
+                    this.embeds = listOfNotNull(message.abstractEmbed?.intoBuilder()).map { it.toRequest() }.toMutableList()
 
                     val filePairs = message.files?.map { it.key to it.value }
                     if (filePairs != null)
