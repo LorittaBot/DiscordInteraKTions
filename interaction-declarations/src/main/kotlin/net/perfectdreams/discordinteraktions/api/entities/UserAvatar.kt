@@ -9,6 +9,11 @@ class UserAvatar(val userId: Long, val discriminator: Int, val avatarId: String?
     val defaultUrl: String get() = "https://cdn.discordapp.com/embed/avatars/${discriminator.toInt() % 5}.png"
 
     /**
+     * Whether the user has set their avatar.
+     */
+    val isCustom: Boolean get() = avatarId != null
+
+    /**
      * Whether the user has an animated avatar.
      */
     val isAnimated: Boolean get() = avatarId?.startsWith("a_") ?: false
@@ -16,17 +21,21 @@ class UserAvatar(val userId: Long, val discriminator: Int, val avatarId: String?
     /**
      * The supported format for this avatar
      */
-    val format = when {
-        isAnimated -> ImageFormat.GIF
-        else -> ImageFormat.PNG
-    }
+    val format: ImageFormat
+        get() = when {
+            isAnimated -> ImageFormat.GIF
+            else -> ImageFormat.PNG
+        }
 
     /**
      * The extension of the file for this avatar
      */
     val formatExtension = format.extension
 
-    val url = "https://cdn.discordapp.com/avatars/userId/$avatarId.$formatExtension"
+    /**
+     * Gets the avatar url in a supported format (defined by [format]) and default size.
+     */
+    val url: String get() = if (isCustom) "https://cdn.discordapp.com/avatars/userId/$avatarId.$formatExtension" else defaultUrl
 
     enum class ImageFormat {
         PNG,
