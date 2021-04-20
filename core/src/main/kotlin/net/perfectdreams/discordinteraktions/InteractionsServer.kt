@@ -43,7 +43,7 @@ class InteractionsServer(
         commandManager,
         rest
     )
-    
+
     /**
      * You can use this method to start the interactions server,
      * which will open an connection on the 12212 port with the **Netty** engine.
