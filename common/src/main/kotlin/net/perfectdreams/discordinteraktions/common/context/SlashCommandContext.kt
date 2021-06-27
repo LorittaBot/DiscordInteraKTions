@@ -1,5 +1,6 @@
 package net.perfectdreams.discordinteraktions.common.context
 
+import net.perfectdreams.discordinteraktions.api.entities.User
 import net.perfectdreams.discordinteraktions.common.entities.Message
 import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
 import net.perfectdreams.discordinteraktions.common.utils.MessageBuilder
@@ -9,7 +10,8 @@ open class SlashCommandContext(
     // TODO:
     // val request: CommandInteraction,
     // val relativeOptions: List<Option>?,
-    internal var bridge: RequestBridge
+    internal var bridge: RequestBridge,
+    val sender: User
 ) {
     val isDeferred
         get() = bridge.state.value != InteractionRequestState.NOT_REPLIED_YET

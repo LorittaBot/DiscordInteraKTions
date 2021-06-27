@@ -73,9 +73,9 @@ class SlashCommandListener(private val manager: CommandManager) : ListenerAdapte
             executor
                 .execute(
                     if (guild != null) {
-                        GuildSlashCommandContext(JDAGuild(guild), bridge)
+                        GuildSlashCommandContext(bridge, JDAUser(event.user), JDAGuild(guild))
                     } else {
-                        SlashCommandContext(bridge)
+                        SlashCommandContext(bridge, JDAUser(event.user))
                     },
                     SlashCommandArguments(arguments)
                 )
