@@ -1,12 +1,12 @@
 package net.perfectdreams.discordinteraktions.utils
 
-import dev.kord.common.Color
 import dev.kord.common.entity.DiscordEmbed
+import dev.kord.common.entity.Option
 import dev.kord.common.entity.optional.*
 import dev.kord.rest.builder.message.EmbedBuilder
+import java.awt.Color
 import java.time.Instant
 import java.time.format.DateTimeFormatter
-import kotlin.reflect.KProperty
 
 class Embed: RestWrapper<DiscordEmbed>, BuilderWrapper<EmbedBuilder> {
 
@@ -75,12 +75,14 @@ class Embed: RestWrapper<DiscordEmbed>, BuilderWrapper<EmbedBuilder> {
         }
     }
 
+
     override fun intoSerial(): DiscordEmbed {
         return DiscordEmbed(
             title = body?.title.optional(),
             description = body?.description.optional(),
             author = author?.intoSerial().optional(),
-            color = body?.color?.rgb?.let { OptionalInt.Value(it) } ?: OptionalInt.Missing,
+            // Somehow using body?.color?.rgb DOESN'T WORK (???) maybe because of the optional int...
+            color = dev.kord.common.Color(body?.color?.rgb ?: 0).rgb.optionalInt(),
             fields = fields.map { it.intoSerial() }.optional(),
             footer = footer?.intoSerial().optional(),
             image = images?.image?.let { DiscordEmbed.Image(it.optional()) }.optional(),
@@ -91,9 +93,9 @@ class Embed: RestWrapper<DiscordEmbed>, BuilderWrapper<EmbedBuilder> {
 }
 
 class Author: RestWrapper<DiscordEmbed.Author>, BuilderWrapper<EmbedBuilder.Author> {
-    var name: String? by EmbedOptional()
-    var url: String? by EmbedOptional()
-    var icon: String? by EmbedOptional()
+    var name: String? = null
+    var url: String? = null
+    var icon: String? = null
 
     override fun intoSerial(): DiscordEmbed.Author {
         return DiscordEmbed.Author(
@@ -125,13 +127,13 @@ class Author: RestWrapper<DiscordEmbed.Author>, BuilderWrapper<EmbedBuilder.Auth
  * None of them are actually required.
  */
 class Body {
-    var title: String? by EmbedOptional()
-    var description: String? by EmbedOptional()
-    var color: Color? by EmbedOptional()
+    var title: String? = null
+    var description: String? = null
+    var color: Color? = null
 }
 
 class Field(val name: String, val value: String): RestWrapper<DiscordEmbed.Field>, BuilderWrapper<EmbedBuilder.Field> {
-    var inline: Boolean? by EmbedOptional()
+    var inline: Boolean? = null
 
     override fun intoSerial(): DiscordEmbed.Field {
         return DiscordEmbed.Field(
@@ -151,8 +153,8 @@ class Field(val name: String, val value: String): RestWrapper<DiscordEmbed.Field
 }
 
 class Images: BuilderWrapper<EmbedBuilder.Thumbnail> {
-    var image: String? by EmbedOptional()
-    var thumbnail: String? by EmbedOptional()
+    var image: String? = null
+    var thumbnail: String? = null
 
     override fun intoBuilder(): EmbedBuilder.Thumbnail? {
         return EmbedBuilder.Thumbnail().also {
@@ -162,8 +164,8 @@ class Images: BuilderWrapper<EmbedBuilder.Thumbnail> {
 }
 
 class Footer(val text: String): RestWrapper<DiscordEmbed.Footer>, BuilderWrapper<EmbedBuilder.Footer> {
-    var icon: String? by EmbedOptional()
-    var timestamp: Instant? by EmbedOptional()
+    var icon: String? = null
+    var timestamp: Instant? = null
 
     override fun intoSerial(): DiscordEmbed.Footer {
         return DiscordEmbed.Footer(
@@ -215,16 +217,6 @@ interface RestWrapper<T> {
  */
 interface BuilderWrapper<T> {
     fun intoBuilder(): T?
-}
-
-class EmbedOptional<V>() {
-    private var value: V? = null
-
-    operator fun getValue(thisRef: Any?, property: KProperty<*>): V? = value
-
-    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: V) {
-        this.value = value
-    }
 }
 
 private fun <T> T?.optional(): Optional<T> =
