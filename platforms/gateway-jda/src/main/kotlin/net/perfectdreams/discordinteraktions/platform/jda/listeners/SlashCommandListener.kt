@@ -5,6 +5,7 @@ import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
+import net.perfectdreams.discordinteraktions.common.context.GuildSlashCommandContext
 import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
 import net.perfectdreams.discordinteraktions.common.context.SlashCommandArguments
@@ -14,6 +15,8 @@ import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDecl
 import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOption
 import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOptionType
 import net.perfectdreams.discordinteraktions.platform.jda.context.manager.JDARequestManager
+import net.perfectdreams.discordinteraktions.platform.jda.entities.JDAGuild
+import net.perfectdreams.discordinteraktions.platform.jda.entities.JDAUser
 
 class SlashCommandListener(private val manager: CommandManager) : ListenerAdapter() {
     override fun onSlashCommand(event: SlashCommandEvent) {
@@ -50,6 +53,7 @@ class SlashCommandListener(private val manager: CommandManager) : ListenerAdapte
             val executorDeclaration = command.executor ?: return@launch
             val executor = manager.executors.first { it.signature() == executorDeclaration.parent }
 
+            // Parse command options and bind them to Discord InteraKTions options
             executorDeclaration.options.arguments.forEach {
                 val option = event.getOption(it.name)
 
@@ -60,13 +64,19 @@ class SlashCommandListener(private val manager: CommandManager) : ListenerAdapte
                     is CommandOptionType.Integer, is CommandOptionType.NullableInteger -> option?.asLong?.toInt()
                     is CommandOptionType.String, is CommandOptionType.NullableString -> option?.asString
                     is CommandOptionType.Bool, is CommandOptionType.NullableBool -> option?.asBoolean
+                    is CommandOptionType.User, is CommandOptionType.NullableUser -> option?.asUser?.let { JDAUser(it) }
                     else -> error("Unsupported type ${it.type}")
                 }
             }
 
+            val guild = event.guild
             executor
                 .execute(
-                    SlashCommandContext(bridge),
+                    if (guild != null) {
+                        GuildSlashCommandContext(JDAGuild(guild), bridge)
+                    } else {
+                        SlashCommandContext(bridge)
+                    },
                     SlashCommandArguments(arguments)
                 )
         }

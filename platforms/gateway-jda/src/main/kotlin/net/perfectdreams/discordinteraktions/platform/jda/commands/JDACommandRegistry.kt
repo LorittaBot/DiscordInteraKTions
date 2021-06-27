@@ -98,6 +98,7 @@ class JDACommandRegistry(private val jda: JDA, private val manager: CommandManag
                 CommandOptionType.Integer, CommandOptionType.NullableInteger -> OptionType.INTEGER
                 CommandOptionType.String, CommandOptionType.NullableString -> OptionType.STRING
                 CommandOptionType.Bool, CommandOptionType.NullableBool -> OptionType.BOOLEAN
+                CommandOptionType.User, CommandOptionType.NullableUser -> OptionType.USER
                 else -> error("Unsupported type ${cmdOption.type}")
             },
             cmdOption.name,
