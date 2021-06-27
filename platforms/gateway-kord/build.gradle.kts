@@ -8,7 +8,8 @@ plugins {
 group = "net.perfectdreams.discordinteraktions"
 
 dependencies {
-    implementation(kotlin("stdlib"))
+    api(project(":core"))
+    implementation("dev.kord:kord-core:0.7.x-SNAPSHOT")
 }
 
 tasks.test {
