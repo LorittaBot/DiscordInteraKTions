@@ -1,6 +1,8 @@
-package net.perfectdreams.discordinteraktions.common.context
+package net.perfectdreams.discordinteraktions.common.context.commands
 
 import net.perfectdreams.discordinteraktions.api.entities.User
+import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
+import net.perfectdreams.discordinteraktions.common.context.RequestBridge
 import net.perfectdreams.discordinteraktions.common.entities.Message
 import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
 import net.perfectdreams.discordinteraktions.common.utils.MessageBuilder
@@ -15,7 +17,12 @@ open class SlashCommandContext(
 
     private var wasInitiallyDeferredEphemerally = false
 
-    suspend fun defer(isEphemeral: Boolean) {
+    /**
+     * Defers the slash command request
+     *
+     * @param isEphemeral if the deferred message should be ephemeral or not
+     */
+    suspend fun defer(isEphemeral: Boolean = false) {
         if (!isDeferred) {
             bridge.manager.defer(isEphemeral)
             wasInitiallyDeferredEphemerally = isEphemeral

@@ -1,4 +1,4 @@
-package net.perfectdreams.discordinteraktions.common.context
+package net.perfectdreams.discordinteraktions.common.context.commands
 
 import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOption
 import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOptionType

@@ -15,6 +15,7 @@ fun buildMessage(block: MessageBuilder.() -> (Unit)): InteractionMessage {
         // result.flags,
         result.isEphemeral,
         result.files,
+        result.components
         // result.embed,
         // listOfNotNull(result.embed?.intoSerial())
     )
@@ -34,7 +35,7 @@ class MessageBuilder {
     var isEphemeral: Boolean? = null
     // var embed: Embed? = null
     var files = mutableMapOf<String, InputStream>()
-
+    val components = mutableListOf<MessageComponent>()
     // TODO:
     // fun embed(declaration: Embed.() -> Unit) {
     //     this.embed = Embed().apply(declaration)
@@ -53,6 +54,7 @@ data class InteractionMessage(
     var isEphemeral: Boolean?,
     // val flags: MessageFlags? = null,
     val files: Map<String, InputStream>? = null,
+    val components: List<MessageComponent>
     // @Transient
     // val abstractEmbed: Embed? = null,
     // val embeds: List<DiscordEmbed> = listOf()

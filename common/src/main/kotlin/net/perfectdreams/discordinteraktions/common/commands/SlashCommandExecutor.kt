@@ -1,7 +1,7 @@
 package net.perfectdreams.discordinteraktions.common.commands
 
-import net.perfectdreams.discordinteraktions.common.context.SlashCommandArguments
-import net.perfectdreams.discordinteraktions.common.context.SlashCommandContext
+import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandArguments
+import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandContext
 
 /**
  * This is the class that should be inherited if you

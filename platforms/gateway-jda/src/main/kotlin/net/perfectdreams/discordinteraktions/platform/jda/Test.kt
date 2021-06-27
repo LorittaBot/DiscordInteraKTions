@@ -2,24 +2,35 @@ package net.perfectdreams.discordinteraktions.platform.jda
 
 import net.dv8tion.jda.api.JDABuilder
 import net.perfectdreams.discordinteraktions.api.entities.Snowflake
+import net.perfectdreams.discordinteraktions.common.buttons.ButtonStateManager
+import net.perfectdreams.discordinteraktions.common.buttons.MemoryButtonStateManager
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor
-import net.perfectdreams.discordinteraktions.common.context.SlashCommandArguments
-import net.perfectdreams.discordinteraktions.common.context.SlashCommandContext
+import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandArguments
+import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandContext
+import net.perfectdreams.discordinteraktions.common.utils.ActionRowComponent
+import net.perfectdreams.discordinteraktions.common.utils.ButtonStyle
+import net.perfectdreams.discordinteraktions.common.utils.TestData
+import net.perfectdreams.discordinteraktions.common.utils.button
+import net.perfectdreams.discordinteraktions.common.utils.urlButton
 import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclaration
 import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOptions
 import net.perfectdreams.discordinteraktions.declarations.slash.slashCommand
 import net.perfectdreams.discordinteraktions.platform.jda.commands.JDACommandRegistry
 import net.perfectdreams.discordinteraktions.platform.jda.listeners.SlashCommandListener
+import net.perfectdreams.discordinteraktions.platform.jda.utils.ButtonClickExecutorTest
 import java.io.File
 
 suspend fun main() {
     val manager = CommandManager()
-    manager.register(TestCommand, TestCommandExecutor(), SubcommandTestCommandExecutor())
+    val buttonsStateManager = MemoryButtonStateManager()
+
+    manager.register(TestCommand, TestCommandExecutor(), SubcommandTestCommandExecutor(buttonsStateManager))
+    buttonsStateManager.registerButtonExecutor(ButtonClickExecutorTest())
 
     val jda = JDABuilder.createDefault(File("token.txt").readText())
-        .addEventListeners(SlashCommandListener(manager))
+        .addEventListeners(SlashCommandListener(manager, buttonsStateManager))
         .build()
         .awaitReady()
 
@@ -67,7 +78,7 @@ class TestCommandExecutor : SlashCommandExecutor() {
     }
 }
 
-class SubcommandTestCommandExecutor : SlashCommandExecutor() {
+class SubcommandTestCommandExecutor(val stateManager: ButtonStateManager) : SlashCommandExecutor() {
     companion object : SlashCommandExecutorDeclaration(SubcommandTestCommandExecutor::class) {
         object Options : CommandOptions() {
             val ayaya = boolean("ayaya", "more ayaya?")
@@ -78,15 +89,37 @@ class SubcommandTestCommandExecutor : SlashCommandExecutor() {
     }
 
     override suspend fun execute(context: SlashCommandContext, args: SlashCommandArguments) {
-        context.defer(true)
+        context.defer(false)
 
         if (args[options.ayaya]) {
             context.sendMessage {
                 content = "ayaya!!! <a:chino_AYAYA:696984642594537503>"
             }
         } else {
+            val actionRow = listOf(
+                button(
+                    stateManager,
+                    ButtonStyle.PRIMARY,
+                    "ayaya!!",
+                    executorSignature = ButtonClickExecutorTest::class,
+                    data = TestData("howdy!")
+                ),
+                button(
+                    stateManager,
+                    ButtonStyle.SECONDARY,
+                    "owo!!",
+                    executorSignature = ButtonClickExecutorTest::class,
+                    data = TestData("uwu whats this")
+                ),
+                urlButton("test", "https://youtu.be/a73vEHy4rZs")
+            )
+
             context.sendMessage {
                 content = "no ayaya but i will do it anyway!!! <a:chino_AYAYA:696984642594537503>"
+
+                components.add(
+                    ActionRowComponent(actionRow)
+                )
             }
 
             context.sendMessage {

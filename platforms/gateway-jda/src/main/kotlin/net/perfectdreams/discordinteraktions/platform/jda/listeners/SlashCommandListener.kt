@@ -2,23 +2,47 @@ package net.perfectdreams.discordinteraktions.platform.jda.listeners
 
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import net.dv8tion.jda.api.events.interaction.ButtonClickEvent
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.perfectdreams.discordinteraktions.common.buttons.ButtonStateManager
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
-import net.perfectdreams.discordinteraktions.common.context.GuildSlashCommandContext
+import net.perfectdreams.discordinteraktions.common.context.commands.GuildSlashCommandContext
 import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
-import net.perfectdreams.discordinteraktions.common.context.SlashCommandArguments
-import net.perfectdreams.discordinteraktions.common.context.SlashCommandContext
+import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandArguments
+import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandContext
 import net.perfectdreams.discordinteraktions.common.utils.Observable
 import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclarationBuilder
 import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOption
 import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOptionType
 import net.perfectdreams.discordinteraktions.platform.jda.context.manager.JDARequestManager
 import net.perfectdreams.discordinteraktions.platform.jda.entities.JDAGuild
+import net.perfectdreams.discordinteraktions.platform.jda.entities.JDAMember
 import net.perfectdreams.discordinteraktions.platform.jda.entities.JDAUser
+import java.util.*
 
-class SlashCommandListener(private val manager: CommandManager) : ListenerAdapter() {
+class SlashCommandListener(private val manager: CommandManager, private val buttonStateManager: ButtonStateManager) : ListenerAdapter() {
+    override fun onButtonClick(event: ButtonClickEvent) {
+        val bridge = RequestBridge(Observable(InteractionRequestState.NOT_REPLIED_YET))
+        val requestManager = JDARequestManager(bridge, event.interaction)
+        bridge.manager = requestManager
+
+        GlobalScope.launch {
+            val data = buttonStateManager.getStateById(UUID.fromString(event.componentId))
+
+            val executor = buttonStateManager.buttonExecutors.first {
+                it.signature() == data.first
+            }
+
+            executor.onClickWithAnyData(
+                JDAUser(event.user),
+                SlashCommandContext(bridge, JDAUser(event.user)),
+                data.second
+            )
+        }
+    }
+
     override fun onSlashCommand(event: SlashCommandEvent) {
         GlobalScope.launch {
             val bridge = RequestBridge(Observable(InteractionRequestState.NOT_REPLIED_YET))
@@ -70,10 +94,12 @@ class SlashCommandListener(private val manager: CommandManager) : ListenerAdapte
             }
 
             val guild = event.guild
+            val member = event.member
+
             executor
                 .execute(
-                    if (guild != null) {
-                        GuildSlashCommandContext(bridge, JDAUser(event.user), JDAGuild(guild))
+                    if (guild != null && member != null) {
+                        GuildSlashCommandContext(bridge, JDAUser(event.user), JDAGuild(guild), JDAMember(member))
                     } else {
                         SlashCommandContext(bridge, JDAUser(event.user))
                     },
