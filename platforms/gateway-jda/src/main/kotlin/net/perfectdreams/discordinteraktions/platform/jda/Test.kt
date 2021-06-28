@@ -1,5 +1,7 @@
 package net.perfectdreams.discordinteraktions.platform.jda
 
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.JDABuilder
 import net.perfectdreams.discordinteraktions.api.entities.Snowflake
 import net.perfectdreams.discordinteraktions.common.buttons.ButtonStateManager
@@ -30,6 +32,7 @@ suspend fun main() {
     buttonsStateManager.registerButtonExecutor(ButtonClickExecutorTest())
 
     val jda = JDABuilder.createDefault(File("token.txt").readText())
+        .setRawEventsEnabled(true)
         .addEventListeners(SlashCommandListener(manager, buttonsStateManager))
         .build()
         .awaitReady()
@@ -89,36 +92,42 @@ class SubcommandTestCommandExecutor(val stateManager: ButtonStateManager) : Slas
     }
 
     override suspend fun execute(context: SlashCommandContext, args: SlashCommandArguments) {
-        context.defer(false)
+        context.deferReply(false)
 
         if (args[options.ayaya]) {
             context.sendMessage {
                 content = "ayaya!!! <a:chino_AYAYA:696984642594537503>"
             }
         } else {
-            val actionRow = listOf(
-                button(
-                    stateManager,
-                    ButtonStyle.PRIMARY,
-                    "ayaya!!",
-                    executorSignature = ButtonClickExecutorTest::class,
-                    data = TestData("howdy!")
-                ),
-                button(
-                    stateManager,
-                    ButtonStyle.SECONDARY,
-                    "owo!!",
-                    executorSignature = ButtonClickExecutorTest::class,
-                    data = TestData("uwu whats this")
-                ),
-                urlButton("test", "https://youtu.be/a73vEHy4rZs")
+            val stateHowdy = stateManager.storeState(
+                ButtonClickExecutorTest::class,
+                Json.encodeToString(TestData("howdy!"))
+            )
+
+            val stateUwu = stateManager.storeState(
+                ButtonClickExecutorTest::class,
+                Json.encodeToString(TestData("uwu whats this"))
             )
 
             context.sendMessage {
                 content = "no ayaya but i will do it anyway!!! <a:chino_AYAYA:696984642594537503>"
 
                 components.add(
-                    ActionRowComponent(actionRow)
+                    ActionRowComponent(
+                        listOf(
+                            button(
+                                ButtonStyle.PRIMARY,
+                                "ayaya!!",
+                                stateUniqueId = stateHowdy
+                            ),
+                            button(
+                                ButtonStyle.SECONDARY,
+                                "owo!!",
+                                stateUniqueId = stateUwu
+                            ),
+                            urlButton("test", "https://youtu.be/a73vEHy4rZs")
+                        )
+                    )
                 )
             }
 

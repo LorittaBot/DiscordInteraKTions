@@ -15,6 +15,7 @@ dependencies {
     api(project(":common"))
     implementation("net.dv8tion:JDA:4.3.0_283")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.5.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1")
 }
 
 tasks {

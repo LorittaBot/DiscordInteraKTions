@@ -2,6 +2,7 @@ package net.perfectdreams.discordinteraktions.platform.jda.listeners
 
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import net.dv8tion.jda.api.events.RawGatewayEvent
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
@@ -10,38 +11,45 @@ import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.context.commands.GuildSlashCommandContext
 import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
+import net.perfectdreams.discordinteraktions.common.context.buttons.ButtonClickContext
 import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandContext
 import net.perfectdreams.discordinteraktions.common.utils.Observable
 import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclarationBuilder
 import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOption
 import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOptionType
+import net.perfectdreams.discordinteraktions.platform.jda.context.manager.JDAButtonRequestManager
 import net.perfectdreams.discordinteraktions.platform.jda.context.manager.JDARequestManager
 import net.perfectdreams.discordinteraktions.platform.jda.entities.JDAGuild
 import net.perfectdreams.discordinteraktions.platform.jda.entities.JDAMember
 import net.perfectdreams.discordinteraktions.platform.jda.entities.JDAUser
 import java.util.*
 
-class SlashCommandListener(private val manager: CommandManager, private val buttonStateManager: ButtonStateManager) : ListenerAdapter() {
+class SlashCommandListener(private val manager: CommandManager) : ListenerAdapter() {
+    /* override fun onRawGateway(event: RawGatewayEvent) {
+        println(event.type)
+        println(event.payload)
+    }
+
     override fun onButtonClick(event: ButtonClickEvent) {
         val bridge = RequestBridge(Observable(InteractionRequestState.NOT_REPLIED_YET))
-        val requestManager = JDARequestManager(bridge, event.interaction)
+        val requestManager = JDAButtonRequestManager(bridge, event.interaction)
         bridge.manager = requestManager
 
         GlobalScope.launch {
             val data = buttonStateManager.getStateById(UUID.fromString(event.componentId))
 
             val executor = buttonStateManager.buttonExecutors.first {
-                it.signature() == data.first
+                it.signature() == data.signature
             }
 
-            executor.onClickWithAnyData(
+            executor.onClickConvertToProperData(
                 JDAUser(event.user),
-                SlashCommandContext(bridge, JDAUser(event.user)),
-                data.second
+                ButtonClickContext(bridge, JDAUser(event.user)),
+                data.data
             )
         }
-    }
+    } */
 
     override fun onSlashCommand(event: SlashCommandEvent) {
         GlobalScope.launch {

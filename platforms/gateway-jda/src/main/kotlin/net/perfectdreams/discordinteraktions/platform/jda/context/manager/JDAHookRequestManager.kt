@@ -15,7 +15,8 @@ import net.perfectdreams.discordinteraktions.platform.jda.utils.JDAConversionUti
 import net.perfectdreams.discordinteraktions.platform.jda.utils.await
 
 class JDAHookRequestManager(bridge: RequestBridge, private val hook: InteractionHook) : RequestManager(bridge) {
-    override suspend fun defer(isEphemeral: Boolean) = throw UnsupportedOperationException("Can't defer a interaction that was already deferred!")
+    override suspend fun deferReply(isEphemeral: Boolean) = throw UnsupportedOperationException("Can't defer a interaction that was already deferred!")
+    override suspend fun deferEdit(message: InteractionMessage?) = throw UnsupportedOperationException("Can't defer a interaction that was already deferred!")
 
     override suspend fun sendMessage(message: InteractionMessage): Message {
         hook.sendMessage(message.content)

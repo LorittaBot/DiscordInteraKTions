@@ -15,8 +15,8 @@ import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
 import net.perfectdreams.discordinteraktions.platform.jda.utils.JDAConversionUtils
 import net.perfectdreams.discordinteraktions.platform.jda.utils.await
 
-class JDARequestManager(bridge: RequestBridge, private val interaction: Interaction) : RequestManager(bridge) {
-    override suspend fun defer(isEphemeral: Boolean) {
+open class JDARequestManager(bridge: RequestBridge, private val interaction: Interaction) : RequestManager(bridge) {
+    override suspend fun deferReply(isEphemeral: Boolean) {
         val hook = interaction
             .deferReply(isEphemeral)
             .await()
@@ -27,6 +27,10 @@ class JDARequestManager(bridge: RequestBridge, private val interaction: Interact
         )
 
         bridge.state.value = InteractionRequestState.DEFERRED
+    }
+
+    override suspend fun deferEdit(message: InteractionMessage?) {
+        throw UnsupportedOperationException("Can't defer a non button interaction!")
     }
 
     override suspend fun sendMessage(message: InteractionMessage): Message {
