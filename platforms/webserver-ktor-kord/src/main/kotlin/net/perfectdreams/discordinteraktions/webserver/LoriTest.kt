@@ -52,6 +52,9 @@ class TestCommandExecutor : SlashCommandExecutor() {
 
             val ayaya = optionalBoolean("ayaya", "ayaya?")
                 .register()
+
+            val user = optionalUser("user", "The user, maybe, idk")
+                .register()
         }
 
         override val options = Options
@@ -65,6 +68,13 @@ class TestCommandExecutor : SlashCommandExecutor() {
         if (args[Options.ayaya] == true) {
             context.sendMessage {
                 content = "ayaya!!!"
+            }
+        }
+
+        val user = args[options.user]
+        if (user != null) {
+            context.sendMessage {
+                content = "User: $user"
             }
         }
     }

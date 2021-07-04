@@ -101,7 +101,7 @@ class DefaultInteractionRequestHandler(
         }
 
         // Convert the Nested Options into a map, then we can access them with our Discord InteraKTion options!
-        val arguments = convertOptions(
+        val arguments = CommandDeclarationUtils.convertOptions(
             request,
             executorDeclaration,
             relativeOptions ?: listOf()
@@ -157,63 +157,5 @@ class DefaultInteractionRequestHandler(
 
         observableState.awaitChange()
         logger.info { "State was changed to ${observableState.value}, so this means we already replied via the Web Server! Leaving request scope..." }
-    }
-
-    fun convertOptions(request: DiscordInteraction, executorDeclaration: SlashCommandExecutorDeclaration, relativeOptions: List<Option>): Map<CommandOption<*>, Any?> {
-        val arguments = mutableMapOf<CommandOption<*>, Any?>()
-
-        for (option in relativeOptions) {
-            val interaKTionOption = executorDeclaration.options.arguments
-                .firstOrNull { it.name == option.name } ?: continue
-
-            val argument = option as CommandArgument<*>
-
-            arguments[interaKTionOption] = convertOption(
-                interaKTionOption,
-                argument,
-                request
-            )
-        }
-
-        return arguments
-    }
-
-    private fun convertOption(interaKTionOption: CommandOption<*>, argument: CommandArgument<*>, request: DiscordInteraction): Any? {
-        println(interaKTionOption.type)
-        println(argument.value)
-
-        return when (interaKTionOption.type) {
-            /* CommandOptionType.User, CommandOptionType.NullableUser -> {
-                val userId = argument.value.value as String
-
-                val resolved = request.data.resolved.value ?: return null
-                val resolvedMap = resolved.users.value ?: return null
-                val kordInstance = resolvedMap[Snowflake(userId)] ?: return null
-
-                // Now we need to wrap the kord user in our own implementation!
-                return KordUser(kordInstance)
-            }
-            CommandOptionType.Channel, CommandOptionType.NullableChannel -> {
-                val userId = argument.value.value as String
-
-                val resolved = request.data.resolved.value ?: return null
-                val resolvedMap = resolved.channels.value ?: return null
-                val kordInstance = resolvedMap[Snowflake(userId)] ?: return null
-
-                // Now we need to wrap the kord user in our own implementation!
-                return KordChannel(kordInstance)
-            }
-            CommandOptionType.Role, CommandOptionType.NullableRole -> {
-                val userId = argument.value.value as String
-
-                val resolved = request.data.resolved.value ?: return null
-                val resolvedMap = resolved.roles.value ?: return null
-                val kordInstance = resolvedMap[Snowflake(userId)] ?: return null
-
-                // Now we need to wrap the kord user in our own implementation!
-                return KordRole(kordInstance)
-            } */
-            else -> { argument.value }
-        }
     }
 }

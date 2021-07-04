@@ -1,10 +1,16 @@
 package net.perfectdreams.discordinteraktions.platforms.kord.commands
 
+import dev.kord.common.entity.CommandArgument
 import dev.kord.common.entity.CommandGroup
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Option
+import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.SubCommand
 import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclarationBuilder
+import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandExecutorDeclaration
+import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOption
+import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOptionType
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
 
 object CommandDeclarationUtils {
     /**
@@ -121,4 +127,64 @@ object CommandDeclarationUtils {
     class RootCommandLabel(label: String) : CommandLabel(label)
     class SubCommandLabel(label: String) : CommandLabel(label)
     class CommandGroupLabel(label: String) : CommandLabel(label)
+
+    fun convertOptions(request: DiscordInteraction, executorDeclaration: SlashCommandExecutorDeclaration, relativeOptions: List<Option>): Map<CommandOption<*>, Any?> {
+        val arguments = mutableMapOf<CommandOption<*>, Any?>()
+
+        for (option in relativeOptions) {
+            val interaKTionOption = executorDeclaration.options.arguments
+                .firstOrNull { it.name == option.name } ?: continue
+
+            val argument = option as CommandArgument<*>
+
+            arguments[interaKTionOption] = convertOption(
+                interaKTionOption,
+                argument,
+                request
+            )
+        }
+
+        return arguments
+    }
+
+    private fun convertOption(interaKTionOption: CommandOption<*>, argument: CommandArgument<*>, request: DiscordInteraction): Any? {
+        println(interaKTionOption.type)
+        println(argument.value)
+
+        return when (interaKTionOption.type) {
+            CommandOptionType.User, CommandOptionType.NullableUser -> {
+                val userId = argument.value as Snowflake
+
+                val resolved = request.data.resolved.value ?: return null
+                val resolvedMap = resolved.users.value ?: return null
+                val kordInstance = resolvedMap[userId] ?: return null
+
+                // Now we need to wrap the kord user in our own implementation!
+                return KordUser(kordInstance)
+            }
+            CommandOptionType.Channel, CommandOptionType.NullableChannel -> {
+                val userId = argument.value as Snowflake
+
+                val resolved = request.data.resolved.value ?: return null
+                val resolvedMap = resolved.channels.value ?: return null
+                val kordInstance = resolvedMap[userId] ?: return null
+
+                // Now we need to wrap the kord user in our own implementation!
+                TODO("Channel arguments are not supported yet")
+                // return KordChannel(kordInstance)
+            }
+            CommandOptionType.Role, CommandOptionType.NullableRole -> {
+                val userId = argument.value as Snowflake
+
+                val resolved = request.data.resolved.value ?: return null
+                val resolvedMap = resolved.roles.value ?: return null
+                val kordInstance = resolvedMap[userId] ?: return null
+
+                // Now we need to wrap the kord user in our own implementation!
+                TODO("Role arguments are not supported yet")
+                // return KordRole(kordInstance)
+            }
+            else -> { argument.value }
+        }
+    }
 }
