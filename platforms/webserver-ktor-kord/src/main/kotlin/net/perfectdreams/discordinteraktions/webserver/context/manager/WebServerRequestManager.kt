@@ -46,6 +46,7 @@ class WebServerRequestManager(
     override suspend fun deferReply(isEphemeral: Boolean) {
         // How this works? https://discord.com/developers/docs/interactions/slash-commands#interaction-response
         logger.info { "Deferring interaction..." }
+
         call.respondText(
             buildJsonObject {
                 put("type", InteractionResponseType.DeferredChannelMessageWithSource.type)
