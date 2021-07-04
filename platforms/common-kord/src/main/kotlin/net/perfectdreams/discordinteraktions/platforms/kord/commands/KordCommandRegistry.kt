@@ -21,7 +21,7 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
             applicationId.toKordSnowflake(),
             guildId.toKordSnowflake(),
             manager.declarations.map {
-                convertCommandDeclarationToJDA(it).toRequest()
+                convertCommandDeclarationToKord(it).toRequest()
             }
         )
     }
@@ -30,7 +30,7 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
         // TODO: Remove unknown commands
     }
 
-    private fun convertCommandDeclarationToJDA(declaration: SlashCommandDeclarationBuilder): ApplicationCommandCreateBuilder {
+    private fun convertCommandDeclarationToKord(declaration: SlashCommandDeclarationBuilder): ApplicationCommandCreateBuilder {
         val commandData = ApplicationCommandCreateBuilder(declaration.name, declaration.description)
 
         commandData.options = mutableListOf() // Initialize a empty list so we can use it
@@ -38,11 +38,11 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
         // We can only have (subcommands OR subcommand groups) OR arguments
         if (declaration.subcommands.isNotEmpty() || declaration.subcommandGroups.isNotEmpty()) {
             declaration.subcommands.forEach {
-                commandData.options?.add(convertSubcommandDeclarationToJDA(it))
+                commandData.options?.add(convertSubcommandDeclarationToKord(it))
             }
 
             declaration.subcommandGroups.forEach {
-                commandData.options?.add(convertSubcommandGroupDeclarationToJDA(it))
+                commandData.options?.add(convertSubcommandGroupDeclarationToKord(it))
             }
         } else {
             val executor = declaration.executor ?: error("Root command without a executor!")
@@ -50,14 +50,14 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
             val options = executor.options
 
             options.arguments.forEach {
-                convertCommandOptionToJDA(it, commandData)
+                convertCommandOptionToKord(it, commandData)
             }
         }
 
         return commandData
     }
 
-    private fun convertSubcommandDeclarationToJDA(declaration: SlashCommandDeclarationBuilder): SubCommandBuilder {
+    private fun convertSubcommandDeclarationToKord(declaration: SlashCommandDeclarationBuilder): SubCommandBuilder {
         val commandData = SubCommandBuilder(declaration.name, declaration.description)
 
         // This is a subcommand, so we only have a executor anyway
@@ -65,23 +65,23 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
         val options = executor.options
 
         options.arguments.forEach {
-            convertCommandOptionToJDA(it, commandData)
+            convertCommandOptionToKord(it, commandData)
         }
 
         return commandData
     }
 
-    private fun convertSubcommandGroupDeclarationToJDA(declaration: SlashCommandGroupDeclarationBuilder): GroupCommandBuilder {
+    private fun convertSubcommandGroupDeclarationToKord(declaration: SlashCommandGroupDeclarationBuilder): GroupCommandBuilder {
         val commandData = GroupCommandBuilder(declaration.name, declaration.description)
 
         declaration.subcommands.forEach {
-            commandData.options?.add(convertSubcommandDeclarationToJDA(it))
+            commandData.options?.add(convertSubcommandDeclarationToKord(it))
         }
 
         return commandData
     }
 
-    private fun convertCommandOptionToJDA(cmdOption: CommandOption<*>, builder: BaseApplicationBuilder) {
+    private fun convertCommandOptionToKord(cmdOption: CommandOption<*>, builder: BaseApplicationBuilder) {
         when (cmdOption.type) {
             // TODO: Add all possible types
             CommandOptionType.Integer, CommandOptionType.NullableInteger ->
@@ -112,7 +112,7 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
         }
     }
 
-    private fun convertCommandOptionToJDA(cmdOption: CommandOption<*>, builder: SubCommandBuilder) {
+    private fun convertCommandOptionToKord(cmdOption: CommandOption<*>, builder: SubCommandBuilder) {
         when (cmdOption.type) {
             // TODO: Add all possible types
             CommandOptionType.Integer, CommandOptionType.NullableInteger ->
