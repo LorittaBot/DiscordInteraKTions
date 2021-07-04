@@ -83,7 +83,7 @@ suspend fun main() {
                     }
 
                     // Convert the Nested Options into a map, then we can access them with our Discord InteraKTion options!
-                    val arguments = convertOptions(
+                    val arguments = CommandDeclarationUtils.convertOptions(
                         request,
                         executorDeclaration,
                         relativeOptions ?: listOf()
