@@ -33,7 +33,7 @@ suspend fun main() {
 
     val jda = JDABuilder.createDefault(File("token.txt").readText())
         .setRawEventsEnabled(true)
-        .addEventListeners(SlashCommandListener(manager, buttonsStateManager))
+        .addEventListeners(SlashCommandListener(manager))
         .build()
         .awaitReady()
 

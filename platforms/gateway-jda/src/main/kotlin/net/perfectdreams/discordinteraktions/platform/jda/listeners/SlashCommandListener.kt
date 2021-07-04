@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.events.RawGatewayEvent
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.perfectdreams.discordinteraktions.api.entities.Snowflake
 import net.perfectdreams.discordinteraktions.common.buttons.ButtonStateManager
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.context.commands.GuildSlashCommandContext
@@ -107,7 +108,7 @@ class SlashCommandListener(private val manager: CommandManager) : ListenerAdapte
             executor
                 .execute(
                     if (guild != null && member != null) {
-                        GuildSlashCommandContext(bridge, JDAUser(event.user), JDAGuild(guild), JDAMember(member))
+                        GuildSlashCommandContext(bridge, JDAUser(event.user), Snowflake(guild.idLong), JDAMember(member))
                     } else {
                         SlashCommandContext(bridge, JDAUser(event.user))
                     },

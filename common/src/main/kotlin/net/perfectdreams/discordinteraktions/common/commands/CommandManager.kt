@@ -1,6 +1,5 @@
 package net.perfectdreams.discordinteraktions.common.commands
 
-import net.perfectdreams.discordinteraktions.common.utils.ButtonClickExecutor
 import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclaration
 import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclarationBuilder
 

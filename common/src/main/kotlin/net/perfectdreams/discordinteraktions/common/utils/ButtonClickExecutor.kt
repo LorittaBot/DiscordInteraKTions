@@ -1,14 +1,18 @@
 package net.perfectdreams.discordinteraktions.common.utils
 
 import net.perfectdreams.discordinteraktions.api.entities.User
+import net.perfectdreams.discordinteraktions.common.context.buttons.ButtonClickContext
 import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandContext
 
 interface ButtonClickExecutor<CustomButtonData> {
-    suspend fun onClickWithAnyData(user: User, context: SlashCommandContext, data: Any?) {
+    /**
+     * You should override this if you want to custom parse your data
+     */
+    suspend fun onClickConvertToProperData(user: User, context: ButtonClickContext, data: Any?) {
         onClick(user, context, data as CustomButtonData)
     }
 
-    suspend fun onClick(user: User, context: SlashCommandContext, data: CustomButtonData) // TODO: This is a hack! We need a "ButtonContext" or something
+    suspend fun onClick(user: User, context: ButtonClickContext, data: CustomButtonData)
 
     /**
      * Used by the [net.perfectdreams.discordinteraktions.common.buttons.ButtonStateManager] to match declarations to executors.

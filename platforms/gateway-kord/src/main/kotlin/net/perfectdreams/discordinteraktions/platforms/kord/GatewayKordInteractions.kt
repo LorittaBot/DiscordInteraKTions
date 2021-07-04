@@ -1,52 +1,40 @@
-package net.perfectdreams.discordinteraktions.kord
+package net.perfectdreams.discordinteraktions.platforms.kord
 
 import dev.kord.common.annotation.KordPreview
 import dev.kord.common.entity.CommandArgument
+import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Option
 import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.Gateway
 import dev.kord.gateway.InteractionCreate
 import dev.kord.gateway.on
+import dev.kord.rest.service.RestClient
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import net.perfectdreams.discordinteraktions.commands.CommandManager
-import net.perfectdreams.discordinteraktions.commands.SlashCommandArguments
-import net.perfectdreams.discordinteraktions.context.GuildSlashCommandContext
-import net.perfectdreams.discordinteraktions.context.manager.InitialHttpRequestManager
-import net.perfectdreams.discordinteraktions.context.InteractionRequestState
-import net.perfectdreams.discordinteraktions.context.RequestBridge
-import net.perfectdreams.discordinteraktions.context.SlashCommandContext
+import net.perfectdreams.discordinteraktions.common.commands.CommandManager
+import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
+import net.perfectdreams.discordinteraktions.common.context.RequestBridge
+import net.perfectdreams.discordinteraktions.common.context.commands.GuildSlashCommandContext
+import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandArguments
+import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandContext
+import net.perfectdreams.discordinteraktions.common.utils.Observable
 import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOption
-import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOptionType
-import net.perfectdreams.discordinteraktions.entities.CommandInteraction
-import net.perfectdreams.discordinteraktions.internal.entities.KordChannel
-import net.perfectdreams.discordinteraktions.internal.entities.KordRole
-import net.perfectdreams.discordinteraktions.internal.entities.KordUser
-import net.perfectdreams.discordinteraktions.utils.CommandDeclarationUtils
-import net.perfectdreams.discordinteraktions.utils.Observable
+import net.perfectdreams.discordinteraktions.platforms.kord.context.manager.InitialHttpRequestManager
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordMember
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
+import net.perfectdreams.discordinteraktions.platforms.kord.commands.CommandDeclarationUtils
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordSnowflake
 
 @KordPreview
 fun Gateway.installDiscordInteraKTions(
+    applicationId: net.perfectdreams.discordinteraktions.api.entities.Snowflake,
+    rest: RestClient,
     commandManager: CommandManager
 ) {
     on<InteractionCreate> {
-        val interactionData = this.interaction
-
-        // Convert to InteraKTions objects
-        val request = CommandInteraction(
-            interactionData.id,
-            interactionData.type,
-            interactionData.data,
-            interactionData.guildId,
-            interactionData.channelId,
-            interactionData.member,
-            interactionData.user,
-            interactionData.token,
-            interactionData.version
-        )
-
-        println(request)
+        val request = this.interaction
+        println("interaction type: ${request.type}")
 
         // Processing subcommands is kinda hard, but not impossible!
         val commandLabels = CommandDeclarationUtils.findAllSubcommandDeclarationNames(request)
@@ -81,25 +69,35 @@ fun Gateway.installDiscordInteraKTions(
 
         val requestManager = InitialHttpRequestManager(
             bridge,
-            commandManager.rest,
-            commandManager.applicationId,
+            rest,
+            applicationId.toKordSnowflake(),
             request.token,
             request
         )
 
         bridge.manager = requestManager
 
-        val commandContext = if (request.guildId.value != null) {
+        val kordUser = KordUser(request.member.value?.user?.value ?: request.user.value ?: error("oh no"))
+        val guildId = request.guildId.value?.let { net.perfectdreams.discordinteraktions.api.entities.Snowflake(it.value) }
+
+        // If the guild ID is not null, then it means that the interaction happened in a guild!
+        val commandContext = if (guildId != null) {
+            val kordMember = KordMember(
+                request.member.value!! // Should NEVER be null!
+            )
+
             GuildSlashCommandContext(
-                request,
-                relativeOptions,
-                bridge
+                bridge,
+                kordUser,
+                guildId,
+                kordMember
             )
         } else {
             SlashCommandContext(
-                request,
-                relativeOptions,
-                bridge
+                bridge,
+                KordUser(
+                    request.member.value?.user?.value ?: request.user.value ?: error("oh no")
+                )
             )
         }
 
@@ -115,14 +113,14 @@ fun Gateway.installDiscordInteraKTions(
 }
 
 
-private fun convertOptions(request: CommandInteraction, executorDeclaration: SlashCommandExecutorDeclaration, relativeOptions: List<Option>): Map<CommandOption<*>, Any?> {
+fun convertOptions(request: DiscordInteraction, executorDeclaration: SlashCommandExecutorDeclaration, relativeOptions: List<Option>): Map<CommandOption<*>, Any?> {
     val arguments = mutableMapOf<CommandOption<*>, Any?>()
 
     for (option in relativeOptions) {
         val interaKTionOption = executorDeclaration.options.arguments
             .firstOrNull { it.name == option.name } ?: continue
 
-        val argument = option as CommandArgument
+        val argument = option as CommandArgument<*>
 
         arguments[interaKTionOption] = convertOption(
             interaKTionOption,
@@ -134,9 +132,12 @@ private fun convertOptions(request: CommandInteraction, executorDeclaration: Sla
     return arguments
 }
 
-private fun convertOption(interaKTionOption: CommandOption<*>, argument: CommandArgument, request: CommandInteraction): Any? {
+private fun convertOption(interaKTionOption: CommandOption<*>, argument: CommandArgument<*>, request: DiscordInteraction): Any? {
+    println(interaKTionOption.type)
+    println(argument.value)
+
     return when (interaKTionOption.type) {
-        CommandOptionType.User, CommandOptionType.NullableUser -> {
+        /* CommandOptionType.User, CommandOptionType.NullableUser -> {
             val userId = argument.value.value as String
 
             val resolved = request.data.resolved.value ?: return null
@@ -165,7 +166,7 @@ private fun convertOption(interaKTionOption: CommandOption<*>, argument: Command
 
             // Now we need to wrap the kord user in our own implementation!
             return KordRole(kordInstance)
-        }
-        else -> { argument.value.value }
+        } */
+        else -> { argument.value }
     }
 }

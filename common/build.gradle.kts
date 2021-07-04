@@ -11,6 +11,7 @@ dependencies {
     api(project(":interaction-declarations"))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")
+    api("io.github.microutils:kotlin-logging:2.0.3")
 }
 
 tasks {

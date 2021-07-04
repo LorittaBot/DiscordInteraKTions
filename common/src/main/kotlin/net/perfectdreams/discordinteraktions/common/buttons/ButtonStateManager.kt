@@ -10,8 +10,8 @@ abstract class ButtonStateManager {
         buttonExecutors.add(event)
     }
 
-    abstract suspend fun storeState(uniqueId: UUID, executorSignature: Any, data: Any)
-    abstract suspend fun getStateById(uniqueId: UUID): Pair<Any, Any>
-    abstract suspend fun getOrNullStateById(uniqueId: UUID): Pair<Any, Any>?
+    abstract suspend fun storeState(executorSignature: Any, data: String): UUID
+    abstract suspend fun getStateById(uniqueId: UUID): ButtonState
+    abstract suspend fun getOrNullStateById(uniqueId: UUID): ButtonState?
     abstract suspend fun destroyState(uniqueId: UUID)
 }

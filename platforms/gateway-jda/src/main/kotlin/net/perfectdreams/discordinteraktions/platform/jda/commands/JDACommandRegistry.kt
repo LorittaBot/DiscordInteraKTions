@@ -9,17 +9,20 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData
 import net.perfectdreams.discordinteraktions.api.entities.Snowflake
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
+import net.perfectdreams.discordinteraktions.common.commands.CommandRegistry
 import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclarationBuilder
 import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandGroupDeclarationBuilder
 import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOption
 import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOptionType
 import net.perfectdreams.discordinteraktions.platform.jda.utils.await
 
-class JDACommandRegistry(private val jda: JDA, private val manager: CommandManager) {
-    suspend fun updateAllCommandsInGuild(guildId: Snowflake, deleteUnknownCommands: Boolean) = updateAllCommandsInGuild(jda.getGuildById(guildId.value) ?: error("There isn't a guild with the ID $guildId!"), deleteUnknownCommands)
+class JDACommandRegistry(private val jda: JDA, private val manager: CommandManager) : CommandRegistry {
+    override suspend fun updateAllCommandsInGuild(guildId: Snowflake, deleteUnknownCommands: Boolean) = updateAllCommandsInGuild(jda.getGuildById(guildId.value) ?: error("There isn't a guild with the ID $guildId!"), deleteUnknownCommands)
 
     suspend fun updateAllCommandsInGuild(guild: Guild, deleteUnknownCommands: Boolean) {
+        // TODO: Remove unknown commands
         val updateCommandRequest = guild.updateCommands()
+
         for (command in manager.declarations) {
             // Convert to JDA
             updateCommandRequest.addCommands(convertCommandDeclarationToJDA(command))
@@ -28,7 +31,8 @@ class JDACommandRegistry(private val jda: JDA, private val manager: CommandManag
         updateCommandRequest.await()
     }
 
-    suspend fun updateAllGlobalCommands(deleteUnknownCommands: Boolean) {
+    override suspend fun updateAllGlobalCommands(deleteUnknownCommands: Boolean) {
+        // TODO: Remove unknown commands
         val updateCommandRequest = jda.updateCommands()
 
         for (command in manager.declarations) {
@@ -40,7 +44,6 @@ class JDACommandRegistry(private val jda: JDA, private val manager: CommandManag
     }
 
     private fun convertCommandDeclarationToJDA(declaration: SlashCommandDeclarationBuilder): CommandData {
-        // TODO: finish this
         val commandData = CommandData(declaration.name, declaration.description)
 
         // We can only have (subcommands OR subcommand groups) OR arguments
@@ -95,6 +98,7 @@ class JDACommandRegistry(private val jda: JDA, private val manager: CommandManag
     private fun convertCommandOptionToJDA(cmdOption: CommandOption<*>): OptionData {
         val optionData = OptionData(
             when (cmdOption.type) {
+                // TODO: Add all possible types
                 CommandOptionType.Integer, CommandOptionType.NullableInteger -> OptionType.INTEGER
                 CommandOptionType.String, CommandOptionType.NullableString -> OptionType.STRING
                 CommandOptionType.Bool, CommandOptionType.NullableBool -> OptionType.BOOLEAN
