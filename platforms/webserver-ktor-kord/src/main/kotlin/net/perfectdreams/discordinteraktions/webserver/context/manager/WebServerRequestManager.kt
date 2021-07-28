@@ -10,6 +10,7 @@ import io.ktor.response.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.encodeToJsonElement
+import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonObject
 import mu.KotlinLogging
@@ -20,6 +21,7 @@ import net.perfectdreams.discordinteraktions.common.entities.DummyMessage
 import net.perfectdreams.discordinteraktions.common.entities.Message
 import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.context.manager.HttpRequestManager
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordAllowedMentions
 
 /**
  * On this request manager we'll handle the requests
@@ -74,11 +76,20 @@ class WebServerRequestManager(
                 // put("data", Json.encodeToJsonElement(message))
 
                 putJsonObject("data") {
-                    // put("tts", message.tts)
+                    put("tts", message.tts)
                     put("content", message.content)
-                    // put("flags", message.flags)
+                    // Currently only flags that the client can send is ephemeral, so we are going to hard code the flag here
+                    if (message.isEphemeral == true) {
+                        put("flags", 64)
+                    }
+
                     // putJsonArray("embeds") {}
-                    // putJsonArray("allowed_mentions") {}
+                    message.allowedMentions?.toKordAllowedMentions()?.let {
+                        put(
+                            "allowed_mentions",
+                            Json.encodeToJsonElement(it.build())
+                        )
+                    }
                 }
             }.toString(),
             ContentType.Application.Json

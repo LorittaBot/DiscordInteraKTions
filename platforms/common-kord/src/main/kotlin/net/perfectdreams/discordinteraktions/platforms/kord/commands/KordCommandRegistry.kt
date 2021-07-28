@@ -16,10 +16,32 @@ import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordSnowflak
 
 class KordCommandRegistry(private val applicationId: Snowflake, private val rest: RestClient, private val manager: CommandManager) : CommandRegistry {
     override suspend fun updateAllCommandsInGuild(guildId: Snowflake, deleteUnknownCommands: Boolean) {
-        // TODO: Remove unknown commands
+        val kordApplicationId = applicationId.toKordSnowflake()
+        val kordGuildId = guildId.toKordSnowflake()
+
+        if (deleteUnknownCommands) {
+            // Check commands that are already registered and remove the ones that aren't present in our command manager
+            val alreadyRegisteredCommands = rest.interaction.getGuildApplicationCommands(
+                kordApplicationId,
+                kordGuildId
+            )
+
+            val alreadyRegisteredCommandLabels = manager.declarations.map { it.name }
+
+            val commandsToBeRemoved = alreadyRegisteredCommands.filter { it.name !in alreadyRegisteredCommandLabels }
+
+            commandsToBeRemoved.forEach {
+                rest.interaction.deleteGuildApplicationCommand(
+                    kordApplicationId,
+                    kordGuildId,
+                    it.id
+                )
+            }
+        }
+
         rest.interaction.createGuildApplicationCommands(
-            applicationId.toKordSnowflake(),
-            guildId.toKordSnowflake(),
+            kordApplicationId,
+            kordGuildId,
             manager.declarations.map {
                 convertCommandDeclarationToKord(it).toRequest()
             }

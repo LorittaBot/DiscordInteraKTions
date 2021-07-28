@@ -4,6 +4,7 @@ import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.InteractionResponseType
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.builder.interaction.PublicInteractionResponseCreateBuilder
+import dev.kord.rest.builder.interaction.allowedMentions
 import dev.kord.rest.json.request.InteractionResponseCreateRequest
 import dev.kord.rest.service.RestClient
 import mu.KotlinLogging
@@ -13,6 +14,7 @@ import net.perfectdreams.discordinteraktions.common.context.manager.RequestManag
 import net.perfectdreams.discordinteraktions.common.entities.DummyMessage
 import net.perfectdreams.discordinteraktions.common.entities.Message
 import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordAllowedMentions
 
 /**
  * On this request manager we'll handle the requests
@@ -63,6 +65,7 @@ class InitialHttpRequestManager(
             PublicInteractionResponseCreateBuilder().apply {
                 this.content = message.content
                 this.tts = message.tts
+                this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
                 // this.embeds = listOfNotNull(message.abstractEmbed?.intoBuilder()).toMutableList()
             }.toRequest()
         )

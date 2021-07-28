@@ -6,6 +6,7 @@ import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor
 import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandContext
+import net.perfectdreams.discordinteraktions.common.utils.AllowedMentions
 import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclaration
 import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOptions
@@ -21,7 +22,7 @@ suspend fun main() {
         12212
     )
 
-    interactionsServer.commandManager.register(TestCommand, TestCommandExecutor())
+    interactionsServer.commandManager.register(TestCommand, TestCommandExecutor(), TestCommand2Executor())
 
     val registry = KordCommandRegistry(
         Snowflake(744361365724069898L),
@@ -38,6 +39,10 @@ object TestCommand : SlashCommandDeclaration {
     override fun declaration() = slashCommand("test", "test owo") {
         subcommand("test", "test cmd") {
             executor = TestCommandExecutor
+        }
+
+        subcommand("test2", "test cmd2") {
+            executor = TestCommand2Executor
         }
     }
 }
@@ -63,6 +68,12 @@ class TestCommandExecutor : SlashCommandExecutor() {
     override suspend fun execute(context: SlashCommandContext, args: SlashCommandArguments) {
         context.sendMessage {
             content = "The number is ${args[Options.integer]}, woaaa"
+
+            allowedMentions = AllowedMentions(
+                listOf(),
+                listOf(),
+                true
+            )
         }
 
         if (args[Options.ayaya] == true) {
@@ -76,6 +87,29 @@ class TestCommandExecutor : SlashCommandExecutor() {
             context.sendMessage {
                 content = "User: $user"
             }
+        }
+    }
+}
+
+class TestCommand2Executor : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(TestCommand2Executor::class) {
+        object Options : CommandOptions() {
+            val test = string("test", "an string idk")
+                .register()
+        }
+
+        override val options = Options
+    }
+
+    override suspend fun execute(context: SlashCommandContext, args: SlashCommandArguments) {
+        context.sendMessage {
+            content = "Text: ${args[Options.test]}"
+
+            allowedMentions = AllowedMentions(
+                listOf(),
+                listOf(),
+                true
+            )
         }
     }
 }

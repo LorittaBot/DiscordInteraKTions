@@ -4,6 +4,7 @@ import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.builder.interaction.PublicFollowupMessageCreateBuilder
 import dev.kord.rest.builder.interaction.PublicInteractionResponseModifyBuilder
+import dev.kord.rest.builder.interaction.allowedMentions
 import dev.kord.rest.service.RestClient
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
@@ -12,6 +13,8 @@ import net.perfectdreams.discordinteraktions.common.context.manager.RequestManag
 import net.perfectdreams.discordinteraktions.common.entities.DummyMessage
 import net.perfectdreams.discordinteraktions.common.entities.Message
 import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordAllowedMentions
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordSnowflake
 
 /**
  * On this request manager we'll handle the requests
@@ -52,12 +55,15 @@ class HttpRequestManager(
                 request.token,
                 PublicInteractionResponseModifyBuilder().apply {
                     this.content = message.content
+
+                    // You can't modify a message to change its tts status, so it is ignored
                     // this.embeds = listOfNotNull(message.abstractEmbed?.intoBuilder()).toMutableList()
+
                     val filePairs = message.files?.map { it.key to it.value }
                     if (filePairs != null)
                         files.addAll(filePairs)
-                    // this.tts = message.tts
-                    // this.allowedMentions = message.allowedMentions
+
+                    this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
 
                     // There are "username" and "avatar" flags, but they seem to be unused
                     // Also, what to do about message flags? Silently ignore them or throw a exception?
@@ -77,7 +83,7 @@ class HttpRequestManager(
                 PublicFollowupMessageCreateBuilder().apply {
                     this.content = message.content
                     this.tts = message.tts
-                    // this.allowedMentions = message.allowedMentions
+                    this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
                     // this.embeds = listOfNotNull(message.abstractEmbed?.intoBuilder()).map { it.toRequest() }.toMutableList()
 
                     val filePairs = message.files?.map { it.key to it.value }
