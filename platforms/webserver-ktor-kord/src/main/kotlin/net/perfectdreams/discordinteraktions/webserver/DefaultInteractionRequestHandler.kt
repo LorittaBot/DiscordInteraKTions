@@ -22,12 +22,14 @@ import net.perfectdreams.discordinteraktions.common.context.RequestBridge
 import net.perfectdreams.discordinteraktions.common.context.commands.GuildSlashCommandContext
 import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandContext
+import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 import net.perfectdreams.discordinteraktions.common.utils.Observable
 import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOption
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.CommandDeclarationUtils
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordMember
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.toDiscordInteraKTionsResolvedObjects
 import net.perfectdreams.discordinteraktions.webserver.context.manager.WebServerRequestManager
 
 /**
@@ -124,6 +126,8 @@ class DefaultInteractionRequestHandler(
         val kordUser = KordUser(request.member.value?.user?.value ?: request.user.value ?: error("oh no"))
         val guildId = request.guildId.value?.let { net.perfectdreams.discordinteraktions.api.entities.Snowflake(it.value) }
 
+        val interactionData = InteractionData(request.data.resolved.value?.toDiscordInteraKTionsResolvedObjects())
+
         // If the guild ID is not null, then it means that the interaction happened in a guild!
         val commandContext = if (guildId != null) {
             val kordMember = KordMember(
@@ -133,6 +137,7 @@ class DefaultInteractionRequestHandler(
             GuildSlashCommandContext(
                 bridge,
                 kordUser,
+                interactionData,
                 guildId,
                 kordMember
             )
@@ -141,7 +146,8 @@ class DefaultInteractionRequestHandler(
                 bridge,
                 KordUser(
                     request.member.value?.user?.value ?: request.user.value ?: error("oh no")
-                )
+                ),
+                interactionData
             )
         }
 

@@ -15,6 +15,7 @@ import net.perfectdreams.discordinteraktions.common.context.RequestBridge
 import net.perfectdreams.discordinteraktions.common.context.buttons.ButtonClickContext
 import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandContext
+import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 import net.perfectdreams.discordinteraktions.common.utils.Observable
 import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclarationBuilder
 import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOption
@@ -107,10 +108,11 @@ class SlashCommandListener(private val manager: CommandManager) : ListenerAdapte
 
             executor
                 .execute(
+                    // TODO: Fix Interaction Data
                     if (guild != null && member != null) {
-                        GuildSlashCommandContext(bridge, JDAUser(event.user), Snowflake(guild.idLong), JDAMember(member))
+                        GuildSlashCommandContext(bridge, JDAUser(event.user), InteractionData(null), Snowflake(guild.idLong), JDAMember(member))
                     } else {
-                        SlashCommandContext(bridge, JDAUser(event.user))
+                        SlashCommandContext(bridge, JDAUser(event.user), InteractionData(null))
                     },
                     SlashCommandArguments(arguments)
                 )

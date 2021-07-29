@@ -2,13 +2,15 @@ package net.perfectdreams.discordinteraktions.common.context
 
 import net.perfectdreams.discordinteraktions.api.entities.User
 import net.perfectdreams.discordinteraktions.common.entities.Message
+import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
 import net.perfectdreams.discordinteraktions.common.utils.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.utils.buildMessage
 
 open class InteractionContext(
     internal var bridge: RequestBridge,
-    val sender: User
+    val sender: User,
+    val data: InteractionData
 ) {
     val isDeferred
         get() = bridge.state.value != InteractionRequestState.NOT_REPLIED_YET

@@ -5,14 +5,16 @@ import net.perfectdreams.discordinteraktions.common.context.InteractionContext
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
 import net.perfectdreams.discordinteraktions.common.entities.DummyMessage
 import net.perfectdreams.discordinteraktions.common.entities.Message
+import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
 import net.perfectdreams.discordinteraktions.common.utils.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.utils.buildMessage
 
 class ButtonClickContext(
     bridge: RequestBridge,
-    sender: User
-) : InteractionContext(bridge, sender) {
+    sender: User,
+    data: InteractionData
+) : InteractionContext(bridge, sender, data) {
     /**
      * Defers the button request
      */
