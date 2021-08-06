@@ -3,8 +3,7 @@ package net.perfectdreams.discordinteraktions.platforms.kord.context.manager
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.InteractionResponseType
 import dev.kord.common.entity.Snowflake
-import dev.kord.rest.builder.interaction.PublicInteractionResponseCreateBuilder
-import dev.kord.rest.builder.interaction.allowedMentions
+import dev.kord.rest.builder.message.create.PublicInteractionResponseCreateBuilder
 import dev.kord.rest.json.request.InteractionResponseCreateRequest
 import dev.kord.rest.service.RestClient
 import mu.KotlinLogging

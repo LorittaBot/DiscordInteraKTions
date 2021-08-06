@@ -2,9 +2,8 @@ package net.perfectdreams.discordinteraktions.platforms.kord.context.manager
 
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Snowflake
-import dev.kord.rest.builder.interaction.PublicFollowupMessageCreateBuilder
-import dev.kord.rest.builder.interaction.PublicInteractionResponseModifyBuilder
-import dev.kord.rest.builder.interaction.allowedMentions
+import dev.kord.rest.builder.message.create.PublicFollowupMessageCreateBuilder
+import dev.kord.rest.builder.message.modify.PublicInteractionResponseModifyBuilder
 import dev.kord.rest.service.RestClient
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
@@ -60,8 +59,9 @@ class HttpRequestManager(
                     // this.embeds = listOfNotNull(message.abstractEmbed?.intoBuilder()).toMutableList()
 
                     val filePairs = message.files?.map { it.key to it.value }
-                    if (filePairs != null)
-                        files.addAll(filePairs)
+                    filePairs?.forEach {
+                        addFile(it.first, it.second)
+                    }
 
                     this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
 
