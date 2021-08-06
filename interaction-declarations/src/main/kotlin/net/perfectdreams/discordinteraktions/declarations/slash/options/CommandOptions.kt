@@ -35,6 +35,18 @@ open class CommandOptions {
         description
     )
 
+    fun number(name: String, description: String) = argument<Int>(
+        CommandOptionType.Number,
+        name,
+        description
+    )
+
+    fun optionalNumber(name: String, description: String) = argument<Double?>(
+        CommandOptionType.NullableNumber,
+        name,
+        description
+    )
+
     fun boolean(name: String, description: String) = argument<Boolean>(
         CommandOptionType.Bool,
         name,

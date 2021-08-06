@@ -30,6 +30,15 @@ interface CommandOptionType {
 
     object NullableInteger : Nullable()
 
+    // Number
+    object Number : ToNullable, CommandOptionType {
+        override val isNullable = false
+
+        override fun toNullable() = NullableNumber
+    }
+
+    object NullableNumber : Nullable()
+
     // Boolean
     // Can't be named "Boolean" because that causes Kotlin to go crazy
     object Bool : ToNullable, CommandOptionType {
