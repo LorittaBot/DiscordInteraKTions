@@ -114,6 +114,14 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
                         choice(choice.name, choice.value as Int)
                     }
                 }
+            CommandOptionType.Number, CommandOptionType.NullableNumber ->
+                builder.number(cmdOption.name, cmdOption.description) {
+                    this.required = !cmdOption.type.isNullable
+
+                    for (choice in cmdOption.choices) {
+                        choice(choice.name, choice.value as Double)
+                    }
+                }
             CommandOptionType.String, CommandOptionType.NullableString ->
                 builder.string(cmdOption.name, cmdOption.description) {
                     this.required = !cmdOption.type.isNullable
