@@ -10,7 +10,7 @@ group = "net.perfectdreams.discordinteraktions"
 dependencies {
     implementation(kotlin("stdlib"))
     api(project(":common"))
-    api("dev.kord:kord-rest:0.7.x-SNAPSHOT")
+    api("dev.kord:kord-rest:0.8.x-SNAPSHOT")
 }
 
 tasks.test {
