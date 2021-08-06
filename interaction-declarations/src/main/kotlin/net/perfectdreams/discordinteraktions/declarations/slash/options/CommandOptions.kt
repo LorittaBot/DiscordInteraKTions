@@ -35,7 +35,7 @@ open class CommandOptions {
         description
     )
 
-    fun number(name: String, description: String) = argument<Int>(
+    fun number(name: String, description: String) = argument<Double>(
         CommandOptionType.Number,
         name,
         description
