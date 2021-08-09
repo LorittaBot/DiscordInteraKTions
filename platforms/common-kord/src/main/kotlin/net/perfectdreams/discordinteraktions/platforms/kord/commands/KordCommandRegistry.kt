@@ -54,7 +54,6 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
 
     private fun convertCommandDeclarationToKord(declaration: SlashCommandDeclarationBuilder): ApplicationCommandCreateBuilder {
         val commandData = ApplicationCommandCreateBuilder(declaration.name, declaration.description)
-
         commandData.options = mutableListOf() // Initialize a empty list so we can use it
 
         // We can only have (subcommands OR subcommand groups) OR arguments
@@ -95,6 +94,7 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
 
     private fun convertSubcommandGroupDeclarationToKord(declaration: SlashCommandGroupDeclarationBuilder): GroupCommandBuilder {
         val commandData = GroupCommandBuilder(declaration.name, declaration.description)
+        commandData.options = mutableListOf() // Initialize a empty list so we can use it
 
         declaration.subcommands.forEach {
             commandData.options?.add(convertSubcommandDeclarationToKord(it))
