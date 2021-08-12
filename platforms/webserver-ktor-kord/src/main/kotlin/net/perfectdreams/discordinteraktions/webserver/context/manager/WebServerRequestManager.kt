@@ -3,15 +3,24 @@ package net.perfectdreams.discordinteraktions.webserver.context.manager
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.InteractionResponseType
 import dev.kord.common.entity.Snowflake
+import dev.kord.common.entity.optional.Optional
+import dev.kord.common.entity.optional.coerceToMissing
+import dev.kord.common.entity.optional.map
+import dev.kord.common.entity.optional.mapList
+import dev.kord.common.entity.optional.toPrimitive
+import dev.kord.rest.json.request.InteractionApplicationCommandCallbackData
+import dev.kord.rest.json.request.InteractionResponseCreateRequest
 import dev.kord.rest.service.RestClient
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
@@ -22,6 +31,7 @@ import net.perfectdreams.discordinteraktions.common.entities.Message
 import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.context.manager.HttpRequestManager
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordAllowedMentions
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordEmbedBuilder
 
 /**
  * On this request manager we'll handle the requests
@@ -71,27 +81,20 @@ class WebServerRequestManager(
 
     override suspend fun sendMessage(message: InteractionMessage): Message {
         call.respondText(
-            buildJsonObject {
-                put("type", InteractionResponseType.ChannelMessageWithSource.type)
-                // put("data", Json.encodeToJsonElement(message))
-
-                putJsonObject("data") {
-                    put("tts", message.tts)
-                    put("content", message.content)
-                    // Currently only flags that the client can send is ephemeral, so we are going to hard code the flag here
-                    if (message.isEphemeral == true) {
-                        put("flags", 64)
-                    }
-
-                    // putJsonArray("embeds") {}
-                    message.allowedMentions?.toKordAllowedMentions()?.let {
-                        put(
-                            "allowed_mentions",
-                            Json.encodeToJsonElement(it.build())
+            Json.encodeToString(
+                InteractionResponseCreateRequest(
+                    type = InteractionResponseType.ChannelMessageWithSource,
+                    data = Optional(
+                        InteractionApplicationCommandCallbackData(
+                            content = Optional(message.content).coerceToMissing(),
+                            tts = Optional(message.tts).coerceToMissing().toPrimitive(),
+                            embeds = Optional(message.embeds?.map { it.toKordEmbedBuilder().toRequest() } ?: listOf()),
+                            allowedMentions = Optional(message.allowedMentions?.toKordAllowedMentions()).coerceToMissing().map { it.build() },
+                            components = Optional(null).coerceToMissing(),
                         )
-                    }
-                }
-            }.toString(),
+                    )
+                )
+            ),
             ContentType.Application.Json
         )
 

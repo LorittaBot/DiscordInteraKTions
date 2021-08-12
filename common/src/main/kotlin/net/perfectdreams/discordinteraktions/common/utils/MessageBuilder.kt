@@ -1,7 +1,5 @@
 package net.perfectdreams.discordinteraktions.common.utils
 
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 import java.io.InputStream
 
 fun buildMessage(block: MessageBuilder.() -> (Unit)): InteractionMessage {
@@ -10,51 +8,49 @@ fun buildMessage(block: MessageBuilder.() -> (Unit)): InteractionMessage {
     return InteractionMessage(
         result.content.orEmpty(),
         result.tts,
-        // TODO:
-        result.allowedMentions,
-        // result.flags,
-        result.isEphemeral,
         result.files,
+        result.embeds,
+        result.allowedMentions,
+        result.isEphemeral,
         result.components
-        // result.embed,
-        // listOfNotNull(result.embed?.intoSerial())
     )
 }
 
+@InteraKTionsDslMarker
 class MessageBuilder {
     var content: String? = null
     var tts: Boolean? = null
-    // var embeds: List<S>
     var allowedMentions: AllowedMentions? = null
+
     /**
      * If set to true, the message will be ephemeral
      * If set to false, the message won't be ephemeral
      * If not set, the message will follow what was used in the defer(...) call
      */
     var isEphemeral: Boolean? = null
-    // var embed: Embed? = null
+    var embeds: MutableList<EmbedBuilder>? = null
     var files = mutableMapOf<String, InputStream>()
     val components = mutableListOf<MessageComponent>()
-    // TODO:
-    // fun embed(declaration: Embed.() -> Unit) {
-    //     this.embed = Embed().apply(declaration)
-    // }
+
+    fun embed(declaration: EmbedBuilder.() -> Unit) {
+        embeds = (embeds ?: mutableListOf()).also {
+            it.add(EmbedBuilder().apply(declaration))
+        }
+    }
 
     fun addFile(fileName: String, stream: InputStream) {
         files[fileName] = stream
     }
 }
 
+// Follows Discord's field order
+// https://discord.com/developers/docs/resources/channel#create-message
 data class InteractionMessage(
     val content: String,
     val tts: Boolean? = null,
-    // @SerialName("allowed_mentions")
+    val files: Map<String, InputStream>? = null,
+    val embeds: List<EmbedBuilder>? = null,
     val allowedMentions: AllowedMentions? = null,
     var isEphemeral: Boolean?,
-    // val flags: MessageFlags? = null,
-    val files: Map<String, InputStream>? = null,
     val components: List<MessageComponent>
-    // @Transient
-    // val abstractEmbed: Embed? = null,
-    // val embeds: List<DiscordEmbed> = listOf()
 )

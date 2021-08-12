@@ -1,5 +1,6 @@
 package net.perfectdreams.discordinteraktions.webserver
 
+import dev.kord.common.Color
 import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.api.entities.Snowflake
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
@@ -22,7 +23,7 @@ suspend fun main() {
         12212
     )
 
-    interactionsServer.commandManager.register(TestCommand, TestCommandExecutor(), TestCommand2Executor())
+    interactionsServer.commandManager.register(TestCommand, TestCommandExecutor(), TestCommand2Executor(), TestEmbedExecutor())
 
     val registry = KordCommandRegistry(
         Snowflake(744361365724069898L),
@@ -37,12 +38,18 @@ suspend fun main() {
 
 object TestCommand : SlashCommandDeclaration {
     override fun declaration() = slashCommand("test", "test owo") {
-        subcommand("test", "test cmd") {
-            executor = TestCommandExecutor
-        }
+        subcommandGroup("ayaya", "test group") {
+            subcommand("test", "test cmd") {
+                executor = TestCommandExecutor
+            }
 
-        subcommand("test2", "test cmd2") {
-            executor = TestCommand2Executor
+            subcommand("test2", "test cmd2") {
+                executor = TestCommand2Executor
+            }
+
+            subcommand("testembed", "tests an embed") {
+                executor = TestEmbedExecutor
+            }
         }
     }
 }
@@ -110,6 +117,29 @@ class TestCommand2Executor : SlashCommandExecutor() {
                 listOf(),
                 true
             )
+        }
+    }
+}
+
+class TestEmbedExecutor : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(TestEmbedExecutor::class)
+
+    override suspend fun execute(context: SlashCommandContext, args: SlashCommandArguments) {
+        context.sendMessage {
+            embed {
+                title = "Hello world!"
+                description = "ayaya"
+
+                color(0, 181, 255)
+                author("Loritta", "https://loritta.website/", "https://cdn.discordapp.com/emojis/585938576907305004.png?v=1")
+                image("https://cdn.discordapp.com/emojis/585938576907305004.png?v=1")
+                thumbnail("https://cdn.discordapp.com/emojis/585938576907305004.png?v=1")
+
+                inlineField("ayaya", "uwu")
+                inlineField("owo!!!", "yay")
+
+                footer("Google", "https://google.com")
+            }
         }
     }
 }

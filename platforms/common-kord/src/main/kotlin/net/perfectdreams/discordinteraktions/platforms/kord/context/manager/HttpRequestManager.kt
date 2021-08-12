@@ -1,9 +1,11 @@
 package net.perfectdreams.discordinteraktions.platforms.kord.context.manager
 
+import dev.kord.common.annotation.KordPreview
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.builder.message.create.PublicFollowupMessageCreateBuilder
 import dev.kord.rest.builder.message.modify.PublicInteractionResponseModifyBuilder
+import dev.kord.rest.builder.message.modify.embed
 import dev.kord.rest.service.RestClient
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
@@ -13,6 +15,7 @@ import net.perfectdreams.discordinteraktions.common.entities.DummyMessage
 import net.perfectdreams.discordinteraktions.common.entities.Message
 import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordAllowedMentions
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordEmbedBuilder
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordSnowflake
 
 /**
@@ -24,6 +27,7 @@ import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordSnowflak
  * @param interactionToken The request's token
  * @param request The interaction (wrapped by the [InteractionRequestHandler]
  */
+@OptIn(KordPreview::class)
 class HttpRequestManager(
     bridge: RequestBridge,
     val rest: RestClient,
@@ -53,10 +57,9 @@ class HttpRequestManager(
                 applicationId,
                 request.token,
                 PublicInteractionResponseModifyBuilder().apply {
-                    this.content = message.content
-
                     // You can't modify a message to change its tts status, so it is ignored
-                    // this.embeds = listOfNotNull(message.abstractEmbed?.intoBuilder()).toMutableList()
+                    this.content = message.content
+                    this.embeds = message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.toMutableList()
 
                     val filePairs = message.files?.map { it.key to it.value }
                     filePairs?.forEach {
@@ -65,8 +68,8 @@ class HttpRequestManager(
 
                     this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
 
-                    // There are "username" and "avatar" flags, but they seem to be unused
-                    // Also, what to do about message flags? Silently ignore them or throw a exception?
+                    // There are "username" and "avatar" flags, but they seem to be unused for slash commands
+                    // TODO: Also, what to do about message flags? Silently ignore them or throw a exception?
                 }.toRequest()
             )
 
@@ -84,14 +87,16 @@ class HttpRequestManager(
                     this.content = message.content
                     this.tts = message.tts
                     this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
-                    // this.embeds = listOfNotNull(message.abstractEmbed?.intoBuilder()).map { it.toRequest() }.toMutableList()
+                    message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.forEach {
+                        this.embeds.add(it)
+                    }
 
                     val filePairs = message.files?.map { it.key to it.value }
                     if (filePairs != null)
                         files.addAll(filePairs)
 
-                    // There are "username" and "avatar" flags, but they seem to be unused
-                    // Also, what to do about message flags? Silently ignore them or throw a exception?
+                    // There are "username" and "avatar" flags, but they seem to be unused for slash commands
+                    // TODO: Also, what to do about message flags? Silently ignore them or throw a exception?
                 }.toRequest()
             )
 

@@ -1,9 +1,11 @@
 package net.perfectdreams.discordinteraktions.platforms.kord.utils
 
+import dev.kord.common.Color
 import dev.kord.common.entity.ResolvedObjects
 import dev.kord.rest.builder.message.AllowedMentionsBuilder
 import net.perfectdreams.discordinteraktions.api.entities.Snowflake
 import net.perfectdreams.discordinteraktions.common.utils.AllowedMentions
+import net.perfectdreams.discordinteraktions.common.utils.EmbedBuilder
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
 
 /**
@@ -42,4 +44,52 @@ fun ResolvedObjects.toDiscordInteraKTionsResolvedObjects(): net.perfectdreams.di
             it.key.toDiscordInteraKTionsSnowflake() to KordUser(it.value)
         }?.toMap()
     )
+}
+
+/**
+ * Converts Discord InteraKTions' Embed to Kord's Embed
+ */
+fun EmbedBuilder.toKordEmbedBuilder(): dev.kord.rest.builder.message.EmbedBuilder {
+    return dev.kord.rest.builder.message.EmbedBuilder().also { kordBuilder ->
+        kordBuilder.title = this.title
+        kordBuilder.description = this.description
+        kordBuilder.url = this.url
+
+        val color = this.color
+        val author = this.author
+        val image = this.image
+        val thumbnail = this.thumbnail
+        val footer = this.footer
+        val fields = this.fields
+
+        if (color != null)
+            kordBuilder.color = Color(color.rgb)
+
+        if (author != null)
+            kordBuilder.author {
+                this.name = author.name
+                this.url = author.url
+                this.icon = author.iconUrl
+            }
+
+        if (image != null)
+            kordBuilder.image = image.url
+
+        if (thumbnail != null)
+            kordBuilder.thumbnail { this.url = thumbnail.url }
+
+        if (footer != null)
+            kordBuilder.footer {
+                this.text = footer.text
+                this.icon = footer.iconUrl
+            }
+
+        fields.forEach {
+            kordBuilder.field {
+                this.name = it.name
+                this.value = it.value
+                this.inline = it.inline
+            }
+        }
+    }
 }

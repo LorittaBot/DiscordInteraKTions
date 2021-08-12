@@ -9,7 +9,6 @@ import java.time.Instant
 import java.time.format.DateTimeFormatter
 
 class Embed: RestWrapper<DiscordEmbed>, BuilderWrapper<EmbedBuilder> {
-
     var author: Author? = null
     var body: Body? = null
     var footer: Footer? = null

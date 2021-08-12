@@ -1,5 +1,6 @@
 package net.perfectdreams.discordinteraktions.platforms.kord.context.manager
 
+import dev.kord.common.annotation.KordPreview
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.InteractionResponseType
 import dev.kord.common.entity.Snowflake
@@ -14,6 +15,7 @@ import net.perfectdreams.discordinteraktions.common.entities.DummyMessage
 import net.perfectdreams.discordinteraktions.common.entities.Message
 import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordAllowedMentions
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordEmbedBuilder
 
 /**
  * On this request manager we'll handle the requests
@@ -24,6 +26,7 @@ import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordAllowedM
  * @param interactionToken The request's token
  * @param request The interaction (wrapped by the [InteractionRequestHandler]
  */
+@OptIn(KordPreview::class)
 class InitialHttpRequestManager(
     bridge: RequestBridge,
     val rest: RestClient,
@@ -65,7 +68,9 @@ class InitialHttpRequestManager(
                 this.content = message.content
                 this.tts = message.tts
                 this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
-                // this.embeds = listOfNotNull(message.abstractEmbed?.intoBuilder()).toMutableList()
+                message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.forEach {
+                    this.embeds.add(it)
+                }
             }.toRequest()
         )
 
