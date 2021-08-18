@@ -11,7 +11,7 @@ fun buildMessage(block: MessageBuilder.() -> (Unit)): InteractionMessage {
         result.files,
         result.embeds,
         result.allowedMentions,
-        result.isEphemeral,
+        false,
         result.components
     )
 }
@@ -21,7 +21,6 @@ class MessageBuilder {
     var content: String? = null
     var tts: Boolean? = null
     var allowedMentions: AllowedMentions? = null
-    var isEphemeral = false
     var embeds: MutableList<EmbedBuilder>? = null
     var files = mutableMapOf<String, InputStream>()
     val components = mutableListOf<MessageComponent>()
@@ -47,9 +46,4 @@ data class InteractionMessage(
     val allowedMentions: AllowedMentions? = null,
     var isEphemeral: Boolean,
     val components: List<MessageComponent>
-) {
-    init {
-        if (isEphemeral && files?.isNotEmpty() == true)
-            error("Ephemeral messages cannot have files!")
-    }
-}
+)
