@@ -40,8 +40,7 @@ class HttpRequestManager(
     }
 
     init {
-        if (bridge.state.value == InteractionRequestState.NOT_REPLIED_YET)
-            throw IllegalStateException("HttpRequestManager shouldn't be in the NOT_REPLIED_YET state!")
+        require(bridge.state.value != InteractionRequestState.NOT_REPLIED_YET) { "HttpRequestManager shouldn't be in the NOT_REPLIED_YET state!" }
     }
 
     override suspend fun deferMessage(isEphemeral: Boolean) = throw RuntimeException("Can't defer a interaction that was already deferred!")

@@ -58,6 +58,10 @@ class WebServerRequestManager(
         private val logger = KotlinLogging.logger {}
     }
 
+    init {
+        require(bridge.state.value == InteractionRequestState.NOT_REPLIED_YET) { "HttpRequestManager should be in the NOT_REPLIED_YET state!" }
+    }
+
     override suspend fun deferMessage(isEphemeral: Boolean) {
         // How this works? https://discord.com/developers/docs/interactions/slash-commands#interaction-response
         logger.info { "Deferring interaction..." }

@@ -5,6 +5,7 @@ import net.perfectdreams.discordinteraktions.common.commands.slash.SlashCommandE
 import net.perfectdreams.discordinteraktions.common.context.commands.slash.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.utils.AllowedMentions
+import net.perfectdreams.discordinteraktions.common.utils.button
 import net.perfectdreams.discordinteraktions.declarations.commands.wrappers.SlashCommandDeclarationWrapper
 import net.perfectdreams.discordinteraktions.declarations.commands.slash.SlashCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOptions
@@ -70,8 +71,7 @@ class TestCommandExecutor : SlashCommandExecutor() {
     }
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-        context.deferEphemerally()
-        deferredMessage.editMessage("ayaya")
+        context.deferMessage(false)
 
         context.sendMessage {
             content = "The number is ${args[Options.integer]}, woaaa"

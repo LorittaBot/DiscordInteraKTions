@@ -42,10 +42,16 @@ abstract class InteractionContext(
     }
 
     suspend fun sendMessage(message: InteractionMessage): Message {
-        val theRealMessageThatWillBeSent = message
-
         if (message.isEphemeral && message.files?.isNotEmpty() == true)
             error("Ephemeral messages cannot contain attachments!")
+
+        // Check if state matches what we expect
+        if (bridge.state.value == InteractionRequestState.DEFERRED)
+            if (wasInitiallyDeferredEphemerally != message.isEphemeral)
+                if (message.isEphemeral)
+                    error("Trying to send a ephemeral message but the message was originally deferred was public! Change the \"deferMessage(...)\" call to be ephemeral")
+                else
+                    error("Trying to send a public message but the message was originally deferred was ephemeral! Change the \"deferMessage(...)\" call to be public")
 
         if (message.files?.isNotEmpty() == true && !isDeferred) {
             // If the message has files and our current bridge state is "NOT_REPLIED_YET", then it means that we need to defer before sending the file!
@@ -53,6 +59,6 @@ abstract class InteractionContext(
             deferMessage(false)
         }
 
-        return bridge.manager.sendMessage(theRealMessageThatWillBeSent)
+        return bridge.manager.sendMessage(message)
     }
 }

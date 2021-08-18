@@ -39,6 +39,10 @@ class InitialHttpRequestManager(
         private val logger = KotlinLogging.logger {}
     }
 
+    init {
+        require(bridge.state.value == InteractionRequestState.NOT_REPLIED_YET) { "HttpRequestManager should be in the NOT_REPLIED_YET state!" }
+    }
+
     override suspend fun deferMessage(isEphemeral: Boolean) {
         rest.interaction.createInteractionResponse(
             request.id,
