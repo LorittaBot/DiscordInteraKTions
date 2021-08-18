@@ -2,27 +2,21 @@ package net.perfectdreams.discordinteraktions.platform.jda.listeners
 
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import net.dv8tion.jda.api.events.RawGatewayEvent
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.discordinteraktions.api.entities.Snowflake
-import net.perfectdreams.discordinteraktions.common.buttons.ButtonStateManager
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
-import net.perfectdreams.discordinteraktions.common.context.commands.GuildSlashCommandContext
+import net.perfectdreams.discordinteraktions.common.context.commands.GuildApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
-import net.perfectdreams.discordinteraktions.common.context.buttons.ButtonClickContext
-import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandArguments
-import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandContext
+import net.perfectdreams.discordinteraktions.common.context.commands.ChatCommandArguments
+import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 import net.perfectdreams.discordinteraktions.common.utils.Observable
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclarationBuilder
+import net.perfectdreams.discordinteraktions.declarations.application.ApplicationCommandDeclarationBuilder
 import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOption
 import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOptionType
-import net.perfectdreams.discordinteraktions.platform.jda.context.manager.JDAButtonRequestManager
 import net.perfectdreams.discordinteraktions.platform.jda.context.manager.JDARequestManager
-import net.perfectdreams.discordinteraktions.platform.jda.entities.JDAGuild
 import net.perfectdreams.discordinteraktions.platform.jda.entities.JDAMember
 import net.perfectdreams.discordinteraktions.platform.jda.entities.JDAUser
 import java.util.*
@@ -110,11 +104,11 @@ class SlashCommandListener(private val manager: CommandManager) : ListenerAdapte
                 .execute(
                     // TODO: Fix Interaction Data
                     if (guild != null && member != null) {
-                        GuildSlashCommandContext(bridge, JDAUser(event.user), InteractionData(null), Snowflake(guild.idLong), JDAMember(member))
+                        GuildApplicationCommandContext(bridge, JDAUser(event.user), InteractionData(null), Snowflake(guild.idLong), JDAMember(member))
                     } else {
-                        SlashCommandContext(bridge, JDAUser(event.user), InteractionData(null))
+                        ApplicationCommandContext(bridge, JDAUser(event.user), InteractionData(null))
                     },
-                    SlashCommandArguments(arguments)
+                    ChatCommandArguments(arguments)
                 )
         }
     }
@@ -128,7 +122,7 @@ class SlashCommandListener(private val manager: CommandManager) : ListenerAdapte
      * @param declaration     the declaration that must be found
      * @return the matched declaration
      */
-    fun getLabelsConnectedToCommandDeclaration(labels: List<CommandLabel>, declaration: SlashCommandDeclarationBuilder): SlashCommandDeclarationBuilder? {
+    fun getLabelsConnectedToCommandDeclaration(labels: List<CommandLabel>, declaration: ApplicationCommandDeclarationBuilder): ApplicationCommandDeclarationBuilder? {
         // Let's not over complicate this, we already know that Discord only supports one level deep of nesting
         // (so group -> subcommand)
         // So let's do easy and quick checks

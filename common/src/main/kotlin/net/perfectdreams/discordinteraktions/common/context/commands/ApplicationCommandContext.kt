@@ -10,7 +10,7 @@ import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
 import net.perfectdreams.discordinteraktions.common.utils.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.utils.buildMessage
 
-open class SlashCommandContext(
+open class ApplicationCommandContext(
     bridge: RequestBridge,
     sender: User,
     data: InteractionData

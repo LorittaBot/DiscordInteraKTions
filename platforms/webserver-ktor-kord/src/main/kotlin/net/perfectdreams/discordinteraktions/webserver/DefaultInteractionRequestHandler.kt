@@ -1,10 +1,8 @@
 package net.perfectdreams.discordinteraktions.webserver
 
 import dev.kord.common.annotation.KordPreview
-import dev.kord.common.entity.CommandArgument
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.InteractionResponseType
-import dev.kord.common.entity.Option
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.service.RestClient
 import io.ktor.application.*
@@ -17,15 +15,15 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
+import net.perfectdreams.discordinteraktions.common.commands.slash.SlashCommandExecutor
 import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
-import net.perfectdreams.discordinteraktions.common.context.commands.GuildSlashCommandContext
-import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandArguments
-import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandContext
+import net.perfectdreams.discordinteraktions.common.context.commands.GuildApplicationCommandContext
+import net.perfectdreams.discordinteraktions.common.context.commands.ChatCommandArguments
+import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 import net.perfectdreams.discordinteraktions.common.utils.Observable
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandExecutorDeclaration
-import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOption
+import net.perfectdreams.discordinteraktions.declarations.commands.SlashCommandDeclaration
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.CommandDeclarationUtils
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordMember
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
@@ -89,6 +87,7 @@ class DefaultInteractionRequestHandler(
 
         val command = commandManager.declarations
             .asSequence()
+            .filterIsInstance<SlashCommandDeclaration>() // We only care about Slash Command Declarations here
             .mapNotNull {
                 CommandDeclarationUtils.getLabelsConnectedToCommandDeclaration(
                     commandLabels,
@@ -100,7 +99,7 @@ class DefaultInteractionRequestHandler(
         val executorDeclaration = command.executor ?: return
         val executor = commandManager.executors.first {
             it.signature() == executorDeclaration.parent
-        }
+        } as SlashCommandExecutor
 
         // Convert the Nested Options into a map, then we can access them with our Discord InteraKTion options!
         val arguments = CommandDeclarationUtils.convertOptions(
@@ -134,7 +133,7 @@ class DefaultInteractionRequestHandler(
                 request.member.value!! // Should NEVER be null!
             )
 
-            GuildSlashCommandContext(
+            GuildApplicationCommandContext(
                 bridge,
                 kordUser,
                 interactionData,
@@ -142,7 +141,7 @@ class DefaultInteractionRequestHandler(
                 kordMember
             )
         } else {
-            SlashCommandContext(
+            ApplicationCommandContext(
                 bridge,
                 KordUser(
                     request.member.value?.user?.value ?: request.user.value ?: error("oh no")
@@ -154,7 +153,7 @@ class DefaultInteractionRequestHandler(
         GlobalScope.launch {
             executor.execute(
                 commandContext,
-                SlashCommandArguments(
+                ChatCommandArguments(
                     arguments
                 )
             )

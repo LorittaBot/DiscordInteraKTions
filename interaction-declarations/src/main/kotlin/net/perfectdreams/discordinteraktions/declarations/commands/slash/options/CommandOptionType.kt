@@ -1,4 +1,4 @@
-package net.perfectdreams.discordinteraktions.declarations.slash.options
+package net.perfectdreams.discordinteraktions.declarations.commands.options
 
 interface CommandOptionType {
     val isNullable: Boolean

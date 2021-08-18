@@ -1,13 +1,14 @@
 package net.perfectdreams.discordinteraktions.common.commands
 
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclaration
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclarationBuilder
+import net.perfectdreams.discordinteraktions.common.commands.interaction.InteractionCommandExecutor
+import net.perfectdreams.discordinteraktions.declarations.commands.InteractionCommandDeclaration
+import net.perfectdreams.discordinteraktions.declarations.commands.wrappers.InteractionCommandDeclarationWrapper
 
 open class CommandManager {
-    val declarations = mutableListOf<SlashCommandDeclarationBuilder>()
-    val executors = mutableListOf<SlashCommandExecutor>()
+    val declarations = mutableListOf<InteractionCommandDeclaration>()
+    val executors = mutableListOf<InteractionCommandExecutor>()
 
-    fun register(declaration: SlashCommandDeclaration, vararg executors: SlashCommandExecutor) {
+    fun register(declaration: InteractionCommandDeclarationWrapper, vararg executors: InteractionCommandExecutor) {
         declarations.add(declaration.declaration())
         this.executors.addAll(executors)
     }

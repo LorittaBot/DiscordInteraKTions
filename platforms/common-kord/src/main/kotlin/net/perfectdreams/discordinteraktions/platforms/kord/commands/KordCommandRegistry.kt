@@ -8,10 +8,12 @@ import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.api.entities.Snowflake
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.commands.CommandRegistry
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclarationBuilder
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandGroupDeclarationBuilder
-import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOption
-import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOptionType
+import net.perfectdreams.discordinteraktions.declarations.commands.ApplicationCommandDeclaration
+import net.perfectdreams.discordinteraktions.declarations.commands.InteractionCommandDeclaration
+import net.perfectdreams.discordinteraktions.declarations.commands.SlashCommandDeclaration
+import net.perfectdreams.discordinteraktions.declarations.commands.SlashCommandGroupDeclaration
+import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOption
+import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOptionType
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordSnowflake
 
 class KordCommandRegistry(private val applicationId: Snowflake, private val rest: RestClient, private val manager: CommandManager) : CommandRegistry {
@@ -52,33 +54,48 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
         // TODO: Remove unknown commands
     }
 
-    private fun convertCommandDeclarationToKord(declaration: SlashCommandDeclarationBuilder): ApplicationCommandCreateBuilder {
-        val commandData = ApplicationCommandCreateBuilder(declaration.name, declaration.description)
-        commandData.options = mutableListOf() // Initialize a empty list so we can use it
+    private fun convertCommandDeclarationToKord(declaration: InteractionCommandDeclaration): ApplicationCommandCreateBuilder {
+        when (declaration) {
+            is ApplicationCommandDeclaration -> TODO()
+            is SlashCommandDeclaration -> {
+                val commandData = ApplicationCommandCreateBuilder(declaration.name, declaration.description)
+                commandData.options = mutableListOf() // Initialize a empty list so we can use it
 
-        // We can only have (subcommands OR subcommand groups) OR arguments
-        if (declaration.subcommands.isNotEmpty() || declaration.subcommandGroups.isNotEmpty()) {
-            declaration.subcommands.forEach {
-                commandData.options?.add(convertSubcommandDeclarationToKord(it))
+                // We can only have (subcommands OR subcommand groups) OR arguments
+                if (declaration.subcommands.isNotEmpty() || declaration.subcommandGroups.isNotEmpty()) {
+                    declaration.subcommands.forEach {
+                        commandData.options?.add(convertSubcommandDeclarationToKord(it))
+                    }
+
+                    declaration.subcommandGroups.forEach {
+                        commandData.options?.add(convertSubcommandGroupDeclarationToKord(it))
+                    }
+                } else {
+                    val executor = declaration.executor ?: error("Root command without a executor!")
+
+                    val options = executor.options
+
+                    options.arguments.forEach {
+                        convertCommandOptionToKord(it, commandData)
+                    }
+                }
+
+                return commandData
             }
+            is SlashCommandGroupDeclaration -> {
+                val commandData = ApplicationCommandCreateBuilder(declaration.name, declaration.description)
+                commandData.options = mutableListOf() // Initialize a empty list so we can use it
 
-            declaration.subcommandGroups.forEach {
-                commandData.options?.add(convertSubcommandGroupDeclarationToKord(it))
-            }
-        } else {
-            val executor = declaration.executor ?: error("Root command without a executor!")
+                declaration.subcommands.forEach {
+                    commandData.options?.add(convertSubcommandDeclarationToKord(it))
+                }
 
-            val options = executor.options
-
-            options.arguments.forEach {
-                convertCommandOptionToKord(it, commandData)
+                return commandData
             }
         }
-
-        return commandData
     }
 
-    private fun convertSubcommandDeclarationToKord(declaration: SlashCommandDeclarationBuilder): SubCommandBuilder {
+    private fun convertSubcommandDeclarationToKord(declaration: SlashCommandDeclaration): SubCommandBuilder {
         val commandData = SubCommandBuilder(declaration.name, declaration.description)
 
         // This is a subcommand, so we only have a executor anyway
@@ -92,7 +109,7 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
         return commandData
     }
 
-    private fun convertSubcommandGroupDeclarationToKord(declaration: SlashCommandGroupDeclarationBuilder): GroupCommandBuilder {
+    private fun convertSubcommandGroupDeclarationToKord(declaration: SlashCommandGroupDeclaration): GroupCommandBuilder {
         val commandData = GroupCommandBuilder(declaration.name, declaration.description)
         commandData.options = mutableListOf() // Initialize a empty list so we can use it
 

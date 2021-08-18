@@ -5,13 +5,16 @@ import dev.kord.gateway.start
 import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.api.entities.Snowflake
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
-import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor
-import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandArguments
-import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandContext
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclaration
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandExecutorDeclaration
-import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOptions
-import net.perfectdreams.discordinteraktions.declarations.slash.slashCommand
+import net.perfectdreams.discordinteraktions.common.commands.application.ApplicationCommandExecutor
+import net.perfectdreams.discordinteraktions.common.commands.slash.SlashCommandExecutor
+import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
+import net.perfectdreams.discordinteraktions.common.context.commands.ChatCommandArguments
+import net.perfectdreams.discordinteraktions.declarations.commands.application.ApplicationCommandExecutorDeclaration
+import net.perfectdreams.discordinteraktions.declarations.commands.slash.SlashCommandExecutorDeclaration
+import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOptions
+import net.perfectdreams.discordinteraktions.declarations.commands.slash.slashCommand
+import net.perfectdreams.discordinteraktions.declarations.commands.wrappers.ApplicationCommandDeclarationWrapper
+import net.perfectdreams.discordinteraktions.declarations.commands.wrappers.SlashCommandDeclarationWrapper
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
 import java.io.File
 
@@ -39,7 +42,7 @@ suspend fun main() {
     gateway.start(File("token.txt").readText())
 }
 
-object TestCommand : SlashCommandDeclaration {
+object TestCommand : SlashCommandDeclarationWrapper {
     override fun declaration() = slashCommand("test", "test owo") {
         subcommand("test", "test cmd") {
             executor = TestCommandExecutor
@@ -62,7 +65,7 @@ class TestCommandExecutor : SlashCommandExecutor() {
         override val options = Options
     }
 
-    override suspend fun execute(context: SlashCommandContext, args: SlashCommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: ChatCommandArguments) {
         context.sendMessage {
             content = "The number is ${args[Options.integer]}, woaaa"
         }

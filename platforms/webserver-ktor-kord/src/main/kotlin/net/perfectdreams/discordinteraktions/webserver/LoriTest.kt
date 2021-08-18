@@ -1,17 +1,14 @@
 package net.perfectdreams.discordinteraktions.webserver
 
-import dev.kord.common.Color
-import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.api.entities.Snowflake
-import net.perfectdreams.discordinteraktions.common.commands.CommandManager
-import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor
-import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandArguments
-import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandContext
+import net.perfectdreams.discordinteraktions.common.commands.slash.SlashCommandExecutor
+import net.perfectdreams.discordinteraktions.common.context.commands.ChatCommandArguments
+import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.utils.AllowedMentions
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclaration
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandExecutorDeclaration
-import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOptions
-import net.perfectdreams.discordinteraktions.declarations.slash.slashCommand
+import net.perfectdreams.discordinteraktions.declarations.commands.wrappers.SlashCommandDeclarationWrapper
+import net.perfectdreams.discordinteraktions.declarations.commands.slash.SlashCommandExecutorDeclaration
+import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOptions
+import net.perfectdreams.discordinteraktions.declarations.commands.slash.slashCommand
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
 import java.io.File
 
@@ -36,7 +33,7 @@ suspend fun main() {
     interactionsServer.start()
 }
 
-object TestCommand : SlashCommandDeclaration {
+object TestCommand : SlashCommandDeclarationWrapper {
     override fun declaration() = slashCommand("test", "test owo") {
         subcommandGroup("ayaya", "test group") {
             subcommand("test", "test cmd") {
@@ -72,7 +69,7 @@ class TestCommandExecutor : SlashCommandExecutor() {
         override val options = Options
     }
 
-    override suspend fun execute(context: SlashCommandContext, args: SlashCommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: ChatCommandArguments) {
         context.sendMessage {
             content = "The number is ${args[Options.integer]}, woaaa"
 
@@ -108,7 +105,7 @@ class TestCommand2Executor : SlashCommandExecutor() {
         override val options = Options
     }
 
-    override suspend fun execute(context: SlashCommandContext, args: SlashCommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: ChatCommandArguments) {
         context.sendMessage {
             content = "Text: ${args[Options.test]}"
 
@@ -124,7 +121,7 @@ class TestCommand2Executor : SlashCommandExecutor() {
 class TestEmbedExecutor : SlashCommandExecutor() {
     companion object : SlashCommandExecutorDeclaration(TestEmbedExecutor::class)
 
-    override suspend fun execute(context: SlashCommandContext, args: SlashCommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: ChatCommandArguments) {
         context.sendMessage {
             embed {
                 title = "Hello world!"

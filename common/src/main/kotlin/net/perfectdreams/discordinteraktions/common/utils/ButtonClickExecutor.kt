@@ -2,7 +2,6 @@ package net.perfectdreams.discordinteraktions.common.utils
 
 import net.perfectdreams.discordinteraktions.api.entities.User
 import net.perfectdreams.discordinteraktions.common.context.buttons.ButtonClickContext
-import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandContext
 
 interface ButtonClickExecutor<CustomButtonData> {
     /**

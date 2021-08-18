@@ -10,8 +10,8 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData
 import net.perfectdreams.discordinteraktions.api.entities.Snowflake
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.commands.CommandRegistry
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclarationBuilder
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandGroupDeclarationBuilder
+import net.perfectdreams.discordinteraktions.declarations.application.ApplicationCommandDeclarationBuilder
+import net.perfectdreams.discordinteraktions.declarations.application.ApplicationCommandGroupDeclarationBuilder
 import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOption
 import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOptionType
 import net.perfectdreams.discordinteraktions.platform.jda.utils.await
@@ -43,7 +43,7 @@ class JDACommandRegistry(private val jda: JDA, private val manager: CommandManag
         updateCommandRequest.await()
     }
 
-    private fun convertCommandDeclarationToJDA(declaration: SlashCommandDeclarationBuilder): CommandData {
+    private fun convertCommandDeclarationToJDA(declaration: ApplicationCommandDeclarationBuilder): CommandData {
         val commandData = CommandData(declaration.name, declaration.description)
 
         // We can only have (subcommands OR subcommand groups) OR arguments
@@ -71,7 +71,7 @@ class JDACommandRegistry(private val jda: JDA, private val manager: CommandManag
         return commandData
     }
 
-    private fun convertSubcommandDeclarationToJDA(declaration: SlashCommandDeclarationBuilder): SubcommandData {
+    private fun convertSubcommandDeclarationToJDA(declaration: ApplicationCommandDeclarationBuilder): SubcommandData {
         val commandData = SubcommandData(declaration.name, declaration.description)
 
         // This is a subcommand, so we only have a executor anyway
@@ -85,7 +85,7 @@ class JDACommandRegistry(private val jda: JDA, private val manager: CommandManag
         return commandData
     }
 
-    private fun convertSubcommandGroupDeclarationToJDA(declaration: SlashCommandGroupDeclarationBuilder): SubcommandGroupData {
+    private fun convertSubcommandGroupDeclarationToJDA(declaration: ApplicationCommandGroupDeclarationBuilder): SubcommandGroupData {
         val commandData = SubcommandGroupData(declaration.name, declaration.description)
 
         declaration.subcommands.forEach {

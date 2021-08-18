@@ -62,7 +62,7 @@ class HttpRequestManager(
                         this.content = message.content
                         this.embeds = message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.toMutableList()
                         this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
-                        // There are "username" and "avatar" flags, but they seem to be unused for slash commands
+                        // There are "username" and "avatar" flags, but they seem to be unused for application commands
                         // TODO: Also, what to do about message flags? Silently ignore them or throw a exception?
                     }.toRequest()
                 } else {
@@ -77,7 +77,7 @@ class HttpRequestManager(
                         }
 
                         this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
-                        // There are "username" and "avatar" flags, but they seem to be unused for slash commands
+                        // There are "username" and "avatar" flags, but they seem to be unused for application commands
                         // TODO: Also, what to do about message flags? Silently ignore them or throw a exception?
                     }.toRequest()
                 }
@@ -101,7 +101,7 @@ class HttpRequestManager(
                         message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.forEach {
                             this.embeds.add(it)
                         }
-                        // There are "username" and "avatar" flags, but they seem to be unused for slash commands
+                        // There are "username" and "avatar" flags, but they seem to be unused for application commands
                         // TODO: Also, what to do about message flags? Silently ignore them or throw a exception?
                     }.toRequest()
                 } else {
@@ -117,7 +117,7 @@ class HttpRequestManager(
                         if (filePairs != null)
                             files.addAll(filePairs)
 
-                        // There are "username" and "avatar" flags, but they seem to be unused for slash commands
+                        // There are "username" and "avatar" flags, but they seem to be unused for application commands
                         // TODO: Also, what to do about message flags? Silently ignore them or throw a exception?
                     }.toRequest()
                 }

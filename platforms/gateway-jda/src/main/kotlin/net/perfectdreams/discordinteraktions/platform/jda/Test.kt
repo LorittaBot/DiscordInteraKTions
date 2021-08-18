@@ -7,15 +7,15 @@ import net.perfectdreams.discordinteraktions.api.entities.Snowflake
 import net.perfectdreams.discordinteraktions.common.buttons.ButtonStateManager
 import net.perfectdreams.discordinteraktions.common.buttons.MemoryButtonStateManager
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
-import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor
-import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandArguments
-import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandContext
+import net.perfectdreams.discordinteraktions.common.commands.slash.SlashCommandExecutor
+import net.perfectdreams.discordinteraktions.common.context.commands.ChatCommandArguments
+import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.utils.ActionRowComponent
 import net.perfectdreams.discordinteraktions.common.utils.ButtonStyle
 import net.perfectdreams.discordinteraktions.common.utils.TestData
 import net.perfectdreams.discordinteraktions.common.utils.button
 import net.perfectdreams.discordinteraktions.common.utils.urlButton
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclaration
+import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclarationWrapper
 import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOptions
 import net.perfectdreams.discordinteraktions.declarations.slash.slashCommand
@@ -41,7 +41,7 @@ suspend fun main() {
     jdaCommandRegistry.updateAllCommandsInGuild(Snowflake(297732013006389252L), true)
 }
 
-object TestCommand : SlashCommandDeclaration {
+object TestCommand : SlashCommandDeclarationWrapper {
     override fun declaration() = slashCommand("test", "test owo") {
         subcommand("test", "test cmd") {
             executor = TestCommandExecutor
@@ -68,7 +68,7 @@ class TestCommandExecutor : SlashCommandExecutor() {
         override val options = Options
     }
 
-    override suspend fun execute(context: SlashCommandContext, args: SlashCommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: ChatCommandArguments) {
         context.sendMessage {
             content = "The number is ${args[options.integer]}, woaaa"
         }
@@ -91,7 +91,7 @@ class SubcommandTestCommandExecutor(val stateManager: ButtonStateManager) : Slas
         override val options = Options
     }
 
-    override suspend fun execute(context: SlashCommandContext, args: SlashCommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: ChatCommandArguments) {
         context.deferReply(false)
 
         if (args[options.ayaya]) {

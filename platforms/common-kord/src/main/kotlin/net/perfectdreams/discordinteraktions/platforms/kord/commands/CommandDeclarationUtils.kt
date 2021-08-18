@@ -6,10 +6,10 @@ import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Option
 import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.SubCommand
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclarationBuilder
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandExecutorDeclaration
-import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOption
-import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOptionType
+import net.perfectdreams.discordinteraktions.declarations.commands.SlashCommandDeclaration
+import net.perfectdreams.discordinteraktions.declarations.commands.slash.SlashCommandExecutorDeclaration
+import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOption
+import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOptionType
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
 
 object CommandDeclarationUtils {
@@ -80,7 +80,7 @@ object CommandDeclarationUtils {
      * @param declaration     the declaration that must be found
      * @return the matched declaration
      */
-    fun getLabelsConnectedToCommandDeclaration(labels: List<CommandLabel>, declaration: SlashCommandDeclarationBuilder): SlashCommandDeclarationBuilder? {
+    fun getLabelsConnectedToCommandDeclaration(labels: List<CommandLabel>, declaration: SlashCommandDeclaration): SlashCommandDeclaration? {
         // Let's not over complicate this, we already know that Discord only supports one level deep of nesting
         // (so group -> subcommand)
         // So let's do easy and quick checks

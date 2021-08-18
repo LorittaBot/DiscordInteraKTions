@@ -4,7 +4,6 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import net.perfectdreams.discordinteraktions.api.entities.User
 import net.perfectdreams.discordinteraktions.common.context.buttons.ButtonClickContext
-import net.perfectdreams.discordinteraktions.common.context.commands.SlashCommandContext
 import net.perfectdreams.discordinteraktions.common.utils.ButtonClickExecutor
 import net.perfectdreams.discordinteraktions.common.utils.TestData
 

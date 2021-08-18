@@ -20,7 +20,7 @@ open class InteractionContext(
     var wasInitiallyDeferredEphemerally = false
 
     /**
-     * Defers the slash command request
+     * Defers the application command request
      *
      * @param isEphemeral if the deferred message should be ephemeral or not
      */
