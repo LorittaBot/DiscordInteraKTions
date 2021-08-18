@@ -11,15 +11,17 @@ fun slashCommand(name: String, description: String, block: SlashCommandDeclarati
 
 class SlashCommandDeclarationBuilder(val name: String, val description: String) {
     var executor: SlashCommandExecutorDeclaration? = null
-    val subcommands = mutableListOf<SlashCommandDeclarationBuilder>()
-    val subcommandGroups = mutableListOf<SlashCommandGroupDeclarationBuilder>()
+    val subcommands = mutableListOf<SlashCommandDeclaration>()
+    val subcommandGroups = mutableListOf<SlashCommandGroupDeclaration>()
 
     fun subcommand(name: String, description: String, block: SlashCommandDeclarationBuilder.() -> (Unit)) {
         subcommands += SlashCommandDeclarationBuilder(name, description).apply(block)
+            .build()
     }
 
     fun subcommandGroup(name: String, description: String, block: SlashCommandGroupDeclarationBuilder.() -> (Unit)) {
         subcommandGroups += SlashCommandGroupDeclarationBuilder(name, description).apply(block)
+            .build()
     }
 
     fun build(): SlashCommandDeclaration {
@@ -27,8 +29,8 @@ class SlashCommandDeclarationBuilder(val name: String, val description: String) 
             name,
             description,
             executor,
-            subcommands.map { it.build() },
-            subcommandGroups.map { it.build() }
+            subcommands,
+            subcommandGroups
         )
     }
 }
