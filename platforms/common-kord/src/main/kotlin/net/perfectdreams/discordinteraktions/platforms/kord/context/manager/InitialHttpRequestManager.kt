@@ -39,7 +39,7 @@ class InitialHttpRequestManager(
         private val logger = KotlinLogging.logger {}
     }
 
-    override suspend fun deferReply(isEphemeral: Boolean) {
+    override suspend fun deferMessage(isEphemeral: Boolean) {
         rest.interaction.createInteractionResponse(
             request.id,
             interactionToken,
@@ -55,10 +55,6 @@ class InitialHttpRequestManager(
             interactionToken,
             request
         )
-    }
-
-    override suspend fun deferEdit(message: InteractionMessage?) {
-        TODO("Not yet implemented")
     }
 
     override suspend fun sendMessage(message: InteractionMessage): Message {

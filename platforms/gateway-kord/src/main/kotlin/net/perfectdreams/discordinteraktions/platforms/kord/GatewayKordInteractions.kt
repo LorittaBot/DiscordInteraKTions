@@ -12,7 +12,7 @@ import net.perfectdreams.discordinteraktions.common.commands.slash.SlashCommandE
 import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
 import net.perfectdreams.discordinteraktions.common.context.commands.GuildApplicationCommandContext
-import net.perfectdreams.discordinteraktions.common.context.commands.ChatCommandArguments
+import net.perfectdreams.discordinteraktions.common.context.commands.slash.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 import net.perfectdreams.discordinteraktions.common.utils.Observable
@@ -107,7 +107,7 @@ fun Gateway.installDiscordInteraKTions(
         GlobalScope.launch {
             executor.execute(
                 commandContext,
-                ChatCommandArguments(
+                SlashCommandArguments(
                     arguments
                 )
             )

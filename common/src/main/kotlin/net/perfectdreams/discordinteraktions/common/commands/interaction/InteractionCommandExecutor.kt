@@ -1,7 +1,5 @@
 package net.perfectdreams.discordinteraktions.common.commands.interaction
 
-import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
-
 /**
  * This is the class that should be inherited if you
  * want to create an Interaction Command.

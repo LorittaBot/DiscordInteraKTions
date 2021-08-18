@@ -11,13 +11,7 @@ abstract class RequestManager(val bridge: RequestBridge) {
      *
      * The user will just see a loading status for the interaction.
      */
-    abstract suspend fun deferReply(isEphemeral: Boolean)
-
-    /**
-     * A deferred response is the one that you can use to
-     * be able to edit the original message for 15 minutes since it was sent.
-     */
-    abstract suspend fun deferEdit(message: InteractionMessage?)
+    abstract suspend fun deferMessage(isEphemeral: Boolean)
 
     /**
      * The usual way of sending messages to a specific channel/user.

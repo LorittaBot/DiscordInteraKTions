@@ -58,7 +58,7 @@ class WebServerRequestManager(
         private val logger = KotlinLogging.logger {}
     }
 
-    override suspend fun deferReply(isEphemeral: Boolean) {
+    override suspend fun deferMessage(isEphemeral: Boolean) {
         // How this works? https://discord.com/developers/docs/interactions/slash-commands#interaction-response
         logger.info { "Deferring interaction..." }
 
@@ -84,8 +84,6 @@ class WebServerRequestManager(
             request
         )
     }
-
-    override suspend fun deferEdit(message: InteractionMessage?) = TODO("Not yet implemented")
 
     override suspend fun sendMessage(message: InteractionMessage): Message {
         call.respondText(

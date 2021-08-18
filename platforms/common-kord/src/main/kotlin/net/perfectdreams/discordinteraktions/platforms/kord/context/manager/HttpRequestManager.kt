@@ -44,11 +44,7 @@ class HttpRequestManager(
             throw IllegalStateException("HttpRequestManager shouldn't be in the NOT_REPLIED_YET state!")
     }
 
-    override suspend fun deferReply(isEphemeral: Boolean) = throw RuntimeException("Can't defer a interaction that was already deferred!")
-
-    override suspend fun deferEdit(message: InteractionMessage?) {
-        TODO("Not yet implemented")
-    }
+    override suspend fun deferMessage(isEphemeral: Boolean) = throw RuntimeException("Can't defer a interaction that was already deferred!")
 
     override suspend fun sendMessage(message: InteractionMessage): Message {
         if (bridge.state.value == InteractionRequestState.DEFERRED) {

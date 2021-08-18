@@ -9,7 +9,7 @@ import net.perfectdreams.discordinteraktions.common.utils.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.utils.buildEphemeralMessage
 import net.perfectdreams.discordinteraktions.common.utils.buildMessage
 
-open class InteractionContext(
+abstract class InteractionContext(
     internal var bridge: RequestBridge,
     val sender: User,
     val data: InteractionData
@@ -20,13 +20,13 @@ open class InteractionContext(
     var wasInitiallyDeferredEphemerally = false
 
     /**
-     * Defers the application command request
+     * Defers the application command request message
      *
      * @param isEphemeral if the deferred message should be ephemeral or not
      */
-    suspend fun deferReply(isEphemeral: Boolean = false) {
+    suspend fun deferMessage(isEphemeral: Boolean = false) {
         if (!isDeferred) {
-            bridge.manager.deferReply(isEphemeral)
+            bridge.manager.deferMessage(isEphemeral)
             wasInitiallyDeferredEphemerally = isEphemeral
         }
     }
@@ -50,7 +50,7 @@ open class InteractionContext(
         if (message.files?.isNotEmpty() == true && !isDeferred) {
             // If the message has files and our current bridge state is "NOT_REPLIED_YET", then it means that we need to defer before sending the file!
             // (Because currently you can only send files by editing the original interaction message or with a follow up message
-            deferReply(false)
+            deferMessage(false)
         }
 
         return bridge.manager.sendMessage(theRealMessageThatWillBeSent)
