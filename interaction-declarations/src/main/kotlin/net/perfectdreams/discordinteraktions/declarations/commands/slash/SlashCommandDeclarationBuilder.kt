@@ -37,17 +37,17 @@ class SlashCommandDeclarationBuilder(val name: String, val description: String) 
 
 class SlashCommandGroupDeclarationBuilder(val name: String, val description: String) {
     // Groups can't have executors!
-    val subcommands = mutableListOf<SlashCommandDeclarationBuilder>()
+    val subcommands = mutableListOf<SlashCommandDeclaration>()
 
     fun subcommand(name: String, description: String, block: SlashCommandDeclarationBuilder.() -> (Unit)) {
-        subcommands += SlashCommandDeclarationBuilder(name, description).apply(block)
+        subcommands += SlashCommandDeclarationBuilder(name, description).apply(block).build()
     }
 
     fun build(): SlashCommandGroupDeclaration {
         return SlashCommandGroupDeclaration(
             name,
             description,
-            subcommands.map { it.build() }
+            subcommands
         )
     }
 }
