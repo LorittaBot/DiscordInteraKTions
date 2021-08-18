@@ -1,4 +1,4 @@
-package net.perfectdreams.discordinteraktions.declarations.commands.options
+package net.perfectdreams.discordinteraktions.declarations.commands.slash.options
 
 import net.perfectdreams.discordinteraktions.api.entities.Channel
 import net.perfectdreams.discordinteraktions.api.entities.Role
