@@ -3,9 +3,10 @@ package net.perfectdreams.discordinteraktions.platforms.kord.context.manager
 import dev.kord.common.annotation.KordPreview
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Snowflake
+import dev.kord.rest.builder.message.create.EphemeralFollowupMessageCreateBuilder
 import dev.kord.rest.builder.message.create.PublicFollowupMessageCreateBuilder
+import dev.kord.rest.builder.message.modify.EphemeralInteractionResponseModifyBuilder
 import dev.kord.rest.builder.message.modify.PublicInteractionResponseModifyBuilder
-import dev.kord.rest.builder.message.modify.embed
 import dev.kord.rest.service.RestClient
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
@@ -16,7 +17,6 @@ import net.perfectdreams.discordinteraktions.common.entities.Message
 import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordAllowedMentions
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordEmbedBuilder
-import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordSnowflake
 
 /**
  * On this request manager we'll handle the requests
@@ -56,21 +56,31 @@ class HttpRequestManager(
             val kordMessage = rest.interaction.modifyInteractionResponse(
                 applicationId,
                 request.token,
-                PublicInteractionResponseModifyBuilder().apply {
-                    // You can't modify a message to change its tts status, so it is ignored
-                    this.content = message.content
-                    this.embeds = message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.toMutableList()
+                if (message.isEphemeral) {
+                    EphemeralInteractionResponseModifyBuilder().apply {
+                        // You can't modify a message to change its tts status, so it is ignored
+                        this.content = message.content
+                        this.embeds = message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.toMutableList()
+                        this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
+                        // There are "username" and "avatar" flags, but they seem to be unused for slash commands
+                        // TODO: Also, what to do about message flags? Silently ignore them or throw a exception?
+                    }.toRequest()
+                } else {
+                    PublicInteractionResponseModifyBuilder().apply {
+                        // You can't modify a message to change its tts status, so it is ignored
+                        this.content = message.content
+                        this.embeds = message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.toMutableList()
 
-                    val filePairs = message.files?.map { it.key to it.value }
-                    filePairs?.forEach {
-                        addFile(it.first, it.second)
-                    }
+                        val filePairs = message.files?.map { it.key to it.value }
+                        filePairs?.forEach {
+                            addFile(it.first, it.second)
+                        }
 
-                    this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
-
-                    // There are "username" and "avatar" flags, but they seem to be unused for slash commands
-                    // TODO: Also, what to do about message flags? Silently ignore them or throw a exception?
-                }.toRequest()
+                        this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
+                        // There are "username" and "avatar" flags, but they seem to be unused for slash commands
+                        // TODO: Also, what to do about message flags? Silently ignore them or throw a exception?
+                    }.toRequest()
+                }
             )
 
             // And also change the state to "ALREADY_REPLIED"
@@ -83,21 +93,34 @@ class HttpRequestManager(
             val kordMessage = rest.interaction.createFollowupMessage(
                 applicationId,
                 request.token,
-                PublicFollowupMessageCreateBuilder().apply {
-                    this.content = message.content
-                    this.tts = message.tts
-                    this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
-                    message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.forEach {
-                        this.embeds.add(it)
-                    }
+                if (message.isEphemeral) {
+                    EphemeralFollowupMessageCreateBuilder().apply {
+                        this.content = message.content
+                        this.tts = message.tts
+                        this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
+                        message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.forEach {
+                            this.embeds.add(it)
+                        }
+                        // There are "username" and "avatar" flags, but they seem to be unused for slash commands
+                        // TODO: Also, what to do about message flags? Silently ignore them or throw a exception?
+                    }.toRequest()
+                } else {
+                    PublicFollowupMessageCreateBuilder().apply {
+                        this.content = message.content
+                        this.tts = message.tts
+                        this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
+                        message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.forEach {
+                            this.embeds.add(it)
+                        }
 
-                    val filePairs = message.files?.map { it.key to it.value }
-                    if (filePairs != null)
-                        files.addAll(filePairs)
+                        val filePairs = message.files?.map { it.key to it.value }
+                        if (filePairs != null)
+                            files.addAll(filePairs)
 
-                    // There are "username" and "avatar" flags, but they seem to be unused for slash commands
-                    // TODO: Also, what to do about message flags? Silently ignore them or throw a exception?
-                }.toRequest()
+                        // There are "username" and "avatar" flags, but they seem to be unused for slash commands
+                        // TODO: Also, what to do about message flags? Silently ignore them or throw a exception?
+                    }.toRequest()
+                }
             )
 
             return DummyMessage()

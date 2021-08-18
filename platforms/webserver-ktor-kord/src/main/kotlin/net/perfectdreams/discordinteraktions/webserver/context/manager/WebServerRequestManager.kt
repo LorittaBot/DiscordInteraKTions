@@ -2,11 +2,14 @@ package net.perfectdreams.discordinteraktions.webserver.context.manager
 
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.InteractionResponseType
+import dev.kord.common.entity.MessageFlag
+import dev.kord.common.entity.MessageFlags
 import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.optional.Optional
 import dev.kord.common.entity.optional.coerceToMissing
 import dev.kord.common.entity.optional.map
 import dev.kord.common.entity.optional.mapList
+import dev.kord.common.entity.optional.optional
 import dev.kord.common.entity.optional.toPrimitive
 import dev.kord.rest.json.request.InteractionApplicationCommandCallbackData
 import dev.kord.rest.json.request.InteractionResponseCreateRequest
@@ -62,6 +65,11 @@ class WebServerRequestManager(
         call.respondText(
             buildJsonObject {
                 put("type", InteractionResponseType.DeferredChannelMessageWithSource.type)
+
+                if (isEphemeral)
+                    putJsonObject("data") {
+                        put("flags", 64)
+                    }
             }.toString(),
             ContentType.Application.Json
         )
@@ -91,6 +99,10 @@ class WebServerRequestManager(
                             embeds = Optional(message.embeds?.map { it.toKordEmbedBuilder().toRequest() } ?: listOf()),
                             allowedMentions = Optional(message.allowedMentions?.toKordAllowedMentions()).coerceToMissing().map { it.build() },
                             components = Optional(null).coerceToMissing(),
+                            flags = MessageFlags {
+                                if (message.isEphemeral)
+                                    + MessageFlag.Ephemeral
+                            }.optional()
                         )
                     )
                 )

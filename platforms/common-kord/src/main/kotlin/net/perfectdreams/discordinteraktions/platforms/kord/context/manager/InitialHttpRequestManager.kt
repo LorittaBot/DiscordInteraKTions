@@ -4,6 +4,7 @@ import dev.kord.common.annotation.KordPreview
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.InteractionResponseType
 import dev.kord.common.entity.Snowflake
+import dev.kord.rest.builder.message.create.EphemeralInteractionResponseCreateBuilder
 import dev.kord.rest.builder.message.create.PublicInteractionResponseCreateBuilder
 import dev.kord.rest.json.request.InteractionResponseCreateRequest
 import dev.kord.rest.service.RestClient
@@ -64,14 +65,26 @@ class InitialHttpRequestManager(
         rest.interaction.createInteractionResponse(
             request.id,
             interactionToken,
-            PublicInteractionResponseCreateBuilder().apply {
-                this.content = message.content
-                this.tts = message.tts
-                this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
-                message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.forEach {
-                    this.embeds.add(it)
-                }
-            }.toRequest()
+            if (message.isEphemeral) {
+                // Ephemeral does not support file upload
+                EphemeralInteractionResponseCreateBuilder().apply {
+                    this.content = message.content
+                    this.tts = message.tts
+                    this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
+                    message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.forEach {
+                        this.embeds.add(it)
+                    }
+                }.toRequest()
+            } else {
+                PublicInteractionResponseCreateBuilder().apply {
+                    this.content = message.content
+                    this.tts = message.tts
+                    this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
+                    message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.forEach {
+                        this.embeds.add(it)
+                    }
+                }.toRequest()
+            }
         )
 
         bridge.state.value = InteractionRequestState.ALREADY_REPLIED
