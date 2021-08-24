@@ -6,25 +6,23 @@ import net.perfectdreams.discordinteraktions.api.entities.User
 import net.perfectdreams.discordinteraktions.common.commands.message.MessageCommandExecutor
 import net.perfectdreams.discordinteraktions.common.commands.slash.SlashCommandExecutor
 import net.perfectdreams.discordinteraktions.common.commands.user.UserCommandExecutor
-import net.perfectdreams.discordinteraktions.common.context.commands.slash.SlashCommandArguments
+import net.perfectdreams.discordinteraktions.common.components.buttons.ButtonStyle
 import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
+import net.perfectdreams.discordinteraktions.common.context.commands.slash.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.entities.Message
 import net.perfectdreams.discordinteraktions.common.utils.AllowedMentions
-import net.perfectdreams.discordinteraktions.common.utils.button
-import net.perfectdreams.discordinteraktions.declarations.commands.UserCommandDeclaration
 import net.perfectdreams.discordinteraktions.declarations.commands.message.MessageCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.declarations.commands.message.messageCommand
-import net.perfectdreams.discordinteraktions.declarations.commands.wrappers.SlashCommandDeclarationWrapper
 import net.perfectdreams.discordinteraktions.declarations.commands.slash.SlashCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOptions
 import net.perfectdreams.discordinteraktions.declarations.commands.slash.slashCommand
 import net.perfectdreams.discordinteraktions.declarations.commands.user.UserCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.declarations.commands.user.userCommand
 import net.perfectdreams.discordinteraktions.declarations.commands.wrappers.MessageCommandDeclarationWrapper
+import net.perfectdreams.discordinteraktions.declarations.commands.wrappers.SlashCommandDeclarationWrapper
 import net.perfectdreams.discordinteraktions.declarations.commands.wrappers.UserCommandDeclarationWrapper
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
 import java.io.File
-import java.lang.Thread.sleep
 import kotlin.random.Random
 
 suspend fun main() {
@@ -52,13 +50,23 @@ suspend fun main() {
         TestMessageExecutor()
     )
 
+    interactionsServer.commandManager.register(
+        TestClickExecutor,
+        TestClickExecutor()
+    )
+
+    interactionsServer.commandManager.register(
+        TestClickWithDataExecutor,
+        TestClickWithDataExecutor()
+    )
+
     val registry = KordCommandRegistry(
         Snowflake(744361365724069898L),
         interactionsServer.rest,
         interactionsServer.commandManager
     )
 
-    registry.updateAllCommandsInGuild(Snowflake(297732013006389252L), false)
+    // registry.updateAllCommandsInGuild(Snowflake(297732013006389252L), false)
 
     interactionsServer.start()
 }
@@ -210,30 +218,28 @@ class TestCommandExecutor : SlashCommandExecutor() {
     }
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-        val message = context.sendEphemeralMessage {
+        val message = context.sendMessage {
             content = "The number is ${args[Options.integer]}, woaaa"
 
-            allowedMentions = AllowedMentions(
-                listOf(),
-                listOf(),
-                true
-            )
-        }
+            actionRow {
+                interactiveButton(
+                    ButtonStyle.Primary,
+                    "hello world!",
+                    TestClickExecutor
+                )
 
-        message.editMessage {
-            content = "edited the message, uwu!!"
-        }
-
-        if (args[Options.ayaya] == true) {
-            context.sendEphemeralMessage {
-                content = "ayaya!!!"
+                interactiveButton(
+                    ButtonStyle.Secondary,
+                    "hello world!",
+                    TestClickWithDataExecutor,
+                    "the custom data here"
+                )
             }
-        }
 
-        val user = args[options.user]
-        if (user != null) {
-            context.sendMessage {
-                content = "User: $user"
+            actionRow {
+                linkButton("the best website ever", "https://loritta.website/")
+
+                linkButton("the best website ever (but disabled)", "https://loritta.website/", disabled = true)
             }
         }
     }

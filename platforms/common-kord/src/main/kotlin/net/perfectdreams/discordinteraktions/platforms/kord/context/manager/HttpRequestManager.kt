@@ -15,6 +15,9 @@ import net.perfectdreams.discordinteraktions.common.context.manager.RequestManag
 import net.perfectdreams.discordinteraktions.common.entities.DummyMessage
 import net.perfectdreams.discordinteraktions.common.entities.Message
 import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
+import net.perfectdreams.discordinteraktions.common.utils.buildMessage
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordEditedOriginalInteractionPublicMessage
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordActionRowBuilder
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordAllowedMentions
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordEmbedBuilder
 
@@ -46,7 +49,7 @@ class HttpRequestManager(
     override suspend fun deferMessage(isEphemeral: Boolean) = throw error("Can't defer a interaction that was already deferred!")
 
     override suspend fun sendMessage(message: InteractionMessage): Message {
-        if (bridge.state.value == InteractionRequestState.DEFERRED) {
+        if (bridge.state.value == InteractionRequestState.DEFERRED_CHANNEL_MESSAGE) {
             // If it was deferred, we are going to edit the original message
             val kordMessage = rest.interaction.modifyInteractionResponse(
                 applicationId,
@@ -57,6 +60,9 @@ class HttpRequestManager(
                         this.content = message.content
                         this.embeds = message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.toMutableList()
                         this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
+                        this.components = message.components?.map { it.toKordActionRowBuilder() }
+                            ?.toMutableList()
+
                         // There are "username" and "avatar" flags, but they seem to be unused for application commands
                         // TODO: Also, what to do about message flags? Silently ignore them or throw a exception?
                     }.toRequest()
@@ -65,6 +71,8 @@ class HttpRequestManager(
                         // You can't modify a message to change its tts status, so it is ignored
                         this.content = message.content
                         this.embeds = message.embeds?.let { it.map { it.toKordEmbedBuilder() }}?.toMutableList()
+                        this.components = message.components?.map { it.toKordActionRowBuilder() }
+                            ?.toMutableList()
 
                         val filePairs = message.files?.map { it.key to it.value }
                         filePairs?.forEach {
@@ -93,6 +101,11 @@ class HttpRequestManager(
                         this.content = message.content
                         this.tts = message.tts
                         this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
+
+                        message.components?.let { it.map { it.toKordActionRowBuilder() } }?.forEach {
+                            this.components.add(it)
+                        }
+
                         message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.forEach {
                             this.embeds.add(it)
                         }
@@ -104,6 +117,11 @@ class HttpRequestManager(
                         this.content = message.content
                         this.tts = message.tts
                         this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
+
+                        message.components?.let { it.map { it.toKordActionRowBuilder() } }?.forEach {
+                            this.components.add(it)
+                        }
+
                         message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.forEach {
                             this.embeds.add(it)
                         }
@@ -121,5 +139,33 @@ class HttpRequestManager(
             return DummyMessage()
             // return KordMessage(rest, applicationId, interactionToken, kordMessage)
         }
+    }
+
+    override suspend fun deferEditMessage() {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun editMessage(message: InteractionMessage, isEphemeral: Boolean): Message {
+        val newMessage = rest.interaction.modifyInteractionResponse(
+            applicationId,
+            interactionToken,
+            PublicInteractionResponseModifyBuilder().apply {
+                this.content = message.content
+                this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
+                this.embeds = message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.toMutableList()
+
+                val filePairs = message.files?.map { it.key to it.value }
+                if (filePairs != null)
+                    files?.addAll(filePairs)
+            }.toRequest()
+        )
+
+        return KordEditedOriginalInteractionPublicMessage(
+            rest,
+            applicationId,
+            interactionToken,
+            newMessage
+        )
+        TODO("Not yet implemented")
     }
 }

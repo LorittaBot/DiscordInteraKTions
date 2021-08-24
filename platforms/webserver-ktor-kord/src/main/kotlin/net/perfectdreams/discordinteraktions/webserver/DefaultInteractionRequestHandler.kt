@@ -9,14 +9,23 @@ import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
+import net.perfectdreams.discordinteraktions.common.components.buttons.ButtonClickWithDataExecutor
+import net.perfectdreams.discordinteraktions.common.components.buttons.ButtonClickWithNoDataExecutor
 import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
+import net.perfectdreams.discordinteraktions.common.context.buttons.ButtonClickContext
+import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 import net.perfectdreams.discordinteraktions.common.utils.Observable
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordPublicMessage
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordCommandChecker
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.toDiscordInteraKTionsResolvedObjects
 import net.perfectdreams.discordinteraktions.webserver.context.manager.WebServerRequestManager
 
 /**
@@ -59,7 +68,7 @@ class DefaultInteractionRequestHandler(
 
     /**
      * Method called when we receive an interaction of the
-     * [CommandInteraction] type.
+     * ApplicationCommand type.
      *
      * We'll basically handle this by logging the event
      * and executing the requested command.
@@ -86,6 +95,78 @@ class DefaultInteractionRequestHandler(
             request,
             requestManager
         )
+
+        observableState.awaitChange()
+        logger.info { "State was changed to ${observableState.value}, so this means we already replied via the Web Server! Leaving request scope..." }
+    }
+
+    /**
+     * Method called when we receive an interaction of the
+     * Component type.
+     *
+     * We'll basically handle this by logging the event
+     * and executing the requested command.
+     *
+     * @param call The Ktor call containing the request details.
+     * @param request The interaction data.
+     */
+    override suspend fun onComponent(call: ApplicationCall, request: DiscordInteraction) {
+        val observableState = Observable(InteractionRequestState.NOT_REPLIED_YET)
+        val bridge = RequestBridge(observableState)
+
+        val requestManager = WebServerRequestManager(
+            bridge,
+            rest,
+            applicationId,
+            request.token,
+            request,
+            call
+        )
+
+        bridge.manager = requestManager
+
+        // If the button doesn't have a custom ID, we won't process it
+        val buttonCustomId = request.data.customId.value ?: return
+
+        val executorId = buttonCustomId.substringBefore(":")
+        val data = buttonCustomId.substringAfter(":")
+
+        val buttonExecutorDeclaration = commandManager.buttonDeclarations
+            .asSequence()
+            .filter {
+                it.id == executorId
+            }
+            .first()
+
+        val executor = commandManager.buttonExecutors.first {
+            it.signature() == buttonExecutorDeclaration.parent
+        }
+
+        val kordUser = KordUser(request.member.value?.user?.value ?: request.user.value ?: error("oh no"))
+        val guildId = request.guildId.value?.let { net.perfectdreams.discordinteraktions.api.entities.Snowflake(it.value) }
+
+        val interactionData = InteractionData(request.data.resolved.value?.toDiscordInteraKTionsResolvedObjects())
+
+        val buttonClickContext = ButtonClickContext(
+            bridge,
+            kordUser,
+            KordPublicMessage(request.message.value!!), // This should NEVER be null if it is a component message
+            interactionData
+        )
+
+        GlobalScope.launch {
+            if (executor is ButtonClickWithNoDataExecutor)
+                executor.onClick(
+                    kordUser,
+                    buttonClickContext
+                )
+            else if (executor is ButtonClickWithDataExecutor)
+                executor.onClick(
+                    kordUser,
+                    buttonClickContext,
+                    data
+                )
+        }
 
         observableState.awaitChange()
         logger.info { "State was changed to ${observableState.value}, so this means we already replied via the Web Server! Leaving request scope..." }

@@ -2,6 +2,7 @@ package net.perfectdreams.discordinteraktions.webserver
 
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.DiscordMessageInteraction
+import dev.kord.common.entity.InteractionType
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
@@ -69,11 +70,16 @@ fun Routing.installDiscordInteractions(
         println(parse)
 
         when (type) {
-            1 -> handler.onPing(call)
-            2 -> {
+            InteractionType.Ping.type -> handler.onPing(call)
+            InteractionType.ApplicationCommand.type -> {
                 // Kord still has some fields missing (like "deaf") so we need to decode ignoring missing fields
                 val interaction = InteractionsServer.json.decodeFromString<DiscordInteraction>(text)
                 handler.onCommand(call, interaction)
+            }
+            InteractionType.Component.type -> {
+                // Kord still has some fields missing (like "deaf") so we need to decode ignoring missing fields
+                val interaction = InteractionsServer.json.decodeFromString<DiscordInteraction>(text)
+                handler.onComponent(call, interaction)
             }
         }
     }

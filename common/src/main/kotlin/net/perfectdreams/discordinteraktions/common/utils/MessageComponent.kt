@@ -1,6 +1,6 @@
 package net.perfectdreams.discordinteraktions.common.utils
 
-import kotlin.reflect.KClass
+import net.perfectdreams.discordinteraktions.common.components.buttons.ButtonStyle
 
 sealed class MessageComponent(val type: Int)
 

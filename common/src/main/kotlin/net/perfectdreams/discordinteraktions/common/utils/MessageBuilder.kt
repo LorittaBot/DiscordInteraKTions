@@ -1,5 +1,6 @@
 package net.perfectdreams.discordinteraktions.common.utils
 
+import net.perfectdreams.discordinteraktions.common.components.actionrow.ActionRowBuilder
 import java.io.InputStream
 
 fun buildMessage(block: MessageBuilder.() -> (Unit)): InteractionMessage {
@@ -21,17 +22,27 @@ class MessageBuilder {
     var content: String? = null
     var tts: Boolean? = null
     var allowedMentions: AllowedMentions? = null
-    var embeds: MutableList<EmbedBuilder>? = null
-    var files = mutableMapOf<String, InputStream>()
-    val components = mutableListOf<MessageComponent>()
+    internal var embeds: MutableList<EmbedBuilder>? = null
+    internal var files = mutableMapOf<String, InputStream>()
+    internal var components = mutableListOf<ActionRowComponent>()
 
-    fun embed(declaration: EmbedBuilder.() -> Unit) {
+    fun embed(block: EmbedBuilder.() -> Unit) {
         embeds = (embeds ?: mutableListOf()).also {
-            it.add(EmbedBuilder().apply(declaration))
+            it.add(EmbedBuilder().apply(block))
         }
     }
 
-    fun addFile(fileName: String, stream: InputStream) {
+    fun actionRow(block: ActionRowBuilder.() -> Unit) {
+        components = (components ?: mutableListOf()).also {
+            it.add(
+                ActionRowBuilder()
+                    .apply(block)
+                    .build()
+            )
+        }
+    }
+
+    fun file(fileName: String, stream: InputStream) {
         files[fileName] = stream
     }
 }
@@ -45,5 +56,5 @@ data class InteractionMessage(
     val embeds: List<EmbedBuilder>? = null,
     val allowedMentions: AllowedMentions? = null,
     var isEphemeral: Boolean,
-    val components: List<MessageComponent>
+    val components: List<ActionRowComponent>? = null
 )

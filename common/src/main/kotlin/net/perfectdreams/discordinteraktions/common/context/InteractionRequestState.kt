@@ -9,7 +9,12 @@ enum class InteractionRequestState {
     /**
      * Request was deferred without sending any messages
      */
-    DEFERRED,
+    DEFERRED_CHANNEL_MESSAGE,
+
+    /**
+     * Request was deferred without sending any messages
+     */
+    DEFERRED_UPDATE_MESSAGE,
 
     /**
      * Replied to the interaction with a message

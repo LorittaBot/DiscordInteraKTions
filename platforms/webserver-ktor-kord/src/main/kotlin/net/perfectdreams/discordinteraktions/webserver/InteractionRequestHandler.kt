@@ -22,10 +22,19 @@ abstract class InteractionRequestHandler {
 
     /**
      * Method called when we receive an interaction of the
-     * [CommandInteraction] type.
+     * Application Command type.
      *
      * @param call The Ktor call containing the request details.
      * @param request The interaction data.
      */
     open suspend fun onCommand(call: ApplicationCall, request: DiscordInteraction) {}
+
+    /**
+     * Method called when we receive an interaction of the
+     * Component type.
+     *
+     * @param call The Ktor call containing the request details.
+     * @param request The interaction data.
+     */
+    open suspend fun onComponent(call: ApplicationCall, request: DiscordInteraction) {}
 }

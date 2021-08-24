@@ -20,6 +20,7 @@ import net.perfectdreams.discordinteraktions.common.entities.Message
 import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordOriginalInteractionEphemeralMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordOriginalInteractionPublicMessage
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordActionRowBuilder
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordAllowedMentions
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordEmbedBuilder
 
@@ -63,7 +64,7 @@ class InitialHttpRequestManager(
             )
         )
 
-        bridge.state.value = InteractionRequestState.DEFERRED
+        bridge.state.value = InteractionRequestState.DEFERRED_UPDATE_MESSAGE
 
         bridge.manager = HttpRequestManager(
             bridge,
@@ -84,6 +85,11 @@ class InitialHttpRequestManager(
                     this.content = message.content
                     this.tts = message.tts
                     this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
+
+                    message.components?.let { it.map { it.toKordActionRowBuilder() } }?.forEach {
+                        this.components.add(it)
+                    }
+
                     message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.forEach {
                         this.embeds.add(it)
                     }
@@ -93,6 +99,11 @@ class InitialHttpRequestManager(
                     this.content = message.content
                     this.tts = message.tts
                     this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
+
+                    message.components?.let { it.map { it.toKordActionRowBuilder() } }?.forEach {
+                        this.components.add(it)
+                    }
+
                     message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.forEach {
                         this.embeds.add(it)
                     }
@@ -124,5 +135,13 @@ class InitialHttpRequestManager(
                 interactionToken,
                 message.content
             )
+    }
+
+    override suspend fun deferEditMessage() {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun editMessage(message: InteractionMessage, isEphemeral: Boolean): Message {
+        TODO("Not yet implemented")
     }
 }

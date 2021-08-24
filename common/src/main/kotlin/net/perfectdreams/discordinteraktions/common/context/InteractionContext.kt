@@ -50,12 +50,12 @@ abstract class InteractionContext(
             error("Ephemeral messages cannot contain attachments!")
 
         // Check if state matches what we expect
-        if (bridge.state.value == InteractionRequestState.DEFERRED)
+        if (bridge.state.value == InteractionRequestState.DEFERRED_CHANNEL_MESSAGE)
             if (wasInitiallyDeferredEphemerally != message.isEphemeral)
                 if (message.isEphemeral)
-                    error("Trying to send a ephemeral message but the message was originally deferred was public! Change the \"deferMessage(...)\" call to be ephemeral")
+                    error("Trying to send a ephemeral message but the message was originally deferred as public! Change the \"deferMessage(...)\" call to be ephemeral")
                 else
-                    error("Trying to send a public message but the message was originally deferred was ephemeral! Change the \"deferMessage(...)\" call to be public")
+                    error("Trying to send a public message but the message was originally deferred as ephemeral! Change the \"deferMessage(...)\" call to be public")
 
         if (message.files?.isNotEmpty() == true && !isDeferred) {
             // If the message has files and our current bridge state is "NOT_REPLIED_YET", then it means that we need to defer before sending the file!

@@ -1,14 +1,17 @@
 package net.perfectdreams.discordinteraktions.platforms.kord.utils
 
 import dev.kord.common.Color
+import dev.kord.common.entity.ButtonStyle
 import dev.kord.common.entity.ResolvedObjects
+import dev.kord.rest.builder.component.ActionRowBuilder
 import dev.kord.rest.builder.message.AllowedMentionsBuilder
 import net.perfectdreams.discordinteraktions.api.entities.Snowflake
+import net.perfectdreams.discordinteraktions.common.utils.ActionRowComponent
 import net.perfectdreams.discordinteraktions.common.utils.AllowedMentions
+import net.perfectdreams.discordinteraktions.common.utils.ButtonComponent
 import net.perfectdreams.discordinteraktions.common.utils.EmbedBuilder
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordInteractionMember
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordMember
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordMessage
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordPublicMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
 
 /**
@@ -55,7 +58,7 @@ fun ResolvedObjects.toDiscordInteraKTionsResolvedObjects(): net.perfectdreams.di
     }?.toMap()
 
     val messages = this.messages.value?.map {
-        it.key.toDiscordInteraKTionsSnowflake() to KordMessage(
+        it.key.toDiscordInteraKTionsSnowflake() to KordPublicMessage(
             it.value
         )
     }?.toMap()
@@ -65,6 +68,54 @@ fun ResolvedObjects.toDiscordInteraKTionsResolvedObjects(): net.perfectdreams.di
         members,
         messages
     )
+}
+
+/**
+ * Converts Discord InteraKTions's Action Row to Kord's Action Row Builder
+ */
+fun ActionRowComponent.toKordActionRowBuilder(): ActionRowBuilder {
+    val builder = ActionRowBuilder()
+
+    this.components.map {
+        when (it) {
+            is ActionRowComponent -> TODO()
+            is ButtonComponent -> {
+                when (it.style) {
+                    net.perfectdreams.discordinteraktions.common.components.buttons.ButtonStyle.Link -> {
+                        val url = it.url
+                        require(url != null) { "Button URL must not be null!" }
+
+                        builder.linkButton(url) {
+                            this.label = it.label
+                            this.disabled = it.disabled
+                        }
+                    }
+                    else -> {
+                        val customId = it.customId
+                        require(customId != null) { "Button Custom ID must not be null!" }
+
+                        builder.interactionButton(
+                            when (it.style) {
+                                // This should never happen because the style is already being processed above
+                                net.perfectdreams.discordinteraktions.common.components.buttons.ButtonStyle.Link -> error("This should never happen!")
+                                net.perfectdreams.discordinteraktions.common.components.buttons.ButtonStyle.Danger -> ButtonStyle.Danger
+                                net.perfectdreams.discordinteraktions.common.components.buttons.ButtonStyle.Primary -> ButtonStyle.Primary
+                                net.perfectdreams.discordinteraktions.common.components.buttons.ButtonStyle.Secondary -> ButtonStyle.Secondary
+                                net.perfectdreams.discordinteraktions.common.components.buttons.ButtonStyle.Success -> ButtonStyle.Success
+                                is net.perfectdreams.discordinteraktions.common.components.buttons.ButtonStyle.Unknown -> ButtonStyle.Unknown(it.type)
+                            },
+                            customId
+                        ) {
+                            this.label = it.label
+                            this.disabled = it.disabled
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return builder
 }
 
 /**
