@@ -1,9 +1,15 @@
 package net.perfectdreams.discordinteraktions.platforms.kord.commands
 
 import dev.kord.rest.builder.interaction.ApplicationCommandCreateBuilder
-import dev.kord.rest.builder.interaction.BaseApplicationBuilder
+import dev.kord.rest.builder.interaction.ChatInputCreateBuilder
 import dev.kord.rest.builder.interaction.GroupCommandBuilder
+import dev.kord.rest.builder.interaction.MessageCommandCreateBuilder
 import dev.kord.rest.builder.interaction.SubCommandBuilder
+import dev.kord.rest.builder.interaction.boolean
+import dev.kord.rest.builder.interaction.int
+import dev.kord.rest.builder.interaction.number
+import dev.kord.rest.builder.interaction.string
+import dev.kord.rest.builder.interaction.user
 import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.api.entities.Snowflake
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
@@ -58,7 +64,7 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
         when (declaration) {
             is ApplicationCommandDeclaration -> TODO()
             is SlashCommandDeclaration -> {
-                val commandData = ApplicationCommandCreateBuilder(declaration.name, declaration.description)
+                val commandData = ChatInputCreateBuilder(declaration.name, declaration.description)
                 commandData.options = mutableListOf() // Initialize a empty list so we can use it
 
                 // We can only have (subcommands OR subcommand groups) OR arguments
@@ -83,7 +89,7 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
                 return commandData
             }
             is SlashCommandGroupDeclaration -> {
-                val commandData = ApplicationCommandCreateBuilder(declaration.name, declaration.description)
+                val commandData = ChatInputCreateBuilder(declaration.name, declaration.description)
                 commandData.options = mutableListOf() // Initialize a empty list so we can use it
 
                 declaration.subcommands.forEach {
@@ -120,7 +126,7 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
         return commandData
     }
 
-    private fun convertCommandOptionToKord(cmdOption: CommandOption<*>, builder: BaseApplicationBuilder) {
+    private fun convertCommandOptionToKord(cmdOption: CommandOption<*>, builder: ChatInputCreateBuilder) {
         when (cmdOption.type) {
             // TODO: Add all possible types
             CommandOptionType.Integer, CommandOptionType.NullableInteger ->
