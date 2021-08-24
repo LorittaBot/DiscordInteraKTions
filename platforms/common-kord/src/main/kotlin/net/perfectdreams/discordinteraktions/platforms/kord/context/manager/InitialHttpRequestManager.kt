@@ -3,9 +3,13 @@ package net.perfectdreams.discordinteraktions.platforms.kord.context.manager
 import dev.kord.common.annotation.KordPreview
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.InteractionResponseType
+import dev.kord.common.entity.MessageFlag
+import dev.kord.common.entity.MessageFlags
 import dev.kord.common.entity.Snowflake
+import dev.kord.common.entity.optional.optional
 import dev.kord.rest.builder.message.create.EphemeralInteractionResponseCreateBuilder
 import dev.kord.rest.builder.message.create.PublicInteractionResponseCreateBuilder
+import dev.kord.rest.json.request.InteractionApplicationCommandCallbackData
 import dev.kord.rest.json.request.InteractionResponseCreateRequest
 import dev.kord.rest.service.RestClient
 import mu.KotlinLogging
@@ -47,7 +51,15 @@ class InitialHttpRequestManager(
         rest.interaction.createInteractionResponse(
             request.id,
             interactionToken,
-            InteractionResponseCreateRequest(InteractionResponseType.DeferredChannelMessageWithSource)
+            InteractionResponseCreateRequest(
+                InteractionResponseType.DeferredChannelMessageWithSource,
+                InteractionApplicationCommandCallbackData(
+                    flags = MessageFlags {
+                        if (isEphemeral)
+                            + MessageFlag.Ephemeral
+                    }.optional()
+                ).optional()
+            )
         )
 
         bridge.state.value = InteractionRequestState.DEFERRED

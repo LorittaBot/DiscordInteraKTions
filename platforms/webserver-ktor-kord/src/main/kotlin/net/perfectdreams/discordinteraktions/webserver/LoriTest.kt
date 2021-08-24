@@ -71,8 +71,6 @@ class TestCommandExecutor : SlashCommandExecutor() {
     }
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-        context.deferMessage(false)
-
         context.sendMessage {
             content = "The number is ${args[Options.integer]}, woaaa"
 
@@ -84,7 +82,7 @@ class TestCommandExecutor : SlashCommandExecutor() {
         }
 
         if (args[Options.ayaya] == true) {
-            context.sendMessage {
+            context.sendEphemeralMessage {
                 content = "ayaya!!!"
             }
         }
