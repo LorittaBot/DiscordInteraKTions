@@ -5,18 +5,16 @@ import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.builder.message.create.EphemeralFollowupMessageCreateBuilder
 import dev.kord.rest.builder.message.create.PublicFollowupMessageCreateBuilder
-import dev.kord.rest.builder.message.modify.EphemeralInteractionResponseModifyBuilder
 import dev.kord.rest.builder.message.modify.PublicInteractionResponseModifyBuilder
 import dev.kord.rest.service.RestClient
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
 import net.perfectdreams.discordinteraktions.common.context.manager.RequestManager
-import net.perfectdreams.discordinteraktions.common.entities.DummyMessage
-import net.perfectdreams.discordinteraktions.common.entities.Message
+import net.perfectdreams.discordinteraktions.common.entities.messages.DummyMessage
+import net.perfectdreams.discordinteraktions.common.entities.messages.Message
 import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
-import net.perfectdreams.discordinteraktions.common.utils.buildMessage
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordEditedOriginalInteractionPublicMessage
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordEditedOriginalInteractionPublicMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordActionRowBuilder
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordAllowedMentions
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordEmbedBuilder
@@ -46,99 +44,57 @@ class HttpRequestManager(
         require(bridge.state.value != InteractionRequestState.NOT_REPLIED_YET) { "HttpRequestManager shouldn't be in the NOT_REPLIED_YET state!" }
     }
 
-    override suspend fun deferMessage(isEphemeral: Boolean) = throw error("Can't defer a interaction that was already deferred!")
+    override suspend fun deferChannelMessage() = error("Can't defer a interaction that was already deferred!")
+
+    override suspend fun deferChannelMessageEphemerally() =  error("Can't defer a interaction that was already deferred!")
 
     override suspend fun sendMessage(message: InteractionMessage): Message {
-        if (bridge.state.value == InteractionRequestState.DEFERRED_CHANNEL_MESSAGE) {
-            // If it was deferred, we are going to edit the original message
-            val kordMessage = rest.interaction.modifyInteractionResponse(
-                applicationId,
-                request.token,
-                if (message.isEphemeral) {
-                    EphemeralInteractionResponseModifyBuilder().apply {
-                        // You can't modify a message to change its tts status, so it is ignored
-                        this.content = message.content
-                        this.embeds = message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.toMutableList()
-                        this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
-                        this.components = message.components?.map { it.toKordActionRowBuilder() }
-                            ?.toMutableList()
+        // *Technically* we can respond to the initial interaction via HTTP too
+        val kordMessage = rest.interaction.createFollowupMessage(
+            applicationId,
+            request.token,
+            if (message.isEphemeral) {
+                EphemeralFollowupMessageCreateBuilder().apply {
+                    this.content = message.content
+                    this.tts = message.tts
+                    this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
 
-                        // There are "username" and "avatar" flags, but they seem to be unused for application commands
-                        // TODO: Also, what to do about message flags? Silently ignore them or throw a exception?
-                    }.toRequest()
-                } else {
-                    PublicInteractionResponseModifyBuilder().apply {
-                        // You can't modify a message to change its tts status, so it is ignored
-                        this.content = message.content
-                        this.embeds = message.embeds?.let { it.map { it.toKordEmbedBuilder() }}?.toMutableList()
-                        this.components = message.components?.map { it.toKordActionRowBuilder() }
-                            ?.toMutableList()
+                    message.components?.let { it.map { it.toKordActionRowBuilder() } }?.forEach {
+                        this.components.add(it)
+                    }
 
-                        val filePairs = message.files?.map { it.key to it.value }
-                        filePairs?.forEach {
-                            addFile(it.first, it.second)
-                        }
+                    message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.forEach {
+                        this.embeds.add(it)
+                    }
+                    // There are "username" and "avatar" flags, but they seem to be unused for application commands
+                    // TODO: Also, what to do about message flags? Silently ignore them or throw a exception?
+                }.toRequest()
+            } else {
+                PublicFollowupMessageCreateBuilder().apply {
+                    this.content = message.content
+                    this.tts = message.tts
+                    this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
 
-                        this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
-                        // There are "username" and "avatar" flags, but they seem to be unused for application commands
-                        // TODO: Also, what to do about message flags? Silently ignore them or throw a exception?
-                    }.toRequest()
-                }
-            )
+                    message.components?.let { it.map { it.toKordActionRowBuilder() } }?.forEach {
+                        this.components.add(it)
+                    }
 
-            // And also change the state to "ALREADY_REPLIED"
-            bridge.state.value = InteractionRequestState.ALREADY_REPLIED
+                    message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.forEach {
+                        this.embeds.add(it)
+                    }
 
-            return DummyMessage()
-            // return KordMessage(rest, applicationId, interactionToken, kordMessage)
-        } else {
-            // *Technically* we can respond to the initial interaction via HTTP too
-            val kordMessage = rest.interaction.createFollowupMessage(
-                applicationId,
-                request.token,
-                if (message.isEphemeral) {
-                    EphemeralFollowupMessageCreateBuilder().apply {
-                        this.content = message.content
-                        this.tts = message.tts
-                        this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
+                    val filePairs = message.files?.map { it.key to it.value }
+                    if (filePairs != null)
+                        files.addAll(filePairs)
 
-                        message.components?.let { it.map { it.toKordActionRowBuilder() } }?.forEach {
-                            this.components.add(it)
-                        }
+                    // There are "username" and "avatar" flags, but they seem to be unused for application commands
+                    // TODO: Also, what to do about message flags? Silently ignore them or throw a exception?
+                }.toRequest()
+            }
+        )
 
-                        message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.forEach {
-                            this.embeds.add(it)
-                        }
-                        // There are "username" and "avatar" flags, but they seem to be unused for application commands
-                        // TODO: Also, what to do about message flags? Silently ignore them or throw a exception?
-                    }.toRequest()
-                } else {
-                    PublicFollowupMessageCreateBuilder().apply {
-                        this.content = message.content
-                        this.tts = message.tts
-                        this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
-
-                        message.components?.let { it.map { it.toKordActionRowBuilder() } }?.forEach {
-                            this.components.add(it)
-                        }
-
-                        message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.forEach {
-                            this.embeds.add(it)
-                        }
-
-                        val filePairs = message.files?.map { it.key to it.value }
-                        if (filePairs != null)
-                            files.addAll(filePairs)
-
-                        // There are "username" and "avatar" flags, but they seem to be unused for application commands
-                        // TODO: Also, what to do about message flags? Silently ignore them or throw a exception?
-                    }.toRequest()
-                }
-            )
-
-            return DummyMessage()
-            // return KordMessage(rest, applicationId, interactionToken, kordMessage)
-        }
+        return DummyMessage()
+        // return KordMessage(rest, applicationId, interactionToken, kordMessage)
     }
 
     override suspend fun deferEditMessage() {

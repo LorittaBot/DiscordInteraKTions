@@ -1,44 +1,36 @@
-package net.perfectdreams.discordinteraktions.platforms.kord.entities
+package net.perfectdreams.discordinteraktions.platforms.kord.entities.messages
 
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.builder.message.modify.EphemeralInteractionResponseModifyBuilder
-import dev.kord.rest.builder.message.modify.PublicInteractionResponseModifyBuilder
-import dev.kord.rest.builder.message.modify.embed
 import dev.kord.rest.service.RestClient
-import net.perfectdreams.discordinteraktions.common.entities.Message
-import net.perfectdreams.discordinteraktions.common.entities.PublicMessage
-import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
-import net.perfectdreams.discordinteraktions.common.utils.MessageBuilder
-import net.perfectdreams.discordinteraktions.common.utils.buildMessage
+import net.perfectdreams.discordinteraktions.common.entities.messages.EphemeralMessage
+import net.perfectdreams.discordinteraktions.common.utils.EphemeralMessageBuilder
+import net.perfectdreams.discordinteraktions.common.utils.buildEphemeralMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordAllowedMentions
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordEmbedBuilder
 
-class KordOriginalInteractionPublicMessage(
+class KordOriginalInteractionEphemeralMessage(
     private val rest: RestClient,
     private val applicationId: Snowflake,
     private val interactionToken: String,
     override val content: String
-) : PublicMessage {
+) : EphemeralMessage {
     override val id: net.perfectdreams.discordinteraktions.api.entities.Snowflake
         get() = error("Original Interaction Messages do not have an ID!")
 
-    override suspend fun editMessage(block: MessageBuilder.() -> Unit): PublicMessage {
-        val message = buildMessage(block)
+    override suspend fun editMessage(block: EphemeralMessageBuilder.() -> Unit): EphemeralMessage {
+        val message = buildEphemeralMessage(block)
         val newMessage = rest.interaction.modifyInteractionResponse(
             applicationId,
             interactionToken,
-            PublicInteractionResponseModifyBuilder().apply {
+            EphemeralInteractionResponseModifyBuilder().apply {
                 this.content = message.content
                 this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
                 this.embeds = message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.toMutableList()
-
-                val filePairs = message.files?.map { it.key to it.value }
-                if (filePairs != null)
-                    files?.addAll(filePairs)
             }.toRequest()
         )
 
-        return KordEditedOriginalInteractionPublicMessage(
+        return KordEditedOriginalInteractionEphemeralMessage(
             rest,
             applicationId,
             interactionToken,

@@ -1,5 +1,6 @@
 package net.perfectdreams.discordinteraktions.webserver
 
+import kotlinx.coroutines.delay
 import net.perfectdreams.discordinteraktions.api.entities.Member
 import net.perfectdreams.discordinteraktions.api.entities.Snowflake
 import net.perfectdreams.discordinteraktions.api.entities.User
@@ -9,7 +10,7 @@ import net.perfectdreams.discordinteraktions.common.commands.user.UserCommandExe
 import net.perfectdreams.discordinteraktions.common.components.buttons.ButtonStyle
 import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.context.commands.slash.SlashCommandArguments
-import net.perfectdreams.discordinteraktions.common.entities.Message
+import net.perfectdreams.discordinteraktions.common.entities.messages.Message
 import net.perfectdreams.discordinteraktions.common.utils.AllowedMentions
 import net.perfectdreams.discordinteraktions.declarations.commands.message.MessageCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.declarations.commands.message.messageCommand
@@ -218,28 +219,15 @@ class TestCommandExecutor : SlashCommandExecutor() {
     }
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-        val message = context.sendMessage {
-            content = "The number is ${args[Options.integer]}, woaaa"
+        context.sendMessage {
+            content = "hello world!"
 
             actionRow {
                 interactiveButton(
                     ButtonStyle.Primary,
-                    "hello world!",
+                    "ayaya",
                     TestClickExecutor
                 )
-
-                interactiveButton(
-                    ButtonStyle.Secondary,
-                    "hello world!",
-                    TestClickWithDataExecutor,
-                    "the custom data here"
-                )
-            }
-
-            actionRow {
-                linkButton("the best website ever", "https://loritta.website/")
-
-                linkButton("the best website ever (but disabled)", "https://loritta.website/", disabled = true)
             }
         }
     }

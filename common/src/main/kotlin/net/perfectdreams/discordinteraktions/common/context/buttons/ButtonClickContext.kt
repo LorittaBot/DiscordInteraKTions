@@ -4,8 +4,8 @@ import net.perfectdreams.discordinteraktions.api.entities.User
 import net.perfectdreams.discordinteraktions.common.context.InteractionContext
 import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
-import net.perfectdreams.discordinteraktions.common.entities.EphemeralMessage
-import net.perfectdreams.discordinteraktions.common.entities.Message
+import net.perfectdreams.discordinteraktions.common.entities.messages.EphemeralMessage
+import net.perfectdreams.discordinteraktions.common.entities.messages.Message
 import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
 import net.perfectdreams.discordinteraktions.common.utils.MessageBuilder
@@ -43,7 +43,9 @@ class ButtonClickContext(
         if (message.files?.isNotEmpty() == true && !isDeferred) {
             // If the message has files and our current bridge state is "NOT_REPLIED_YET", then it means that we need to defer before sending the file!
             // (Because currently you can only send files by editing the original interaction message or with a follow up message
-            deferMessage(false)
+            // deferChannelMessage(false)
+            // TODO: Fix this
+            TODO()
         }
 
         return bridge.manager.editMessage(message, this.message is EphemeralMessage)

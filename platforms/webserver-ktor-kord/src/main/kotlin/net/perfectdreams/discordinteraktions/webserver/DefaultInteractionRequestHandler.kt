@@ -22,7 +22,7 @@ import net.perfectdreams.discordinteraktions.common.context.RequestBridge
 import net.perfectdreams.discordinteraktions.common.context.buttons.ButtonClickContext
 import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 import net.perfectdreams.discordinteraktions.common.utils.Observable
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordPublicMessage
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordPublicMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordCommandChecker
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toDiscordInteraKTionsResolvedObjects

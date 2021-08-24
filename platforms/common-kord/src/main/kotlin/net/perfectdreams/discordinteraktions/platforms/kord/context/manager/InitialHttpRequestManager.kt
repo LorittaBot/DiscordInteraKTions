@@ -16,10 +16,14 @@ import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
 import net.perfectdreams.discordinteraktions.common.context.manager.RequestManager
-import net.perfectdreams.discordinteraktions.common.entities.Message
+import net.perfectdreams.discordinteraktions.common.entities.messages.EphemeralThinkingMessage
+import net.perfectdreams.discordinteraktions.common.entities.messages.Message
+import net.perfectdreams.discordinteraktions.common.entities.messages.PublicThinkingMessage
 import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordOriginalInteractionEphemeralMessage
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordOriginalInteractionPublicMessage
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordEphemeralThinkingMessage
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordOriginalInteractionEphemeralMessage
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordOriginalInteractionPublicMessage
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordPublicThinkingMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordActionRowBuilder
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordAllowedMentions
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordEmbedBuilder
@@ -49,7 +53,35 @@ class InitialHttpRequestManager(
         require(bridge.state.value == InteractionRequestState.NOT_REPLIED_YET) { "HttpRequestManager should be in the NOT_REPLIED_YET state!" }
     }
 
-    override suspend fun deferMessage(isEphemeral: Boolean) {
+    override suspend fun deferChannelMessage(): PublicThinkingMessage {
+        rest.interaction.createInteractionResponse(
+            request.id,
+            interactionToken,
+            InteractionResponseCreateRequest(
+                InteractionResponseType.DeferredChannelMessageWithSource,
+                InteractionApplicationCommandCallbackData().optional()
+            )
+        )
+
+        bridge.state.value = InteractionRequestState.DEFERRED_UPDATE_MESSAGE
+
+        bridge.manager = HttpRequestManager(
+            bridge,
+            rest,
+            applicationId,
+            interactionToken,
+            request
+        )
+
+        return KordPublicThinkingMessage(
+            rest,
+            applicationId,
+            interactionToken,
+            bridge
+        )
+    }
+
+    override suspend fun deferChannelMessageEphemerally(): EphemeralThinkingMessage {
         rest.interaction.createInteractionResponse(
             request.id,
             interactionToken,
@@ -57,8 +89,7 @@ class InitialHttpRequestManager(
                 InteractionResponseType.DeferredChannelMessageWithSource,
                 InteractionApplicationCommandCallbackData(
                     flags = MessageFlags {
-                        if (isEphemeral)
-                            + MessageFlag.Ephemeral
+                        + MessageFlag.Ephemeral
                     }.optional()
                 ).optional()
             )
@@ -72,6 +103,13 @@ class InitialHttpRequestManager(
             applicationId,
             interactionToken,
             request
+        )
+
+        return KordEphemeralThinkingMessage(
+            rest,
+            applicationId,
+            interactionToken,
+            bridge
         )
     }
 

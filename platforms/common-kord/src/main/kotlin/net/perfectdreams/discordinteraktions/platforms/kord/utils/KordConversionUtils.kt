@@ -11,7 +11,7 @@ import net.perfectdreams.discordinteraktions.common.utils.AllowedMentions
 import net.perfectdreams.discordinteraktions.common.utils.ButtonComponent
 import net.perfectdreams.discordinteraktions.common.utils.EmbedBuilder
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordMember
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordPublicMessage
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordPublicMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
 
 /**
