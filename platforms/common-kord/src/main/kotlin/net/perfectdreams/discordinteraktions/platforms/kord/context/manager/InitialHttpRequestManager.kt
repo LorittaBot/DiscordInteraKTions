@@ -19,6 +19,7 @@ import net.perfectdreams.discordinteraktions.common.context.manager.RequestManag
 import net.perfectdreams.discordinteraktions.common.entities.DummyMessage
 import net.perfectdreams.discordinteraktions.common.entities.Message
 import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordOriginalInteractionMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordAllowedMentions
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordEmbedBuilder
 
@@ -109,7 +110,11 @@ class InitialHttpRequestManager(
             request
         )
 
-        return DummyMessage()
-        // return InitialResponseMessage(rest, applicationId, interactionToken, message.content)
+        return KordOriginalInteractionMessage(
+            rest,
+            applicationId,
+            interactionToken,
+            message.content
+        )
     }
 }

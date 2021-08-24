@@ -6,6 +6,9 @@ import dev.kord.rest.builder.message.AllowedMentionsBuilder
 import net.perfectdreams.discordinteraktions.api.entities.Snowflake
 import net.perfectdreams.discordinteraktions.common.utils.AllowedMentions
 import net.perfectdreams.discordinteraktions.common.utils.EmbedBuilder
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordInteractionMember
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordMember
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
 
 /**
@@ -39,10 +42,28 @@ fun AllowedMentions.toKordAllowedMentions(): AllowedMentionsBuilder {
  * Converts Kord's Resolved Objects to Discord InteraKTions's Resolved Objects
  */
 fun ResolvedObjects.toDiscordInteraKTionsResolvedObjects(): net.perfectdreams.discordinteraktions.common.interactions.ResolvedObjects {
+    val users = this.users.value?.map {
+        it.key.toDiscordInteraKTionsSnowflake() to KordUser(it.value)
+    }?.toMap()
+
+    val members = this.members.value?.map {
+        // In this case, the user map contains the user object, so we need to get it from there
+        it.key.toDiscordInteraKTionsSnowflake() to KordMember(
+            it.value,
+            users?.get(it.key.toDiscordInteraKTionsSnowflake())!! // Should NEVER be null!
+        )
+    }?.toMap()
+
+    val messages = this.messages.value?.map {
+        it.key.toDiscordInteraKTionsSnowflake() to KordMessage(
+            it.value
+        )
+    }?.toMap()
+
     return net.perfectdreams.discordinteraktions.common.interactions.ResolvedObjects(
-        this.users.value?.map {
-            it.key.toDiscordInteraKTionsSnowflake() to KordUser(it.value)
-        }?.toMap()
+        users,
+        members,
+        messages
     )
 }
 

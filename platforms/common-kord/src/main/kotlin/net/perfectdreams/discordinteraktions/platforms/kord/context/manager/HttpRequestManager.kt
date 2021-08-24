@@ -64,7 +64,7 @@ class HttpRequestManager(
                     PublicInteractionResponseModifyBuilder().apply {
                         // You can't modify a message to change its tts status, so it is ignored
                         this.content = message.content
-                        this.embeds = message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.toMutableList()
+                        this.embeds = message.embeds?.let { it.map { it.toKordEmbedBuilder() }}?.toMutableList()
 
                         val filePairs = message.files?.map { it.key to it.value }
                         filePairs?.forEach {

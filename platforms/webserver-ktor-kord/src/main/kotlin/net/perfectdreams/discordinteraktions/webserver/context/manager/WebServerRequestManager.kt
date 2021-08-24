@@ -33,6 +33,8 @@ import net.perfectdreams.discordinteraktions.common.entities.DummyMessage
 import net.perfectdreams.discordinteraktions.common.entities.Message
 import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.context.manager.HttpRequestManager
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordOriginalInteractionMessage
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.toDiscordInteraKTionsSnowflake
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordAllowedMentions
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordEmbedBuilder
 
@@ -122,12 +124,11 @@ class WebServerRequestManager(
             request
         )
 
-        return DummyMessage() // TODO: Fix
-        /* return DummyMessage(
+        return KordOriginalInteractionMessage(
             rest,
             applicationId,
             interactionToken,
             message.content
-        ) */
+        )
     }
 }

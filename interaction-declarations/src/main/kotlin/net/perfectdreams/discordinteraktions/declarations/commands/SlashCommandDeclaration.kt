@@ -4,8 +4,8 @@ import net.perfectdreams.discordinteraktions.declarations.commands.slash.SlashCo
 
 class SlashCommandDeclaration(
     name: String,
-    description: String,
+    val description: String,
     val executor: SlashCommandExecutorDeclaration? = null,
     val subcommands: List<SlashCommandDeclaration>,
     val subcommandGroups: List<SlashCommandGroupDeclaration>
-) : InteractionCommandDeclaration(name, description)
+) : InteractionCommandDeclaration(name)

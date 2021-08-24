@@ -5,6 +5,7 @@ import dev.kord.rest.builder.interaction.ChatInputCreateBuilder
 import dev.kord.rest.builder.interaction.GroupCommandBuilder
 import dev.kord.rest.builder.interaction.MessageCommandCreateBuilder
 import dev.kord.rest.builder.interaction.SubCommandBuilder
+import dev.kord.rest.builder.interaction.UserCommandCreateBuilder
 import dev.kord.rest.builder.interaction.boolean
 import dev.kord.rest.builder.interaction.int
 import dev.kord.rest.builder.interaction.number
@@ -14,8 +15,9 @@ import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.api.entities.Snowflake
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.commands.CommandRegistry
-import net.perfectdreams.discordinteraktions.declarations.commands.ApplicationCommandDeclaration
+import net.perfectdreams.discordinteraktions.declarations.commands.UserCommandDeclaration
 import net.perfectdreams.discordinteraktions.declarations.commands.InteractionCommandDeclaration
+import net.perfectdreams.discordinteraktions.declarations.commands.MessageCommandDeclaration
 import net.perfectdreams.discordinteraktions.declarations.commands.SlashCommandDeclaration
 import net.perfectdreams.discordinteraktions.declarations.commands.SlashCommandGroupDeclaration
 import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOption
@@ -62,7 +64,14 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
 
     private fun convertCommandDeclarationToKord(declaration: InteractionCommandDeclaration): ApplicationCommandCreateBuilder {
         when (declaration) {
-            is ApplicationCommandDeclaration -> TODO()
+            is UserCommandDeclaration -> {
+                return UserCommandCreateBuilder(declaration.name)
+            }
+
+            is MessageCommandDeclaration -> {
+                return MessageCommandCreateBuilder(declaration.name)
+            }
+
             is SlashCommandDeclaration -> {
                 val commandData = ChatInputCreateBuilder(declaration.name, declaration.description)
                 commandData.options = mutableListOf() // Initialize a empty list so we can use it

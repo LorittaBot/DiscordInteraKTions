@@ -6,7 +6,9 @@ import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Option
 import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.SubCommand
+import net.perfectdreams.discordinteraktions.declarations.commands.InteractionCommandDeclaration
 import net.perfectdreams.discordinteraktions.declarations.commands.SlashCommandDeclaration
+import net.perfectdreams.discordinteraktions.declarations.commands.UserCommandDeclaration
 import net.perfectdreams.discordinteraktions.declarations.commands.slash.SlashCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOption
 import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOptionType
@@ -76,7 +78,29 @@ object CommandDeclarationUtils {
      * @see findAllSubcommandDeclarationNames
      *
      * @param labels          the request labels in order
-     * @param rootDeclaration the root declaration
+     * @param declaration     the declaration that must be found
+     * @return the matched declaration
+     */
+    fun getLabelsConnectedToCommandDeclaration(labels: List<CommandLabel>, declaration: InteractionCommandDeclaration): InteractionCommandDeclaration? {
+        // Let's not over complicate this, we already know that Discord only supports one level deep of nesting
+        // (so group -> subcommand)
+        // So let's do easy and quick checks
+        if (labels.first() is RootCommandLabel && labels.first().label == declaration.name) {
+            // Matches the root label! Yay!
+            if (labels.size == 1)
+                // If there is only a Root Label, then it means we found our root declaration!
+                return declaration
+        }
+        return null
+    }
+
+    /**
+     * Checks if the [labels] are connected from the [rootDeclaration] to the [declaration], by checking the [rootDeclaration] and its children until
+     * the [declaration] is found.
+     *
+     * @see findAllSubcommandDeclarationNames
+     *
+     * @param labels          the request labels in order
      * @param declaration     the declaration that must be found
      * @return the matched declaration
      */
