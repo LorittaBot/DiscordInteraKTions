@@ -8,7 +8,6 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.optional.Optional
 import dev.kord.common.entity.optional.coerceToMissing
 import dev.kord.common.entity.optional.map
-import dev.kord.common.entity.optional.mapList
 import dev.kord.common.entity.optional.optional
 import dev.kord.common.entity.optional.toPrimitive
 import dev.kord.rest.json.request.InteractionApplicationCommandCallbackData
@@ -20,21 +19,17 @@ import io.ktor.response.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.encodeToJsonElement
-import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
-import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
 import net.perfectdreams.discordinteraktions.common.context.manager.RequestManager
-import net.perfectdreams.discordinteraktions.common.entities.DummyMessage
 import net.perfectdreams.discordinteraktions.common.entities.Message
 import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.context.manager.HttpRequestManager
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordOriginalInteractionMessage
-import net.perfectdreams.discordinteraktions.platforms.kord.utils.toDiscordInteraKTionsSnowflake
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordOriginalInteractionEphemeralMessage
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordOriginalInteractionPublicMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordAllowedMentions
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordEmbedBuilder
 
@@ -124,11 +119,19 @@ class WebServerRequestManager(
             request
         )
 
-        return KordOriginalInteractionMessage(
-            rest,
-            applicationId,
-            interactionToken,
-            message.content
-        )
+        return if (message.isEphemeral)
+            KordOriginalInteractionEphemeralMessage(
+                rest,
+                applicationId,
+                interactionToken,
+                message.content
+            )
+        else
+            KordOriginalInteractionPublicMessage(
+                rest,
+                applicationId,
+                interactionToken,
+                message.content
+            )
     }
 }

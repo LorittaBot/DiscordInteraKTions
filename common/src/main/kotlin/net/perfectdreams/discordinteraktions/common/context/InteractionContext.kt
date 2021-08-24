@@ -1,7 +1,9 @@
 package net.perfectdreams.discordinteraktions.common.context
 
 import net.perfectdreams.discordinteraktions.api.entities.User
+import net.perfectdreams.discordinteraktions.common.entities.EphemeralMessage
 import net.perfectdreams.discordinteraktions.common.entities.Message
+import net.perfectdreams.discordinteraktions.common.entities.PublicMessage
 import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 import net.perfectdreams.discordinteraktions.common.utils.EphemeralMessageBuilder
 import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
@@ -31,17 +33,19 @@ abstract class InteractionContext(
         }
     }
 
-    suspend fun sendEphemeralMessage(block: EphemeralMessageBuilder.() -> (Unit)): Message {
+    suspend fun sendEphemeralMessage(block: EphemeralMessageBuilder.() -> (Unit)): EphemeralMessage {
         val message = buildEphemeralMessage(block)
-        return sendMessage(message)
+        // TODO: Improve the code below to always be sure that it will return an ephemeral message
+        return sendMessage(message) as EphemeralMessage // This will always return an ephemeral message
     }
 
-    suspend fun sendMessage(block: MessageBuilder.() -> (Unit)): Message {
+    suspend fun sendMessage(block: MessageBuilder.() -> (Unit)): PublicMessage {
         val message = buildMessage(block)
-        return sendMessage(message)
+        // TODO: Improve the code below to always be sure that it will return an public message
+        return sendMessage(message) as PublicMessage // This will always return an public message
     }
 
-    suspend fun sendMessage(message: InteractionMessage): Message {
+    private suspend fun sendMessage(message: InteractionMessage): Message {
         if (message.isEphemeral && message.files?.isNotEmpty() == true)
             error("Ephemeral messages cannot contain attachments!")
 

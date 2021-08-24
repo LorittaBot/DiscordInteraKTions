@@ -16,10 +16,10 @@ import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
 import net.perfectdreams.discordinteraktions.common.context.manager.RequestManager
-import net.perfectdreams.discordinteraktions.common.entities.DummyMessage
 import net.perfectdreams.discordinteraktions.common.entities.Message
 import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordOriginalInteractionMessage
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordOriginalInteractionEphemeralMessage
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordOriginalInteractionPublicMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordAllowedMentions
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordEmbedBuilder
 
@@ -110,11 +110,19 @@ class InitialHttpRequestManager(
             request
         )
 
-        return KordOriginalInteractionMessage(
-            rest,
-            applicationId,
-            interactionToken,
-            message.content
-        )
+        return if (message.isEphemeral)
+            KordOriginalInteractionEphemeralMessage(
+                rest,
+                applicationId,
+                interactionToken,
+                message.content
+            )
+        else
+            KordOriginalInteractionPublicMessage(
+                rest,
+                applicationId,
+                interactionToken,
+                message.content
+            )
     }
 }
