@@ -11,10 +11,11 @@ import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
 import net.perfectdreams.discordinteraktions.common.context.manager.RequestManager
-import net.perfectdreams.discordinteraktions.common.entities.messages.DummyMessage
 import net.perfectdreams.discordinteraktions.common.entities.messages.Message
 import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordEditedOriginalInteractionPublicMessage
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordEphemeralMessage
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordPublicMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordActionRowBuilder
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordAllowedMentions
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordEmbedBuilder
@@ -93,8 +94,10 @@ class HttpRequestManager(
             }
         )
 
-        return DummyMessage()
-        // return KordMessage(rest, applicationId, interactionToken, kordMessage)
+        return if (message.isEphemeral)
+            KordEphemeralMessage(kordMessage)
+        else
+            KordPublicMessage(kordMessage)
     }
 
     override suspend fun deferUpdateMessage() {
