@@ -214,16 +214,6 @@ repositories {
 }
 ```
 
-Then add the Discord InteraKTions dependency!
-
-```kotlin
-dependencies {
-    ...
-    implementation("net.perfectdreams.discordinteraktions:core:0.0.6-SNAPSHOT")
-    ...
-}
-```
-
 After that, you have two options on how to process and handle the interactions...
 
 #### Interactions via HTTP POST
@@ -235,7 +225,7 @@ Add the Kord Web Server via Ktor Support module to your project
 ```kotlin
 dependencies {
     ...
-    implementation("net.perfectdreams.discordinteraktions:webserver-ktor-kord:0.0.6-SNAPSHOT")
+    implementation("net.perfectdreams.discordinteraktions:webserver-ktor-kord:0.0.6")
     ...
 }
 ```
@@ -290,7 +280,7 @@ Add the Kord Gateway Support module to your project
 ```kotlin
 dependencies {
     ...
-    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.6-SNAPSHOT")
+    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.6")
     ...
 }
 ```
