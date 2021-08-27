@@ -1,12 +1,15 @@
-# Discord InteraKTions
 
-**Not finished yet so you shouldn't use it yet!!**
+<h1 align="center">👩‍💻 Discord InteraKTions 👩‍💻</h1>
 
-Discord InteraKTions allows you to create, receive and process [Discord's Slash Commands](https://discord.com/developers/docs/interactions/slash-commands) via a HTTP Web Server. Built on top of [Kord](https://github.com/kordlib/kord), using interactions is easy and fun!
+**🚧 Experiemental Project 🚧** / **Not finished yet so you shouldn't use it!!**
 
-## Status of Discord InteraKTions
+Discord InteraKTions allows you to create, receive and process [Discord's Application Commands](https://discord.com/developers/docs/interactions/application-commands) and [Message Components](https://discord.com/developers/docs/interactions/message-components) via a HTTP Web Server or via the Gateway. Built on top of [Kord](https://github.com/kordlib/kord), using interactions is easy and fun!
 
-Nothing works yet so you shouldn't use it!! (Okay *technically* sending messages already work)
+Discord InteraKTions is as barebones as it gets compared to other libs like [Kord Extensions](https://github.com/Kord-Extensions/kord-extensions), and this is intentional! While Discord InteraKTions does provide an easy way to create slash command declarations and slash command executors, the rest (dependency injection, paginator, translations, etc) is up to you to do it your own way!
+
+## 📝 Status of Discord InteraKTions
+
+While Discord InteraKTions has a bunch of nifty features, it still doesn't support everything! Keep in mind that Discord InteraKTions is still in active development and every commit is a new chance of breaking your code due to unnecessary refactors. Heck, even the examples below may be already out of date due to changes in the code! 😛
 
 * [X] Receiving Discord Interactions via Web Server/Webhooks
 * [X] Validating Discord Interactions via Web Server/Webhooks
@@ -16,128 +19,78 @@ Nothing works yet so you shouldn't use it!! (Okay *technically* sending messages
 * [X] Sending Follow Up Messages via REST
 * [X] Registering Slash Commands on Discord
 * [X] Subcommands and Subcommand Groups
-* [ ] Sending Embeds
-* [ ] Abstractions On Top of Kord
+* [X] Sending Embeds
+* [X] Abstractions On Top of Kord
+* [X] *(Experimental)* User/Message Commands (Context Menu)
+* [X] *(Experimental)* Buttons
+* [ ] Select Menus
+* [ ] Permissions
 * [ ] *Good* Documentation
 * [ ] Being a good project :3
 
-## How it Works
+## 🤔 How it Works
 
-Discord InteraKTions uses a Web Server (with [Ktor](https://ktor.io/)) ready to receive interactions from Discord! All of the "dirty work", like interaction request validation and parsing, is already done for you, so you only need to care about creating your nifty slash commands and having fun!
+### 📘 Examples
 
-Discord InteraKTions uses [Kord](https://github.com/kordlib/kord)'s `common` and `rest` modules for data serialization and REST interactions, keep in mind that Discord InteraKTions creates a abstraction layer between Discord InteraKTions and Kord, to avoid interacting *directly* with Kord's 1:1 Discord mappings. (Which is a good and ver cool thing that Kord works like that! You can create your abstractions on top of Kord very easily!)
+Discord InteraKTions is also an abstraction on top of other libraries, instead of using their classes directly when coding commands, this is to avoid rewriting all of your commands just because you want to switch the underlying libraries with something else. Your code also doesn't care if it is receiving interactions over HTTP or over the gateway, it is all the same thing for them!
 
-Discord Interactions has a very nice thing that you can reply to a interaction directly on Discord's POST request, but you can also defer the message (if you are going to take more than three seconds to process it) and/or send follow up messages. Discord InteraKTions automatically handles deferring and message follow ups via REST, so if your command is like this:
+All of the "dirty work", like interaction request validation and parsing, is already done for you, so you only need to care about creating your nifty slash commands and having fun!
 
-```kotlin
-override suspend fun execute(context: SlashCommandContext, args: SlashCommandArguments) {
-    context.sendMessage {
-        content = "Hello World! Loritta is very cute!! :3"
-    }
-}
-```
+Discord InteraKTions uses [Kord](https://github.com/kordlib/kord)'s `common` and `rest` modules for data serialization and REST interactions, keep in mind that Discord InteraKTions creates a abstraction layer between Discord InteraKTions and Kord, to avoid interacting *directly* with Kord's 1:1 Discord mappings.
 
-Discord InteraKTions will handle this as "reply directly on Discord's POST request", which is nice because you avoid consuming rate limits and is pretty useful if your command won't take more than three seconds to process.
-
-But if your command is like this
-```kotlin
-override suspend fun execute(context: SlashCommandContext, args: SlashCommandArguments) {
-    context.sendMessage {
-        content = "Hello World! Loritta is very cute!! :3"
-    }
-
-    context.sendMessage {
-        content = "Bye World! Pantufa and Gabriela are also very cute!! :3"
-    }
-}
-```
-The first `sendMessage` will be processed as a "reply directly on Discord's POST request" while the second one will be sent as a follow up message via REST.
-
-You can of course handle deferring yourself, if you already know that your command replies will need to be deferred due to your processing taking too long (example: image processing, pulling stuff from a external slow API, etc)
-```kotlin
-override suspend fun execute(context: SlashCommandContext, args: SlashCommandArguments) {
-    context.defer() // Defer the message, we will follow up later
-
-    delay(10_000) // Very slow task here
-
-    context.sendMessage {
-        content = "We searched everywhere on the world, and we found out that Loritta is still very cute!! :3"
-    }
-}
-```
-
-## Modules
-
-### `core`
-
-Contains the web server and other nifty stuff.
-
-### `interaction-declarations`
-
-Contains the classes related to declaration of slash commands.
-
-### `requests-verifier`
-
-Contains the code used to verify Discord requests, useful if you want to create your own way to process Discord requests with your own Web Server!
+First, let's see how a command looks like, just so you can get a feel on how you will be using Discord InteraKTions when developing your commands. Don't worry, we will explain how everything works, with more detailed examples down the road. In this example, we will use the Web Server backend.
 
 ```kotlin
-val keyVerifier = InteractionRequestVerifier(publicKey)
+suspend fun main() {
+    val interactionsServer = InteractionsServer(
+        12345L, // Your application ID, get it from the Discord Developers' dashboard!
+        "application_public_key_here", // The application's public key, get it from the Discord Developers' dashboard!
+        "application_token_here", // The application's token, get it from the Discord Developers' dashboard!
+        12212 // The webserver port
+    )
 
-...
+    // Register the command...
+    // Keep in mind that you need to register all the executors used in the declarations!
+    interactionsServer.commandManager.register(
+        CharacterCommand,   // The declaration of the command
+        CharacterExecutor() // All executors related to that command, this argument is a vararg!
+    )
 
-val signature = call.request.header("X-Signature-Ed25519")!!
-val timestamp = call.request.header("X-Signature-Timestamp")!!
+    // And now we will create our command registry!
+    // You may be wondering: "Why this can't be in the CommandManager?"
+    // Because CommandManager does not know what platform we are using, we may be using another lib that isn't Kord!
+    // So we need to create the command registry with our command manager!
+    val registry = KordCommandRegistry(
+        Snowflake(12345L), // Your application ID, get it from the Discord Developers' dashboard!
+        interactionsServer.rest,
+        interactionsServer.commandManager
+    )
 
-val verified = keyVerifier.verifyKey(
-    text,
-    signature,
-    timestamp
-)
+    // And now update all commands registered in our command manager!
+    registry.updateAllCommandsInGuild(
+        Snowflake(40028922L), // Change to your Guild ID
+        // This compares the currently registered commands on Discord with the commands in the Command Manager
+        // If a command is missing from the Command Manager but is present on Discord, it is deleted from Discord!
+        true
+    )
 
-if (!verified) {
-    // Request is not valid, oh no...
-    call.respondText("", ContentType.Application.Json, HttpStatusCode.Unauthorized)
-    return
+    interactionsServer.start() // This starts the interactions web server on port 12212!
+
+    // Now we are live! Set your interaction URL on Discord's Developer Portal and have fun!
+    //
+    // Don't forget that your Web Server should be accessible from the outside world!
+    // If you are doing this for tests & stuff, you can use ngrok or a SSH Reverse Tunnel
 }
 
-// Request is valid, yay!
-```
-
-## How to Use
-
-### Installation
-
-First, add the PerfectDreams repository to your project
-
-```kotlin
-repositories {
-    maven("https://oss.sonatype.org/content/repositories/snapshots") // Required by Kord
-    maven("https://repo.perfectdreams.net/")
-}
-```
-
-Then add the Discord InteraKTions dependency!
-
-```kotlin
-dependencies {
-    ...
-    implementation("net.perfectdreams.discordinteraktions:core:0.0.4-SNAPSHOT")
-    ...
-}
-```
-
-### Creating Slash Commands
-
-First we need to create a Slash Command, here's a example of how you can create your own
-
-```kotlin
 // This is the slash command declaration, this is used when registering the command on Discord
 //
 // The reason it is a companion object is to allow you to register the command on Discord without
 // needing to initialize the command class! (which can be a *pain* if your command requires dependency injection)
-object CharacterCommand : SlashCommandDeclaration {
-    override fun declaration() = slashCommand("character") { // The command label
-        description = "So many choices, so little time..." // The command description shown in the Discord UI
+object CharacterCommand : SlashCommandDeclarationWrapper {
+    override fun declaration() = slashCommand(
+        "character", // The command label
+        "So many choices, so little time..." // The command description shown in the Discord UI
+    ) {
         executor = CharacterExecutor // This is a reference to what executor should execute the command
     }
 }
@@ -159,7 +112,7 @@ class CharacterExecutor : SlashCommandExecutor() {
         }
     }
 
-    override suspend fun execute(context: SlashCommandContext, args: SlashCommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         val character = args[options.character] // This is a "String" because the option is required
         val repeatCount = args[options.repeat] ?: 1 // This is a "Int?" because the option is not required (optional)
 
@@ -190,33 +143,137 @@ class CharacterExecutor : SlashCommandExecutor() {
 }
 ```
 
+Too much happening, eh? Don't worry, now let's see things in a bite size manner.
+
+Discord Interactions has a very nice thing that you can reply to a interaction directly on Discord's POST request, but you can also defer the message (if you are going to take more than three seconds to process it) and/or send follow up messages. Discord InteraKTions automatically handles deferring and message follow ups via REST, so if your command is like this:
+
+```kotlin
+override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+    context.sendMessage {
+        content = "Hello World! Loritta is very cute!! :3"
+    }
+}
+```
+
+If you already used interactions before, you will notice that there isn't `defer` call of any kind here, this is because Discord InteraKTions knows that the request wasn't deferred and then responds the interaction with the `Create Interaction Response` API call! On a webserver backend, the request is replied directly on Discord's POST request, avoiding consuming rate limits and sending HTTP requests to Discord!
+
+But if your command is like this...
+
+```kotlin
+override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+    context.sendMessage {
+        content = "Hello World! Loritta is very cute!! :3"
+    }
+
+    context.sendMessage {
+        content = "Bye World! Pantufa and Gabriela are also very cute!! :3"
+    }
+}
+```
+
+The first `sendMessage` will be processed as a  `Create Interaction Response`, while the second `sendMessage` will be processed as a follow up message using the `Create Followup Message` API call.
+
+Of course, Discord InteraKTions does not magically know how long your tasks take to be finished (example: image processing, pulling stuff from a external slow API, etc), because Discord has a max 3 second limit to send a interaction response, so in those cases, you need to handle deferring yourself to avoid a "Interaction Failed"!
+
+```kotlin
+override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+    context.deferChannelMessage() // Defer the message, we will follow up later
+
+    delay(10_000) // Very slow task here
+
+    context.sendMessage {
+        content = "We searched everywhere on the world, and we found out that Loritta is still very cute!! :3"
+    }
+}
+```
+
+In this case, the interaction will be deferred and then later edited with the `Edit Original Interaction Response` API call.
+
+You can also upload files with Discord InteraKTions!
+
+```kotlin
+override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+    context.sendMessage {
+        content = "haha funni image"
+
+        file("image.png", File("/path/to/file/image.png").inputStream())
+    }
+}
+```
+
+If you already used interactions before, you know that you can't send images in the `Create Interaction Response` API call, so in this case, Discord InteraKTions will automatically defer and then use the `Edit Original Interaction Response` call!
+
+### 🛠️ Installation
+
+First, add the PerfectDreams repository to your project
+
+```kotlin
+repositories {
+    maven("https://oss.sonatype.org/content/repositories/snapshots") // Required by Kord
+    maven("https://repo.perfectdreams.net/")
+}
+```
+
+Then add the Discord InteraKTions dependency!
+
+```kotlin
+dependencies {
+    ...
+    implementation("net.perfectdreams.discordinteraktions:core:0.0.6-SNAPSHOT")
+    ...
+}
+```
+
 After that, you have two options on how to process and handle the interactions...
 
 #### Interactions via HTTP POST
 
+##### Kord and Ktor
+
+Add the Kord Web Server via Ktor Support module to your project
+
 ```kotlin
-val interactions = InteractionsServer(
-    applicationId = 12345L, // Change the Application ID to your Bot's Application ID
-    publicKey = "bot_public_key_here",
-    token = "bot_token_here"
+dependencies {
+    ...
+    implementation("net.perfectdreams.discordinteraktions:webserver-ktor-kord:0.0.6-SNAPSHOT")
+    ...
+}
+```
+
+```kotlin
+val interactionsServer = InteractionsServer(
+    12345L, // Your application ID, get it from the Discord Developers' dashboard!
+    "application_public_key_here", // The application's public key, get it from the Discord Developers' dashboard!
+    "application_token_here", // The application's token, get it from the Discord Developers' dashboard!
+    12212 // The webserver port
 )
 
 // Register the command...
-// Keep in mind that you need to register all the executors used in the declarations!
-interactions.commandManager.register(
-    CharacterCommand,
-    CharacterExecutor()
+ // Keep in mind that you need to register all the executors used in the declarations!
+interactionsServer.commandManager.register(
+    CharacterCommand,   // The declaration of the command
+    CharacterExecutor() // All executors related to that command, this argument is a vararg!
 )
 
-// And now register all commands registered in our command manager!
-interactions.commandManager.updateAllCommandsInGuild(
+// And now we will create our command registry!
+// You may be wondering: "Why this can't be in the CommandManager?"
+// Because CommandManager does not know what platform we are using, we may be using another lib that isn't Kord!
+// So we need to create the command registry with our command manager!
+val registry = KordCommandRegistry(
+    Snowflake(12345L), // Your application ID, get it from the Discord Developers' dashboard!
+    interactionsServer.rest,
+    interactionsServer.commandManager
+)
+
+// And now update all commands registered in our command manager!
+registry.updateAllCommandsInGuild(
     Snowflake(40028922L), // Change to your Guild ID
     // This compares the currently registered commands on Discord with the commands in the Command Manager
     // If a command is missing from the Command Manager but is present on Discord, it is deleted from Discord!
-    deleteUnknownCommands = true
+    true
 )
 
-interactions.start() // This starts the interactions web server on port 12212!
+interactionsServer.start() // This starts the interactions web server on port 12212!
 
 // Now we are live! Set your interaction URL on Discord's Developer Portal and have fun!
 //
@@ -224,7 +281,7 @@ interactions.start() // This starts the interactions web server on port 12212!
 // If you are doing this for tests & stuff, you can use ngrok or a SSH Reverse Tunnel
 ```
 
-#### Interactions via the Gateway 
+#### Interactions via the Gateway
 
 ##### Kord
 
@@ -233,7 +290,7 @@ Add the Kord Gateway Support module to your project
 ```kotlin
 dependencies {
     ...
-    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.4-SNAPSHOT")
+    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.6-SNAPSHOT")
     ...
 }
 ```
@@ -248,14 +305,29 @@ suspend fun main() {
         applicationId
     )
 
-    commandManager.register(CharacterCommand())
+    // Register the command...
+    // Keep in mind that you need to register all the executors used in the declarations!
+    commandManager.register(
+        CharacterCommand,   // The declaration of the command
+        CharacterExecutor() // All executors related to that command, this argument is a vararg!
+    )
 
-    // And now register all commands registered in our command manager!
-    commandManager.updateAllCommandsInGuild(
+    // And now we will create our command registry!
+    // You may be wondering: "Why this can't be in the CommandManager?"
+    // Because CommandManager does not know what platform we are using, we may be using another lib that isn't Kord!
+    // So we need to create the command registry with our command manager!
+    val registry = KordCommandRegistry(
+        Snowflake(12345L), // Your application ID, get it from the Discord Developers' dashboard!
+        interactionsServer.rest,
+        interactionsServer.commandManager
+    )
+
+    // And now update all commands registered in our command manager!
+    registry.updateAllCommandsInGuild(
         Snowflake(40028922L), // Change to your Guild ID
         // This compares the currently registered commands on Discord with the commands in the Command Manager
         // If a command is missing from the Command Manager but is present on Discord, it is deleted from Discord!
-        deleteUnknownCommands = true
+        true
     )
 
     client.gateway.gateways.forEach {
@@ -266,4 +338,53 @@ suspend fun main() {
     
     client.login()
 }
+```
+
+## 📦 Modules
+
+### `common`
+
+Contains Discord InteraKTions' API and other nifty stuff.
+
+### `interaction-declarations`
+
+Contains the classes related to declaration of slash commands.
+
+### `platforms:common-kord`
+
+Common classes used for Kord platforms.
+
+### `platforms:gateway-kord`
+
+Implementation of the Discord InteraKTions' API using Kord, running interactions over the gateway.
+
+### `platforms:webserver-ktor-kord`
+
+Implementation of the Discord InteraKTions' API using Kord, running interactions over HTTP with a [Ktor](https://ktor.io/) Web Server.
+
+### `requests-verifier`
+
+Contains the code used to verify Discord requests, useful if you want to create your own way to process Discord requests with your own Web Server!
+
+```kotlin
+val keyVerifier = InteractionRequestVerifier(publicKey)
+
+...
+
+val signature = call.request.header("X-Signature-Ed25519")!!
+val timestamp = call.request.header("X-Signature-Timestamp")!!
+
+val verified = keyVerifier.verifyKey(
+    text,
+    signature,
+    timestamp
+)
+
+if (!verified) {
+    // Request is not valid, oh no...
+    call.respondText("", ContentType.Application.Json, HttpStatusCode.Unauthorized)
+    return
+}
+
+// Request is valid, yay!
 ```
