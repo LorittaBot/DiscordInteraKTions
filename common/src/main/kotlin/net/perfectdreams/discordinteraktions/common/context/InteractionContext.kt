@@ -2,11 +2,8 @@ package net.perfectdreams.discordinteraktions.common.context
 
 import net.perfectdreams.discordinteraktions.api.entities.User
 import net.perfectdreams.discordinteraktions.common.entities.messages.EphemeralMessage
-import net.perfectdreams.discordinteraktions.common.entities.messages.EphemeralThinkingMessage
 import net.perfectdreams.discordinteraktions.common.entities.messages.Message
 import net.perfectdreams.discordinteraktions.common.entities.messages.PublicMessage
-import net.perfectdreams.discordinteraktions.common.entities.messages.PublicThinkingMessage
-import net.perfectdreams.discordinteraktions.common.entities.messages.ThinkingMessage
 import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 import net.perfectdreams.discordinteraktions.common.utils.EphemeralMessageBuilder
 import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
@@ -21,37 +18,28 @@ abstract class InteractionContext(
 ) {
     val isDeferred
         get() = bridge.state.value != InteractionRequestState.NOT_REPLIED_YET
-
-    private var thinkingMessage: ThinkingMessage? = null
-    val wasInitiallyDeferredEphemerally: Boolean
-        get() = thinkingMessage is EphemeralThinkingMessage
+    var wasInitiallyDeferredEphemerally = false
 
     /**
      * Defers the application command request message with a public message
-     *
-     * @return the "Bot is thinking..." message, you can use it to edit the message
      */
-    suspend fun deferChannelMessage(): PublicThinkingMessage {
+    suspend fun deferChannelMessage() {
         if (isDeferred)
             error("Trying to defer something that was already deferred!")
 
-        val message = bridge.manager.deferChannelMessage()
-        this.thinkingMessage = message
-        return message
+        bridge.manager.deferChannelMessage()
+        wasInitiallyDeferredEphemerally = false
     }
 
     /**
      * Defers the application command request message with a ephemeral message
-     *
-     * @return the "Bot is thinking..." message, you can use it to edit the message
      */
-    suspend fun deferChannelMessageEphemerally(): EphemeralThinkingMessage {
+    suspend fun deferChannelMessageEphemerally() {
         if (isDeferred)
             error("Trying to defer something that was already deferred!")
 
-        val message = bridge.manager.deferChannelMessageEphemerally()
-        this.thinkingMessage = message
-        return message
+        bridge.manager.deferChannelMessageEphemerally()
+        wasInitiallyDeferredEphemerally = true
     }
 
     suspend fun sendEphemeralMessage(block: EphemeralMessageBuilder.() -> (Unit)): EphemeralMessage {
@@ -67,9 +55,6 @@ abstract class InteractionContext(
     }
 
     private suspend fun sendMessage(message: InteractionMessage): Message {
-        if (thinkingMessage != null && bridge.state.value == InteractionRequestState.DEFERRED_CHANNEL_MESSAGE)
-            error("You can't send a message if you haven't edited your deferred message yet! Use \"editMessage(...)\" in your deferred message if you want to change the \"Thinking\" message!")
-
         if (message.isEphemeral && message.files?.isNotEmpty() == true)
             error("Ephemeral messages cannot contain attachments!")
 
@@ -84,9 +69,7 @@ abstract class InteractionContext(
         if (message.files?.isNotEmpty() == true && !isDeferred) {
             // If the message has files and our current bridge state is "NOT_REPLIED_YET", then it means that we need to defer before sending the file!
             // (Because currently you can only send files by editing the original interaction message or with a follow up message
-            val thinkingMessage = deferChannelMessage()
-            // TODO: Defer and update the thinking message, and then return the edited message
-            TODO()
+            deferChannelMessage()
         }
 
         return bridge.manager.sendMessage(message)

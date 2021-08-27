@@ -97,11 +97,11 @@ class HttpRequestManager(
         // return KordMessage(rest, applicationId, interactionToken, kordMessage)
     }
 
-    override suspend fun deferEditMessage() {
+    override suspend fun deferUpdateMessage() {
         TODO("Not yet implemented")
     }
 
-    override suspend fun editMessage(message: InteractionMessage, isEphemeral: Boolean): Message {
+    override suspend fun updateMessage(message: InteractionMessage, isEphemeral: Boolean): Message {
         val newMessage = rest.interaction.modifyInteractionResponse(
             applicationId,
             interactionToken,
@@ -110,9 +110,12 @@ class HttpRequestManager(
                 this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
                 this.embeds = message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.toMutableList()
 
-                val filePairs = message.files?.map { it.key to it.value }
-                if (filePairs != null)
-                    files?.addAll(filePairs)
+                if (message.removeAlreadyUploadedFiles) {
+                    println("Removing already uploaded files...")
+                    this.files = mutableListOf()
+                }
+
+                this.files = message.files?.map { it.key to it.value }?.toMutableList()
             }.toRequest()
         )
 
@@ -122,6 +125,5 @@ class HttpRequestManager(
             interactionToken,
             newMessage
         )
-        TODO("Not yet implemented")
     }
 }

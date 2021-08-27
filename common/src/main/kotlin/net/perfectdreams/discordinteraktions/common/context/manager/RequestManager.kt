@@ -1,9 +1,7 @@
 package net.perfectdreams.discordinteraktions.common.context.manager
 
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
-import net.perfectdreams.discordinteraktions.common.entities.messages.EphemeralThinkingMessage
 import net.perfectdreams.discordinteraktions.common.entities.messages.Message
-import net.perfectdreams.discordinteraktions.common.entities.messages.PublicThinkingMessage
 import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
 
 abstract class RequestManager(val bridge: RequestBridge) {
@@ -13,7 +11,7 @@ abstract class RequestManager(val bridge: RequestBridge) {
      *
      * The user will just see a loading status for the interaction.
      */
-    abstract suspend fun deferChannelMessage(): PublicThinkingMessage
+    abstract suspend fun deferChannelMessage()
 
     /**
      * A deferred response is the one that you can use to
@@ -21,7 +19,7 @@ abstract class RequestManager(val bridge: RequestBridge) {
      *
      * The user will just see a loading status for the interaction.
      */
-    abstract suspend fun deferChannelMessageEphemerally(): EphemeralThinkingMessage
+    abstract suspend fun deferChannelMessageEphemerally()
 
     /**
      * The usual way of sending messages to a specific channel/user.
@@ -34,10 +32,10 @@ abstract class RequestManager(val bridge: RequestBridge) {
      *
      * The user will not see a loading status for the interaction.
      */
-    abstract suspend fun deferEditMessage()
+    abstract suspend fun deferUpdateMessage()
 
     /**
      * The usual way of editing a message to a specific channel/user.
      */
-    abstract suspend fun editMessage(message: InteractionMessage, isEphemeral: Boolean): Message
+    abstract suspend fun updateMessage(message: InteractionMessage, isEphemeral: Boolean): Message
 }

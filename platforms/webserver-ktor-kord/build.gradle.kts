@@ -12,6 +12,7 @@ dependencies {
     api(project(":requests-verifier"))
     api(project(":common"))
     api(project(":platforms:common-kord"))
+    implementation("dev.kord:kord-rest:0.8.x-SNAPSHOT")
     implementation("io.ktor:ktor-server-netty:1.6.0")
 
     // Async Appender is broken in alpha5

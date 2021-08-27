@@ -8,6 +8,7 @@ fun buildEphemeralMessage(block: EphemeralMessageBuilder.() -> (Unit)): Interact
     return InteractionMessage(
         result.content.orEmpty(),
         result.tts,
+        false,
         null,
         result.embeds,
         result.allowedMentions,

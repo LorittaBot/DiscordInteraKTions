@@ -7,6 +7,7 @@ import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.common.entities.messages.EphemeralMessage
 import net.perfectdreams.discordinteraktions.common.utils.EphemeralMessageBuilder
 import net.perfectdreams.discordinteraktions.common.utils.buildEphemeralMessage
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordActionRowBuilder
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordAllowedMentions
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordEmbedBuilder
 
@@ -25,6 +26,7 @@ class KordEditedOriginalInteractionEphemeralMessage(
                 this.content = message.content
                 this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
                 this.embeds = message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.toMutableList()
+                this.components = message.components?.map { it.toKordActionRowBuilder() }?.toMutableList()
             }.toRequest()
         )
 

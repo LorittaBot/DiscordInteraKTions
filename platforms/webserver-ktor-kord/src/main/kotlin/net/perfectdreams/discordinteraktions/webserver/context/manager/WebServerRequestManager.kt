@@ -64,7 +64,7 @@ class WebServerRequestManager(
         require(bridge.state.value == InteractionRequestState.NOT_REPLIED_YET) { "HttpRequestManager should be in the NOT_REPLIED_YET state!" }
     }
 
-    override suspend fun deferChannelMessage(): PublicThinkingMessage {
+    override suspend fun deferChannelMessage() {
         call.respondText(
             buildJsonObject {
                 put("type", InteractionResponseType.DeferredChannelMessageWithSource.type)
@@ -81,16 +81,9 @@ class WebServerRequestManager(
             interactionToken,
             request
         )
-
-        return KordPublicThinkingMessage(
-            rest,
-            applicationId,
-            interactionToken,
-            bridge
-        )
     }
 
-    override suspend fun deferChannelMessageEphemerally(): EphemeralThinkingMessage {
+    override suspend fun deferChannelMessageEphemerally() {
         call.respondText(
             buildJsonObject {
                 put("type", InteractionResponseType.DeferredChannelMessageWithSource.type)
@@ -110,13 +103,6 @@ class WebServerRequestManager(
             applicationId,
             interactionToken,
             request
-        )
-
-        return KordEphemeralThinkingMessage(
-            rest,
-            applicationId,
-            interactionToken,
-            bridge
         )
     }
 
@@ -169,7 +155,7 @@ class WebServerRequestManager(
             )
     }
 
-    override suspend fun deferEditMessage() {
+    override suspend fun deferUpdateMessage() {
         logger.info { "Deferring interaction..." }
 
         call.respondText(
@@ -190,7 +176,7 @@ class WebServerRequestManager(
         )
     }
 
-    override suspend fun editMessage(message: InteractionMessage, isEphemeral: Boolean): Message {
+    override suspend fun updateMessage(message: InteractionMessage, isEphemeral: Boolean): Message {
         call.respondText(
             Json.encodeToString(
                 InteractionResponseCreateRequest(

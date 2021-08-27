@@ -53,7 +53,7 @@ class InitialHttpRequestManager(
         require(bridge.state.value == InteractionRequestState.NOT_REPLIED_YET) { "HttpRequestManager should be in the NOT_REPLIED_YET state!" }
     }
 
-    override suspend fun deferChannelMessage(): PublicThinkingMessage {
+    override suspend fun deferChannelMessage() {
         rest.interaction.createInteractionResponse(
             request.id,
             interactionToken,
@@ -72,16 +72,9 @@ class InitialHttpRequestManager(
             interactionToken,
             request
         )
-
-        return KordPublicThinkingMessage(
-            rest,
-            applicationId,
-            interactionToken,
-            bridge
-        )
     }
 
-    override suspend fun deferChannelMessageEphemerally(): EphemeralThinkingMessage {
+    override suspend fun deferChannelMessageEphemerally() {
         rest.interaction.createInteractionResponse(
             request.id,
             interactionToken,
@@ -103,13 +96,6 @@ class InitialHttpRequestManager(
             applicationId,
             interactionToken,
             request
-        )
-
-        return KordEphemeralThinkingMessage(
-            rest,
-            applicationId,
-            interactionToken,
-            bridge
         )
     }
 
@@ -175,11 +161,11 @@ class InitialHttpRequestManager(
             )
     }
 
-    override suspend fun deferEditMessage() {
+    override suspend fun deferUpdateMessage() {
         TODO("Not yet implemented")
     }
 
-    override suspend fun editMessage(message: InteractionMessage, isEphemeral: Boolean): Message {
+    override suspend fun updateMessage(message: InteractionMessage, isEphemeral: Boolean): Message {
         TODO("Not yet implemented")
     }
 }

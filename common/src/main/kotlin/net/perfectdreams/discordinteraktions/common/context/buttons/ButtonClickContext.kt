@@ -17,18 +17,18 @@ class ButtonClickContext(
     val message: Message,
     data: InteractionData
 ) : InteractionContext(bridge, sender, data) {
-    suspend fun deferEditMessage() {
+    suspend fun deferUpdateMessage() {
         if (!isDeferred) {
-            bridge.manager.deferEditMessage()
+            bridge.manager.deferUpdateMessage()
         }
     }
 
-    suspend fun editMessage(block: MessageBuilder.() -> (Unit)): Message {
+    suspend fun updateMessage(block: MessageBuilder.() -> (Unit)): Message {
         val message = buildMessage(block)
-        return editMessage(message)
+        return updateMessage(message)
     }
 
-    private suspend fun editMessage(message: InteractionMessage): Message {
+    private suspend fun updateMessage(message: InteractionMessage): Message {
         if (message.isEphemeral && message.files?.isNotEmpty() == true)
             error("Ephemeral messages cannot contain attachments!")
 
@@ -43,11 +43,10 @@ class ButtonClickContext(
         if (message.files?.isNotEmpty() == true && !isDeferred) {
             // If the message has files and our current bridge state is "NOT_REPLIED_YET", then it means that we need to defer before sending the file!
             // (Because currently you can only send files by editing the original interaction message or with a follow up message
-            // deferChannelMessage(false)
             // TODO: Fix this
-            TODO()
+            deferUpdateMessage()
         }
 
-        return bridge.manager.editMessage(message, this.message is EphemeralMessage)
+        return bridge.manager.updateMessage(message, this.message is EphemeralMessage)
     }
 }

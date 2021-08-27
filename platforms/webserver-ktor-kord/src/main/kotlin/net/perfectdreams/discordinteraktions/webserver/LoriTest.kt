@@ -36,19 +36,7 @@ suspend fun main() {
 
     interactionsServer.commandManager.register(
         TestCommand,
-        TestCommandExecutor(),
-        TestCommand2Executor(),
-        TestEmbedExecutor()
-    )
-
-    interactionsServer.commandManager.register(
-        TestUserCommand,
-        TestUserExecutor()
-    )
-
-    interactionsServer.commandManager.register(
-        TestMessageCommand,
-        TestMessageExecutor()
+        TestCommandExecutor()
     )
 
     interactionsServer.commandManager.register(
@@ -72,208 +60,32 @@ suspend fun main() {
     interactionsServer.start()
 }
 
-object TestUserCommand : UserCommandDeclarationWrapper {
-    override fun declaration() = userCommand("View User's Avatar", TestUserExecutor)
-}
-
-class TestUserExecutor : UserCommandExecutor() {
-    companion object : UserCommandExecutorDeclaration(TestUserExecutor::class)
-
-    override suspend fun execute(context: ApplicationCommandContext, targetUser: User, targetMember: Member?) {
-        context.sendEphemeralMessage {
-            content = "owo whats this??? ${targetUser.avatar.url}"
-        }
-
-        if (targetMember != null) {
-            context.sendEphemeralMessage {
-                content = "E você sabia que esse dai tem os cargos ${targetMember.roles}???"
-            }
-        }
-    }
-}
-
-object TestMessageCommand : MessageCommandDeclarationWrapper {
-    override fun declaration() = messageCommand("Furrify", TestMessageExecutor)
-}
-
-class TestMessageExecutor : MessageCommandExecutor() {
-    companion object : MessageCommandExecutorDeclaration(TestMessageExecutor::class)
-
-    override suspend fun execute(context: ApplicationCommandContext, targetMessage: Message) {
-        context.sendMessage {
-            content = furrify(targetMessage.content)
-        }
-    }
-
-    val replacements = mapOf(
-        "tal" to "taw",
-        "quer" to "quew",
-        "ser" to "sew",
-        "dir" to "diw",
-        "per" to "pew",
-        "par" to "paw",
-        "eat" to "eaw",
-        "vez" to "vew",
-        "isso" to "issu",
-        "dio" to "diu",
-        "bado" to "bad",
-        "dos" to "dus",
-        "mente" to "ment",
-        "servidor" to "servidOwOr",
-        "Loritta" to "OwOrittaw",
-        "R" to "W",
-        "L" to "W",
-        "ow" to "OwO",
-        "no" to "nu",
-        "has" to "haz",
-        "have" to "haz",
-        "you" to "uu",
-        "the " to "da ",
-        "fofo" to "foof",
-        "fofa" to "foof",
-        "ito" to "it",
-        "dade" to "dad",
-        "tando" to "tand",
-        "ens" to "e",
-        "tas" to "ts",
-        "quanto" to "quant",
-        "ente" to "ent",
-        "não" to "naum"
-    )
-
-    val suffixes = listOf(
-        ":3",
-        "UwU",
-        "ʕʘ‿ʘʔ",
-        ">_>",
-        "^_^",
-        "^-^",
-        ";_;",
-        ";-;",
-        "xD",
-        "x3",
-        ":D",
-        ":P",
-        ";3",
-        "XDDD",
-        "ㅇㅅㅇ",
-        "(人◕ω◕)",
-        "（＾ｖ＾）",
-        ">_<"
-    )
-
-    fun furrify(input: String): String {
-        var new = input
-
-        val suffix = when {
-            new.contains("triste", true) || new.contains("desculp", true) || new.contains("sorry", true) -> ">_<"
-            new.contains("parabéns", true) -> "(人◕ω◕)"
-            else -> suffixes.random(Random(new.hashCode()))
-        }
-
-        for ((from, to) in replacements) {
-            new = new.replace(from, to)
-        }
-
-        new += " $suffix"
-        new = new.trim()
-
-        return new
-    }
-}
-
 object TestCommand : SlashCommandDeclarationWrapper {
     override fun declaration() = slashCommand("test", "test owo") {
-        subcommandGroup("ayaya", "test group") {
-            subcommand("test", "test cmd") {
-                executor = TestCommandExecutor
-            }
-
-            subcommand("test2", "test cmd2") {
-                executor = TestCommand2Executor
-            }
-
-            subcommand("testembed", "tests an embed") {
-                executor = TestEmbedExecutor
-            }
-        }
+        executor = TestCommandExecutor
     }
 }
 
 class TestCommandExecutor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(TestCommandExecutor::class) {
-        object Options : CommandOptions() {
-            val integer = integer("test", "an integer idk")
-                .choice(1, "haha, one!")
-                .choice(2, "owo")
-                .register()
-
-            val ayaya = optionalBoolean("ayaya", "ayaya?")
-                .register()
-
-            val user = optionalUser("user", "The user, maybe, idk")
-                .register()
-        }
-
-        override val options = Options
-    }
+    companion object : SlashCommandExecutorDeclaration(TestCommandExecutor::class)
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        // Defers the message
+        context.deferChannelMessage()
+
         context.sendMessage {
-            content = "hello world!"
+            content = "owo"
 
-            actionRow {
-                interactiveButton(
-                    ButtonStyle.Primary,
-                    "ayaya",
-                    TestClickExecutor
-                )
-            }
-        }
-    }
-}
+            file("gessy_pistola.png", File("L:\\Pictures\\gessy_pistola.png").inputStream())
 
-class TestCommand2Executor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(TestCommand2Executor::class) {
-        object Options : CommandOptions() {
-            val test = string("test", "an string idk")
-                .register()
-        }
-
-        override val options = Options
-    }
-
-    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-        context.sendMessage {
-            content = "Text: ${args[Options.test]}"
-
-            allowedMentions = AllowedMentions(
-                listOf(),
-                listOf(),
-                true
-            )
-        }
-    }
-}
-
-class TestEmbedExecutor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(TestEmbedExecutor::class)
-
-    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-        context.sendMessage {
-            embed {
-                title = "Hello world!"
-                description = "ayaya"
-
-                color(0, 181, 255)
-                author("Loritta", "https://loritta.website/", "https://cdn.discordapp.com/emojis/585938576907305004.png?v=1")
-                image("https://cdn.discordapp.com/emojis/585938576907305004.png?v=1")
-                thumbnail("https://cdn.discordapp.com/emojis/585938576907305004.png?v=1")
-
-                inlineField("ayaya", "uwu")
-                inlineField("owo!!!", "yay")
-
-                footer("Google", "https://google.com")
+            components {
+                actionRow {
+                    interactiveButton(
+                        ButtonStyle.Primary,
+                        "Clique!",
+                        TestClickExecutor
+                    )
+                }
             }
         }
     }
