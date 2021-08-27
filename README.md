@@ -30,13 +30,13 @@ While Discord InteraKTions has a bunch of nifty features, it still doesn't suppo
 
 ## 🤔 How it Works
 
-### 📘 Examples
-
-Discord InteraKTions is also an abstraction on top of other libraries, instead of using their classes directly when coding commands, this is to avoid rewriting all of your commands just because you want to switch the underlying libraries with something else. Your code also doesn't care if it is receiving interactions over HTTP or over the gateway, it is all the same thing for them!
+Discord InteraKTions is an abstraction on top of other libraries, instead of using their classes directly when coding commands, this is to avoid rewriting all of your commands just because you want to switch the underlying libraries with something else. Also, your code also doesn't care if it is receiving interactions over HTTP or over the gateway, it is all the same thing for them!
 
 All of the "dirty work", like interaction request validation and parsing, is already done for you, so you only need to care about creating your nifty slash commands and having fun!
 
-Discord InteraKTions uses [Kord](https://github.com/kordlib/kord)'s `common` and `rest` modules for data serialization and REST interactions, keep in mind that Discord InteraKTions creates a abstraction layer between Discord InteraKTions and Kord, to avoid interacting *directly* with Kord's 1:1 Discord mappings.
+Discord InteraKTions' Web Server and Gateway modules uses [Kord](https://github.com/kordlib/kord)'s `common` and `rest` modules for data serialization and REST interactions, keep in mind that Discord InteraKTions creates a abstraction layer between Discord InteraKTions and Kord, to avoid interacting *directly* with Kord's 1:1 Discord mappings. But as how we said before, it is possible to use other libraries if you implement Discord InteraKTions' API in it!
+
+### 📘 Examples
 
 First, let's see how a command looks like, just so you can get a feel on how you will be using Discord InteraKTions when developing your commands. Don't worry, we will explain how everything works, with more detailed examples down the road. In this example, we will use the Web Server backend.
 
