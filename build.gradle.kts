@@ -1,12 +1,12 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.4.30"
+    kotlin("jvm") version "1.5.10"
     `maven-publish`
 }
 
 group = "net.perfectdreams.discordinteraktions"
-version = "0.0.3-SNAPSHOT"
+version = "0.0.6"
 
 repositories {
     mavenCentral()
@@ -30,7 +30,7 @@ allprojects {
 
 subprojects {
     apply<MavenPublishPlugin>()
-    version = "0.0.4-SNAPSHOT"
+    version = "0.0.6"
 
     publishing {
         repositories {
