@@ -9,6 +9,8 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.optional.optional
 import dev.kord.rest.builder.message.create.EphemeralInteractionResponseCreateBuilder
 import dev.kord.rest.builder.message.create.PublicInteractionResponseCreateBuilder
+import dev.kord.rest.builder.message.modify.EphemeralInteractionResponseModifyBuilder
+import dev.kord.rest.builder.message.modify.PublicInteractionResponseModifyBuilder
 import dev.kord.rest.json.request.InteractionApplicationCommandCallbackData
 import dev.kord.rest.json.request.InteractionResponseCreateRequest
 import dev.kord.rest.service.RestClient
@@ -59,7 +61,7 @@ class InitialHttpRequestManager(
             )
         )
 
-        bridge.state.value = InteractionRequestState.DEFERRED_UPDATE_MESSAGE
+        bridge.state.value = InteractionRequestState.DEFERRED_CHANNEL_MESSAGE
 
         bridge.manager = HttpRequestManager(
             bridge,
@@ -84,7 +86,7 @@ class InitialHttpRequestManager(
             )
         )
 
-        bridge.state.value = InteractionRequestState.DEFERRED_UPDATE_MESSAGE
+        bridge.state.value = InteractionRequestState.DEFERRED_CHANNEL_MESSAGE
 
         bridge.manager = HttpRequestManager(
             bridge,
@@ -158,10 +160,75 @@ class InitialHttpRequestManager(
     }
 
     override suspend fun deferUpdateMessage() {
-        TODO("Not yet implemented")
+        rest.interaction.createInteractionResponse(
+            request.id,
+            interactionToken,
+            InteractionResponseCreateRequest(
+                InteractionResponseType.DeferredUpdateMessage,
+                InteractionApplicationCommandCallbackData().optional()
+            )
+        )
+
+        bridge.state.value = InteractionRequestState.DEFERRED_UPDATE_MESSAGE
+
+        bridge.manager = HttpRequestManager(
+            bridge,
+            rest,
+            applicationId,
+            interactionToken,
+            request
+        )
     }
 
     override suspend fun updateMessage(message: InteractionMessage, isEphemeral: Boolean): Message {
-        TODO("Not yet implemented")
+        rest.interaction.modifyInteractionResponse(
+            request.id,
+            interactionToken,
+            if (message.isEphemeral) {
+                // Ephemeral does not support file upload
+                EphemeralInteractionResponseModifyBuilder().apply {
+                    this.content = message.content
+                    this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
+
+                    this.embeds = message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.toMutableList()
+                    this.components = message.components?.map { it.toKordActionRowBuilder() }?.toMutableList()
+                }.toRequest()
+            } else {
+                PublicInteractionResponseModifyBuilder().apply {
+                    this.content = message.content
+                    this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
+
+                    this.embeds = message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.toMutableList()
+                    this.components = message.components?.map { it.toKordActionRowBuilder() }?.toMutableList()
+                }.toRequest()
+            }
+        )
+
+        bridge.state.value = InteractionRequestState.ALREADY_REPLIED
+
+        bridge.manager = HttpRequestManager(
+            bridge,
+            rest,
+            applicationId,
+            interactionToken,
+            request
+        )
+
+        // This is a weird case, honestly, we need to find out if it is ephemeral or not and, if it is/isn't, we create the appropriate objects
+        // This could be fixed later, if we redesign some things
+        return if (isEphemeral)
+            KordOriginalInteractionEphemeralMessage(
+                rest,
+                applicationId,
+                interactionToken,
+                message.content
+            )
+        else
+            KordOriginalInteractionPublicMessage(
+                rest,
+                applicationId,
+                interactionToken,
+                message.content
+            )
     }
 }
