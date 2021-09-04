@@ -59,7 +59,30 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
     }
 
     override suspend fun updateAllGlobalCommands(deleteUnknownCommands: Boolean) {
-        // TODO: Remove unknown commands
+        val kordApplicationId = applicationId.toKordSnowflake()
+
+        if (deleteUnknownCommands) {
+            // Check commands that are already registered and remove the ones that aren't present in our command manager
+            val alreadyRegisteredCommands = rest.interaction.getGlobalApplicationCommands(kordApplicationId)
+
+            val alreadyRegisteredCommandLabels = manager.declarations.map { it.name }
+
+            val commandsToBeRemoved = alreadyRegisteredCommands.filter { it.name !in alreadyRegisteredCommandLabels }
+
+            commandsToBeRemoved.forEach {
+                rest.interaction.deleteGlobalApplicationCommand(
+                    kordApplicationId,
+                    it.id
+                )
+            }
+        }
+
+        rest.interaction.createGlobalApplicationCommands(
+            kordApplicationId,
+            manager.declarations.map {
+                convertCommandDeclarationToKord(it).toRequest()
+            }
+        )
     }
 
     private fun convertCommandDeclarationToKord(declaration: InteractionCommandDeclaration): ApplicationCommandCreateBuilder {
