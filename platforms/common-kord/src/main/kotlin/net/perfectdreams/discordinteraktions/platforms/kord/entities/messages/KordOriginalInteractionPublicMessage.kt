@@ -30,9 +30,9 @@ class KordOriginalInteractionPublicMessage(
                 this.embeds = message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.toMutableList()
                 this.components = message.components?.map { it.toKordActionRowBuilder() }?.toMutableList()
 
-                val filePairs = message.files?.map { it.key to it.value }
-                if (filePairs != null)
-                    files?.addAll(filePairs)
+                message.files?.forEach {
+                    addFile(it.key, it.value)
+                }
             }.toRequest()
         )
 

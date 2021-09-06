@@ -2,7 +2,7 @@ package net.perfectdreams.discordinteraktions.api.entities
 
 // Inspired by Kord
 // https://github.com/kordlib/kord/blob/ce7f0a12e6b9267e2d13f7995a29c903e6d0edd8/core/src/main/kotlin/entity/User.kt#L85
-class UserAvatar(val userId: Long, val discriminator: Int, val avatarId: String?) {
+class UserAvatar(val userId: ULong, val discriminator: Int, val avatarId: String?) {
     /**
      * The default avatar url for this user. Discord uses this for users who don't have a custom avatar set.
      */

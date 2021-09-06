@@ -84,9 +84,9 @@ class HttpRequestManager(
                         this.embeds.add(it)
                     }
 
-                    val filePairs = message.files?.map { it.key to it.value }
-                    if (filePairs != null)
-                        files.addAll(filePairs)
+                    message.files?.forEach {
+                        addFile(it.key, it.value)
+                    }
 
                     // There are "username" and "avatar" flags, but they seem to be unused for application commands
                     // TODO: Also, what to do about message flags? Silently ignore them or throw a exception?
@@ -118,7 +118,9 @@ class HttpRequestManager(
                     this.files = mutableListOf()
                 }
 
-                this.files = message.files?.map { it.key to it.value }?.toMutableList()
+                message.files?.forEach {
+                    addFile(it.key, it.value)
+                }
             }.toRequest()
         )
 

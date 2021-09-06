@@ -2,6 +2,7 @@ package net.perfectdreams.discordinteraktions.platforms.kord.entities.messages
 
 import dev.kord.common.entity.DiscordMessage
 import dev.kord.common.entity.Snowflake
+import dev.kord.rest.NamedFile
 import dev.kord.rest.builder.message.modify.PublicInteractionResponseModifyBuilder
 import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.common.entities.messages.PublicMessage
@@ -29,8 +30,10 @@ class KordEditedOriginalInteractionPublicMessage(
                 this.components = message.components?.map { it.toKordActionRowBuilder() }?.toMutableList()
 
                 val filePairs = message.files?.map { it.key to it.value }
-                if (filePairs != null)
-                    files?.addAll(filePairs)
+
+                filePairs?.forEach {
+                    addFile(it.first, it.second)
+                }
             }.toRequest()
         )
 
