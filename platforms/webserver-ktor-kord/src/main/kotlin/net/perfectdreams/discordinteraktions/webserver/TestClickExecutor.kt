@@ -1,5 +1,8 @@
 package net.perfectdreams.discordinteraktions.webserver
 
+import dev.kord.rest.builder.message.modify.allowedMentions
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import net.perfectdreams.discordinteraktions.api.entities.User
 import net.perfectdreams.discordinteraktions.common.components.buttons.ButtonClickExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.components.buttons.ButtonClickWithNoDataExecutor
@@ -9,12 +12,21 @@ import java.io.File
 class TestClickExecutor : ButtonClickWithNoDataExecutor {
     companion object : ButtonClickExecutorDeclaration(TestClickExecutor::class, "test_click")
 
-    override suspend fun onClick(user: User, context: ButtonClickContext) {
-        context.updateMessage {
-            content = "owo whats this???"
+    var mutex = Mutex()
+    var count = 0
 
-            removeAlreadyUploadedFiles = true
-            file("gessy_pistola.png", File("L:\\Pictures\\monke-oil-sticker.png").inputStream())
+    override suspend fun onClick(user: User, context: ButtonClickContext) {
+        mutex.withLock {
+            count++
+            context.updateMessage {
+                content = "owo whats this??? Contagem: ${count}, último que clicou: <@${user.id.value}>"
+
+                allowedMentions {} // Nothing
+            }
+        }
+
+        context.sendEphemeralMessage {
+            content = "seu voto foi contabilizad safad lets gooo"
         }
     }
 }

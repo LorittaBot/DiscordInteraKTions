@@ -1,6 +1,7 @@
 package net.perfectdreams.discordinteraktions.webserver
 
 import dev.kord.common.annotation.KordPreview
+import dev.kord.common.entity.ComponentType
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.InteractionResponseType
 import dev.kord.common.entity.Snowflake
@@ -17,9 +18,12 @@ import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.components.buttons.ButtonClickWithDataExecutor
 import net.perfectdreams.discordinteraktions.common.components.buttons.ButtonClickWithNoDataExecutor
+import net.perfectdreams.discordinteraktions.common.components.selects.SelectMenuWithDataExecutor
+import net.perfectdreams.discordinteraktions.common.components.selects.SelectMenuWithNoDataExecutor
 import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
 import net.perfectdreams.discordinteraktions.common.context.buttons.ButtonClickContext
+import net.perfectdreams.discordinteraktions.common.context.selects.SelectMenuContext
 import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 import net.perfectdreams.discordinteraktions.common.utils.Observable
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordPublicMessage
@@ -111,6 +115,8 @@ class DefaultInteractionRequestHandler(
      * @param request The interaction data.
      */
     override suspend fun onComponent(call: ApplicationCall, request: DiscordInteraction) {
+        val componentType = request.data.componentType.value ?: error("Component Type is not present in Discord's request! Bug?")
+
         val observableState = Observable(InteractionRequestState.NOT_REPLIED_YET)
         val bridge = RequestBridge(observableState)
 
@@ -125,47 +131,94 @@ class DefaultInteractionRequestHandler(
 
         bridge.manager = requestManager
 
-        // If the button doesn't have a custom ID, we won't process it
-        val buttonCustomId = request.data.customId.value ?: return
+        // If the component doesn't have a custom ID, we won't process it
+        val componentCustomId = request.data.customId.value ?: return
 
-        val executorId = buttonCustomId.substringBefore(":")
-        val data = buttonCustomId.substringAfter(":")
+        val executorId = componentCustomId.substringBefore(":")
+        val data = componentCustomId.substringAfter(":")
 
-        val buttonExecutorDeclaration = commandManager.buttonDeclarations
-            .asSequence()
-            .filter {
-                it.id == executorId
+        // Now this changes a bit depending on what we are trying to execute
+        when (componentType) {
+            is ComponentType.Unknown -> error("Unknown Component Type!")
+            ComponentType.ActionRow -> error("Received a ActionRow component interaction... but that's impossible!")
+            ComponentType.Button -> {
+                val buttonExecutorDeclaration = commandManager.buttonDeclarations
+                    .asSequence()
+                    .filter {
+                        it.id == executorId
+                    }
+                    .first()
+
+                val executor = commandManager.buttonExecutors.first {
+                    it.signature() == buttonExecutorDeclaration.parent
+                }
+
+                val kordUser = KordUser(request.member.value?.user?.value ?: request.user.value ?: error("oh no"))
+                val guildId = request.guildId.value
+
+                val interactionData = InteractionData(request.data.resolved.value?.toDiscordInteraKTionsResolvedObjects())
+
+                val buttonClickContext = ButtonClickContext(
+                    bridge,
+                    kordUser,
+                    KordPublicMessage(request.message.value!!), // This should NEVER be null if it is a component message
+                    interactionData
+                )
+
+                GlobalScope.launch {
+                    if (executor is ButtonClickWithNoDataExecutor)
+                        executor.onClick(
+                            kordUser,
+                            buttonClickContext
+                        )
+                    else if (executor is ButtonClickWithDataExecutor)
+                        executor.onClick(
+                            kordUser,
+                            buttonClickContext,
+                            data
+                        )
+                }
             }
-            .first()
+            ComponentType.SelectMenu -> {
+                val executorDeclaration = commandManager.selectMenusDeclarations
+                    .asSequence()
+                    .filter {
+                        it.id == executorId
+                    }
+                    .first()
 
-        val executor = commandManager.buttonExecutors.first {
-            it.signature() == buttonExecutorDeclaration.parent
-        }
+                val executor = commandManager.selectMenusExecutors.first {
+                    it.signature() == executorDeclaration.parent
+                }
 
-        val kordUser = KordUser(request.member.value?.user?.value ?: request.user.value ?: error("oh no"))
-        val guildId = request.guildId.value?.let { net.perfectdreams.discordinteraktions.api.entities.Snowflake(it.value) }
+                val kordUser = KordUser(request.member.value?.user?.value ?: request.user.value ?: error("oh no"))
+                val guildId = request.guildId.value
 
-        val interactionData = InteractionData(request.data.resolved.value?.toDiscordInteraKTionsResolvedObjects())
+                val interactionData = InteractionData(request.data.resolved.value?.toDiscordInteraKTionsResolvedObjects())
 
-        val buttonClickContext = ButtonClickContext(
-            bridge,
-            kordUser,
-            KordPublicMessage(request.message.value!!), // This should NEVER be null if it is a component message
-            interactionData
-        )
-
-        GlobalScope.launch {
-            if (executor is ButtonClickWithNoDataExecutor)
-                executor.onClick(
+                val selectMenuContext = SelectMenuContext(
+                    bridge,
                     kordUser,
-                    buttonClickContext
+                    KordPublicMessage(request.message.value!!), // This should NEVER be null if it is a component message
+                    interactionData
                 )
-            else if (executor is ButtonClickWithDataExecutor)
-                executor.onClick(
-                    kordUser,
-                    buttonClickContext,
-                    data
-                )
+
+                GlobalScope.launch {
+                    if (executor is SelectMenuWithNoDataExecutor)
+                        executor.onSelect(
+                            kordUser,
+                            selectMenuContext,
+                            request.data.values.value ?: error("Values list is null!")
+                        )
+                    else if (executor is SelectMenuWithDataExecutor)
+                        executor.onSelect(
+                            kordUser,
+                            selectMenuContext,
+                            data,
+                            request.data.values.value ?: error("Values list is null!")
+                        )
+                }
+            }
         }
 
         observableState.awaitChange()

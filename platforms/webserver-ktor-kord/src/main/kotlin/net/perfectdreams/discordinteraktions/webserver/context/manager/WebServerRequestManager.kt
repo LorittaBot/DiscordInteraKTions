@@ -10,6 +10,8 @@ import dev.kord.common.entity.optional.coerceToMissing
 import dev.kord.common.entity.optional.map
 import dev.kord.common.entity.optional.optional
 import dev.kord.common.entity.optional.toPrimitive
+import dev.kord.rest.builder.message.modify.EphemeralInteractionResponseModifyBuilder
+import dev.kord.rest.builder.message.modify.PublicInteractionResponseModifyBuilder
 import dev.kord.rest.json.request.InteractionApplicationCommandCallbackData
 import dev.kord.rest.json.request.InteractionResponseCreateRequest
 import dev.kord.rest.service.RestClient
@@ -22,17 +24,17 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonObject
 import mu.KotlinLogging
+import net.perfectdreams.discordinteraktions.common.builder.message.create.EphemeralInteractionOrFollowupMessageCreateBuilder
+import net.perfectdreams.discordinteraktions.common.builder.message.create.PublicInteractionOrFollowupMessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
 import net.perfectdreams.discordinteraktions.common.context.manager.RequestManager
+import net.perfectdreams.discordinteraktions.common.entities.messages.EphemeralMessage
 import net.perfectdreams.discordinteraktions.common.entities.messages.Message
-import net.perfectdreams.discordinteraktions.common.utils.InteractionCreateMessage
+import net.perfectdreams.discordinteraktions.common.entities.messages.PublicMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.context.manager.HttpRequestManager
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordOriginalInteractionEphemeralMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordOriginalInteractionPublicMessage
-import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordActionRowBuilder
-import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordAllowedMentions
-import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordEmbedBuilder
 
 /**
  * On this request manager we'll handle the requests
@@ -102,7 +104,7 @@ class WebServerRequestManager(
         )
     }
 
-    override suspend fun sendMessage(message: InteractionCreateMessage): Message {
+    override suspend fun sendPublicMessage(message: PublicInteractionOrFollowupMessageCreateBuilder): PublicMessage {
         call.respondText(
             Json.encodeToString(
                 InteractionResponseCreateRequest(
@@ -111,12 +113,49 @@ class WebServerRequestManager(
                         InteractionApplicationCommandCallbackData(
                             content = Optional(message.content).coerceToMissing(),
                             tts = Optional(message.tts).coerceToMissing().toPrimitive(),
-                            embeds = Optional(message.embeds?.map { it.toKordEmbedBuilder().toRequest() } ?: listOf()),
-                            allowedMentions = Optional(message.allowedMentions?.toKordAllowedMentions()).coerceToMissing().map { it.build() },
-                            components = message.components?.map { it.toKordActionRowBuilder().build() }.optional().coerceToMissing(),
+                            embeds = Optional(message.embeds.map { it.toRequest() }),
+                            allowedMentions = Optional(message.allowedMentions).coerceToMissing().map { it.build() },
+                            components = message.components.map { it.build() }.optional().coerceToMissing(),
+                            flags = MessageFlags {}.optional()
+                        )
+                    )
+                )
+            ),
+            ContentType.Application.Json
+        )
+
+        bridge.state.value = InteractionRequestState.ALREADY_REPLIED
+
+        bridge.manager = HttpRequestManager(
+            bridge,
+            rest,
+            applicationId,
+            interactionToken,
+            request
+        )
+
+        return KordOriginalInteractionPublicMessage(
+            rest,
+            applicationId,
+            interactionToken,
+            message.content
+        )
+    }
+
+    override suspend fun sendEphemeralMessage(message: EphemeralInteractionOrFollowupMessageCreateBuilder): EphemeralMessage {
+        call.respondText(
+            Json.encodeToString(
+                InteractionResponseCreateRequest(
+                    type = InteractionResponseType.ChannelMessageWithSource,
+                    data = Optional(
+                        InteractionApplicationCommandCallbackData(
+                            content = Optional(message.content).coerceToMissing(),
+                            tts = Optional(message.tts).coerceToMissing().toPrimitive(),
+                            embeds = Optional(message.embeds.map { it.toRequest() }),
+                            allowedMentions = Optional(message.allowedMentions).coerceToMissing().map { it.build() },
+                            components = message.components.map { it.build() }.optional().coerceToMissing(),
                             flags = MessageFlags {
-                                if (message.isEphemeral)
-                                    + MessageFlag.Ephemeral
+                                + MessageFlag.Ephemeral
                             }.optional()
                         )
                     )
@@ -135,25 +174,15 @@ class WebServerRequestManager(
             request
         )
 
-        return if (message.isEphemeral)
-            KordOriginalInteractionEphemeralMessage(
-                rest,
-                applicationId,
-                interactionToken,
-                message.content
-            )
-        else
-            KordOriginalInteractionPublicMessage(
-                rest,
-                applicationId,
-                interactionToken,
-                message.content
-            )
+        return KordOriginalInteractionEphemeralMessage(
+            rest,
+            applicationId,
+            interactionToken,
+            message.content
+        )
     }
 
     override suspend fun deferUpdateMessage() {
-        logger.info { "Deferring interaction..." }
-
         call.respondText(
             buildJsonObject {
                 put("type", InteractionResponseType.DeferredUpdateMessage.type)
@@ -172,7 +201,7 @@ class WebServerRequestManager(
         )
     }
 
-    override suspend fun updateMessage(message: InteractionCreateMessage, isEphemeral: Boolean): Message {
+    override suspend fun updateMessage(message: PublicInteractionResponseModifyBuilder): Message {
         call.respondText(
             Json.encodeToString(
                 InteractionResponseCreateRequest(
@@ -180,14 +209,10 @@ class WebServerRequestManager(
                     data = Optional(
                         InteractionApplicationCommandCallbackData(
                             content = Optional(message.content).coerceToMissing(),
-                            tts = Optional(message.tts).coerceToMissing().toPrimitive(),
-                            embeds = Optional(message.embeds?.map { it.toKordEmbedBuilder().toRequest() } ?: listOf()),
-                            allowedMentions = Optional(message.allowedMentions?.toKordAllowedMentions()).coerceToMissing().map { it.build() },
-                            components = message.components?.map { it.toKordActionRowBuilder().build() }.optional().coerceToMissing(),
-                            flags = MessageFlags {
-                                if (message.isEphemeral)
-                                    + MessageFlag.Ephemeral
-                            }.optional()
+                            embeds = Optional(message.embeds?.map { it.toRequest() } ?: listOf()),
+                            allowedMentions = Optional(message.allowedMentions?.build()).coerceToMissing(),
+                            components = message.components?.map { it.build() }.optional().coerceToMissing(),
+                            flags = MessageFlags {}.optional()
                         )
                     )
                 )
@@ -205,21 +230,48 @@ class WebServerRequestManager(
             request
         )
 
-        // This is a weird case, honestly, we need to find out if it is ephemeral or not and, if it is/isn't, we create the appropriate objects
-        // This could be fixed later, if we redesign some things
-        return if (isEphemeral)
-            KordOriginalInteractionEphemeralMessage(
-                rest,
-                applicationId,
-                interactionToken,
-                message.content
-            )
-        else
-            KordOriginalInteractionPublicMessage(
-                rest,
-                applicationId,
-                interactionToken,
-                message.content
-            )
+        return KordOriginalInteractionPublicMessage(
+            rest,
+            applicationId,
+            interactionToken,
+            message.content
+        )
+    }
+
+    override suspend fun updateEphemeralMessage(message: EphemeralInteractionResponseModifyBuilder): Message {
+        call.respondText(
+            Json.encodeToString(
+                InteractionResponseCreateRequest(
+                    type = InteractionResponseType.UpdateMessage,
+                    data = Optional(
+                        InteractionApplicationCommandCallbackData(
+                            content = Optional(message.content).coerceToMissing(),
+                            embeds = Optional(message.embeds?.map { it.toRequest() } ?: listOf()),
+                            allowedMentions = Optional(message.allowedMentions?.build()).coerceToMissing(),
+                            components = message.components?.map { it.build() }.optional().coerceToMissing(),
+                            flags = MessageFlags {}.optional()
+                        )
+                    )
+                )
+            ),
+            ContentType.Application.Json
+        )
+
+        bridge.state.value = InteractionRequestState.ALREADY_REPLIED
+
+        bridge.manager = HttpRequestManager(
+            bridge,
+            rest,
+            applicationId,
+            interactionToken,
+            request
+        )
+
+        return KordOriginalInteractionEphemeralMessage(
+            rest,
+            applicationId,
+            interactionToken,
+            message.content
+        )
     }
 }

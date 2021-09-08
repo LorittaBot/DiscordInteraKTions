@@ -3,12 +3,9 @@ package net.perfectdreams.discordinteraktions.platforms.kord.entities.messages
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.builder.message.modify.PublicInteractionResponseModifyBuilder
 import dev.kord.rest.service.RestClient
+import net.perfectdreams.discordinteraktions.common.builder.message.modify.PublicInteractionOrFollowupMessageModifyBuilder
 import net.perfectdreams.discordinteraktions.common.entities.messages.PublicMessage
-import net.perfectdreams.discordinteraktions.common.utils.MessageCreateBuilder
-import net.perfectdreams.discordinteraktions.common.utils.buildMessage
-import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordActionRowBuilder
-import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordAllowedMentions
-import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordEmbedBuilder
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.runIfNotMissing
 
 class KordOriginalInteractionPublicMessage(
     private val rest: RestClient,
@@ -16,23 +13,21 @@ class KordOriginalInteractionPublicMessage(
     private val interactionToken: String,
     override val content: String?
 ) : PublicMessage {
-    override val id: net.perfectdreams.discordinteraktions.api.entities.Snowflake
+    override val id: Snowflake
         get() = error("Original Interaction Messages do not have an ID!")
 
-    override suspend fun editMessage(block: MessageCreateBuilder.() -> Unit): PublicMessage {
-        val message = buildMessage(block)
+    override suspend fun editMessage(block: PublicInteractionOrFollowupMessageModifyBuilder.() -> Unit): PublicMessage {
+        val message = PublicInteractionOrFollowupMessageModifyBuilder().apply(block)
         val newMessage = rest.interaction.modifyInteractionResponse(
             applicationId,
             interactionToken,
             PublicInteractionResponseModifyBuilder().apply {
-                this.content = message.content
-                this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
-                this.embeds = message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.toMutableList()
-                this.components = message.components?.map { it.toKordActionRowBuilder() }?.toMutableList()
-
-                message.files?.forEach {
-                    addFile(it.key, it.value)
-                }
+                runIfNotMissing(message.state.content) { this.content = it }
+                runIfNotMissing(message.state.allowedMentions) { this.allowedMentions = it }
+                runIfNotMissing(message.state.components) { this.components = it }
+                runIfNotMissing(message.state.embeds) { this.embeds = it }
+                runIfNotMissing(message.state.files) { this.files = it }
+                runIfNotMissing(message.state.attachments) { this.attachments = it }
             }.toRequest()
         )
 

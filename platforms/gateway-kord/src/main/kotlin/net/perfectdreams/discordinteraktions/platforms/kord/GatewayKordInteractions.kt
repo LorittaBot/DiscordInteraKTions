@@ -2,6 +2,7 @@ package net.perfectdreams.discordinteraktions.platforms.kord
 
 import dev.kord.common.annotation.KordPreview
 import dev.kord.common.entity.InteractionType
+import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.Gateway
 import dev.kord.gateway.InteractionCreate
 import dev.kord.gateway.on
@@ -21,11 +22,10 @@ import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordPublicMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordCommandChecker
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toDiscordInteraKTionsResolvedObjects
-import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordSnowflake
 
 @KordPreview
 fun Gateway.installDiscordInteraKTions(
-    applicationId: net.perfectdreams.discordinteraktions.api.entities.Snowflake,
+    applicationId: Snowflake,
     rest: RestClient,
     commandManager: CommandManager
 ) {
@@ -40,7 +40,7 @@ fun Gateway.installDiscordInteraKTions(
         val requestManager = InitialHttpRequestManager(
             bridge,
             rest,
-            applicationId.toKordSnowflake(),
+            applicationId,
             request.token,
             request
         )
@@ -71,7 +71,7 @@ fun Gateway.installDiscordInteraKTions(
             }
 
             val kordUser = KordUser(request.member.value?.user?.value ?: request.user.value ?: error("oh no"))
-            val guildId = request.guildId.value?.let { net.perfectdreams.discordinteraktions.api.entities.Snowflake(it.value) }
+            val guildId = request.guildId.value
 
             val interactionData = InteractionData(request.data.resolved.value?.toDiscordInteraKTionsResolvedObjects())
 

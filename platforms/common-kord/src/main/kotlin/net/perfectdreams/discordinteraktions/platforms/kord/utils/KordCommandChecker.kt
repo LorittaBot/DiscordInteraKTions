@@ -66,7 +66,7 @@ class KordCommandChecker(val commandManager: CommandManager) {
                 )
 
                 val kordUser = KordUser(request.member.value?.user?.value ?: request.user.value ?: error("oh no"))
-                val guildId = request.guildId.value?.let { net.perfectdreams.discordinteraktions.api.entities.Snowflake(it.value) }
+                val guildId = request.guildId.value
 
                 val interactionData = InteractionData(request.data.resolved.value?.toDiscordInteraKTionsResolvedObjects())
 
@@ -125,7 +125,7 @@ class KordCommandChecker(val commandManager: CommandManager) {
                 } as UserCommandExecutor
 
                 val kordUser = KordUser(request.member.value?.user?.value ?: request.user.value ?: error("oh no"))
-                val guildId = request.guildId.value?.let { net.perfectdreams.discordinteraktions.api.entities.Snowflake(it.value) }
+                val guildId = request.guildId.value
 
                 // TODO: Remove this workaround when Kord fixes the targetUser to targetId
                 // val targetUserId = request.data.targetUser.value ?: error("Target User ID is null in a User Command! Bug?")
@@ -186,7 +186,7 @@ class KordCommandChecker(val commandManager: CommandManager) {
                 } as MessageCommandExecutor
 
                 val kordUser = KordUser(request.member.value?.user?.value ?: request.user.value ?: error("oh no"))
-                val guildId = request.guildId.value?.let { net.perfectdreams.discordinteraktions.api.entities.Snowflake(it.value) }
+                val guildId = request.guildId.value
 
                 val interactionData = InteractionData(request.data.resolved.value?.toDiscordInteraKTionsResolvedObjects())
                 // TODO: Remove this workaround when Kord fixes the targetUser to targetId

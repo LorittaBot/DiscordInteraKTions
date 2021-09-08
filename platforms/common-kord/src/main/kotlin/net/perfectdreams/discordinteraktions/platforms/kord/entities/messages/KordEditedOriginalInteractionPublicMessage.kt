@@ -2,14 +2,14 @@ package net.perfectdreams.discordinteraktions.platforms.kord.entities.messages
 
 import dev.kord.common.entity.DiscordMessage
 import dev.kord.common.entity.Snowflake
+import dev.kord.rest.builder.message.create.PublicFollowupMessageCreateBuilder
+import dev.kord.rest.builder.message.modify.PublicFollowupMessageModifyBuilder
 import dev.kord.rest.builder.message.modify.PublicInteractionResponseModifyBuilder
+import dev.kord.rest.json.request.FollowupMessageModifyRequest
 import dev.kord.rest.service.RestClient
+import net.perfectdreams.discordinteraktions.common.builder.message.modify.PublicInteractionOrFollowupMessageModifyBuilder
 import net.perfectdreams.discordinteraktions.common.entities.messages.PublicMessage
-import net.perfectdreams.discordinteraktions.common.utils.MessageCreateBuilder
-import net.perfectdreams.discordinteraktions.common.utils.buildMessage
-import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordActionRowBuilder
-import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordAllowedMentions
-import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordEmbedBuilder
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.runIfNotMissing
 
 class KordEditedOriginalInteractionPublicMessage(
     private val rest: RestClient,
@@ -17,22 +17,20 @@ class KordEditedOriginalInteractionPublicMessage(
     private val interactionToken: String,
     private val message: DiscordMessage
 ) : KordPublicMessage(message) {
-    override suspend fun editMessage(block: MessageCreateBuilder.() -> Unit): PublicMessage {
-        val message = buildMessage(block)
-        val newMessage = rest.interaction.modifyInteractionResponse(
+    override suspend fun editMessage(block: PublicInteractionOrFollowupMessageModifyBuilder.() -> Unit): PublicMessage {
+        val message = PublicInteractionOrFollowupMessageModifyBuilder().apply(block)
+
+        val newMessage = rest.interaction.modifyFollowupMessage(
             applicationId,
             interactionToken,
-            PublicInteractionResponseModifyBuilder().apply {
-                this.content = message.content
-                this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
-                this.embeds = message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.toMutableList()
-                this.components = message.components?.map { it.toKordActionRowBuilder() }?.toMutableList()
-
-                val filePairs = message.files?.map { it.key to it.value }
-
-                filePairs?.forEach {
-                    addFile(it.first, it.second)
-                }
+            this.message.id,
+            PublicFollowupMessageModifyBuilder().apply {
+                runIfNotMissing(message.state.content) { this.content = it }
+                runIfNotMissing(message.state.allowedMentions) { this.allowedMentions = it }
+                runIfNotMissing(message.state.components) { this.components = it }
+                runIfNotMissing(message.state.embeds) { this.embeds = it }
+                runIfNotMissing(message.state.files) { this.files = it }
+                runIfNotMissing(message.state.attachments) { this.attachments = it }
             }.toRequest()
         )
 

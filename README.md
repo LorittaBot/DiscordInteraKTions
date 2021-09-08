@@ -30,11 +30,11 @@ While Discord InteraKTions has a bunch of nifty features, it still doesn't suppo
 
 ## 🤔 How it Works
 
-Discord InteraKTions is an abstraction on top of other libraries, instead of using their classes directly when coding commands, this is to avoid rewriting all of your commands just because you want to switch the underlying libraries with something else. Also, your code also doesn't care if it is receiving interactions over HTTP or over the gateway, it is all the same thing for them!
+Discord InteraKTions works on top of Kord. Your code also doesn't care if it is receiving interactions over HTTP or over the gateway, it is all the same thing for them!
 
 All of the "dirty work", like interaction request validation and parsing, is already done for you, so you only need to care about creating your nifty slash commands and having fun!
 
-Discord InteraKTions' Web Server and Gateway modules uses [Kord](https://github.com/kordlib/kord)'s `common` and `rest` modules for data serialization and REST interactions, keep in mind that Discord InteraKTions creates a abstraction layer between Discord InteraKTions and Kord, to avoid interacting *directly* with Kord's 1:1 Discord mappings. But as how we said before, it is possible to use other libraries if you implement Discord InteraKTions' API in it!
+Discord InteraKTions' Web Server and Gateway modules uses [Kord](https://github.com/kordlib/kord)'s `common` and `rest` modules for data serialization and REST interactions, so keep that in mind if you are already worked with Kord `core`, because Discord InteraKTions does **not** use `core` classes!
 
 ### 📘 Examples
 

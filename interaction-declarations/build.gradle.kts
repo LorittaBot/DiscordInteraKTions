@@ -9,7 +9,7 @@ group = "net.perfectdreams.discordinteraktions"
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.2.1") // Used for the snowflake
+    implementation("dev.kord:kord-common:0.8.x-SNAPSHOT")
 }
 
 tasks.test {

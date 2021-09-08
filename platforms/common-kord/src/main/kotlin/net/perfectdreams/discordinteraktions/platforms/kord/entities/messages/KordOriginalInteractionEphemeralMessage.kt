@@ -3,12 +3,9 @@ package net.perfectdreams.discordinteraktions.platforms.kord.entities.messages
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.builder.message.modify.EphemeralInteractionResponseModifyBuilder
 import dev.kord.rest.service.RestClient
+import net.perfectdreams.discordinteraktions.common.builder.message.modify.EphemeralInteractionOrFollowupMessageModifyBuilder
 import net.perfectdreams.discordinteraktions.common.entities.messages.EphemeralMessage
-import net.perfectdreams.discordinteraktions.common.utils.EphemeralMessageCreateBuilder
-import net.perfectdreams.discordinteraktions.common.utils.buildEphemeralMessage
-import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordActionRowBuilder
-import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordAllowedMentions
-import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordEmbedBuilder
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.runIfNotMissing
 
 class KordOriginalInteractionEphemeralMessage(
     private val rest: RestClient,
@@ -16,19 +13,19 @@ class KordOriginalInteractionEphemeralMessage(
     private val interactionToken: String,
     override val content: String?
 ) : EphemeralMessage {
-    override val id: net.perfectdreams.discordinteraktions.api.entities.Snowflake
+    override val id: Snowflake
         get() = error("Original Interaction Messages do not have an ID!")
 
-    override suspend fun editMessage(block: EphemeralMessageCreateBuilder.() -> Unit): EphemeralMessage {
-        val message = buildEphemeralMessage(block)
+    override suspend fun editMessage(block: EphemeralInteractionOrFollowupMessageModifyBuilder.() -> Unit): EphemeralMessage {
+        val message = EphemeralInteractionOrFollowupMessageModifyBuilder().apply(block)
         val newMessage = rest.interaction.modifyInteractionResponse(
             applicationId,
             interactionToken,
             EphemeralInteractionResponseModifyBuilder().apply {
-                this.content = message.content
-                this.allowedMentions = message.allowedMentions?.toKordAllowedMentions()
-                this.embeds = message.embeds?.let { it.map { it.toKordEmbedBuilder() } }?.toMutableList()
-                this.components = message.components?.map { it.toKordActionRowBuilder() }?.toMutableList()
+                runIfNotMissing(message.state.content) { this.content = it }
+                runIfNotMissing(message.state.allowedMentions) { this.allowedMentions = it }
+                runIfNotMissing(message.state.components) { this.components = it }
+                runIfNotMissing(message.state.embeds) { this.embeds = it }
             }.toRequest()
         )
 

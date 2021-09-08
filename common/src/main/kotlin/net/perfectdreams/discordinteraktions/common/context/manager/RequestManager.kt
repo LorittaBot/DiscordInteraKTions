@@ -1,8 +1,13 @@
 package net.perfectdreams.discordinteraktions.common.context.manager
 
+import dev.kord.rest.builder.message.modify.EphemeralInteractionResponseModifyBuilder
+import dev.kord.rest.builder.message.modify.PublicInteractionResponseModifyBuilder
+import net.perfectdreams.discordinteraktions.common.builder.message.create.EphemeralInteractionOrFollowupMessageCreateBuilder
+import net.perfectdreams.discordinteraktions.common.builder.message.create.PublicInteractionOrFollowupMessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
+import net.perfectdreams.discordinteraktions.common.entities.messages.EphemeralMessage
 import net.perfectdreams.discordinteraktions.common.entities.messages.Message
-import net.perfectdreams.discordinteraktions.common.utils.InteractionCreateMessage
+import net.perfectdreams.discordinteraktions.common.entities.messages.PublicMessage
 
 abstract class RequestManager(val bridge: RequestBridge) {
     /**
@@ -24,7 +29,12 @@ abstract class RequestManager(val bridge: RequestBridge) {
     /**
      * The usual way of sending messages to a specific channel/user.
      */
-    abstract suspend fun sendMessage(message: InteractionCreateMessage): Message
+    abstract suspend fun sendPublicMessage(message: PublicInteractionOrFollowupMessageCreateBuilder): PublicMessage
+
+    /**
+     * The usual way of sending messages to a specific channel/user.
+     */
+    abstract suspend fun sendEphemeralMessage(message: EphemeralInteractionOrFollowupMessageCreateBuilder): EphemeralMessage
 
     /**
      * A deferred response is the one that you can use to
@@ -37,5 +47,10 @@ abstract class RequestManager(val bridge: RequestBridge) {
     /**
      * The usual way of editing a message to a specific channel/user.
      */
-    abstract suspend fun updateMessage(message: InteractionCreateMessage, isEphemeral: Boolean): Message
+    abstract suspend fun updateMessage(message: PublicInteractionResponseModifyBuilder): Message
+
+    /**
+     * The usual way of editing a message to a specific channel/user.
+     */
+    abstract suspend fun updateEphemeralMessage(message: EphemeralInteractionResponseModifyBuilder): Message
 }

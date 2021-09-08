@@ -1,14 +1,19 @@
-package net.perfectdreams.discordinteraktions.common.utils
+package net.perfectdreams.discordinteraktions.common.builder.message.modify
 
-import net.perfectdreams.discordinteraktions.api.entities.optional.Optional
-import net.perfectdreams.discordinteraktions.common.NamedFile
+import dev.kord.common.entity.DiscordAttachment
+import dev.kord.common.entity.MessageFlags
+import dev.kord.common.entity.optional.Optional
+import dev.kord.rest.NamedFile
+import dev.kord.rest.builder.component.MessageComponentBuilder
+import dev.kord.rest.builder.message.AllowedMentionsBuilder
+import dev.kord.rest.builder.message.EmbedBuilder
 
 /**
  * Utility container for message modify builder. This class contains
  * all possible fields as optionals.
  */
-// From Kord: https://github.com/kordlib/kord/blob/0.8.x/rest/src/main/kotlin/builder/message/modify/MessageModifyStateHolder.kt
-internal class MessageModifyStateHolder {
+class MessageModifyStateHolder {
+
     var files: Optional<MutableList<NamedFile>> = Optional.Missing()
 
     var content: Optional<String?> = Optional.Missing()
@@ -22,4 +27,5 @@ internal class MessageModifyStateHolder {
     var attachments: Optional<MutableList<DiscordAttachment>> = Optional.Missing()
 
     var components: Optional<MutableList<MessageComponentBuilder>> = Optional.Missing()
+
 }
