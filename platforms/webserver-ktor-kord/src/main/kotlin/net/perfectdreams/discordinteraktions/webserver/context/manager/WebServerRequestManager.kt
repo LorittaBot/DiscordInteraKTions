@@ -26,7 +26,7 @@ import net.perfectdreams.discordinteraktions.common.context.InteractionRequestSt
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
 import net.perfectdreams.discordinteraktions.common.context.manager.RequestManager
 import net.perfectdreams.discordinteraktions.common.entities.messages.Message
-import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
+import net.perfectdreams.discordinteraktions.common.utils.InteractionCreateMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.context.manager.HttpRequestManager
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordOriginalInteractionEphemeralMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordOriginalInteractionPublicMessage
@@ -102,7 +102,7 @@ class WebServerRequestManager(
         )
     }
 
-    override suspend fun sendMessage(message: InteractionMessage): Message {
+    override suspend fun sendMessage(message: InteractionCreateMessage): Message {
         call.respondText(
             Json.encodeToString(
                 InteractionResponseCreateRequest(
@@ -172,7 +172,7 @@ class WebServerRequestManager(
         )
     }
 
-    override suspend fun updateMessage(message: InteractionMessage, isEphemeral: Boolean): Message {
+    override suspend fun updateMessage(message: InteractionCreateMessage, isEphemeral: Boolean): Message {
         call.respondText(
             Json.encodeToString(
                 InteractionResponseCreateRequest(

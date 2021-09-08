@@ -2,10 +2,10 @@ package net.perfectdreams.discordinteraktions.common.utils
 
 import net.perfectdreams.discordinteraktions.common.components.actionrow.ActionRowBuilder
 
-fun buildEphemeralMessage(block: EphemeralMessageBuilder.() -> (Unit)): InteractionMessage {
-    val result = EphemeralMessageBuilder().apply(block)
+fun buildEphemeralMessage(block: EphemeralMessageCreateBuilder.() -> (Unit)): InteractionCreateMessage {
+    val result = EphemeralMessageCreateBuilder().apply(block)
 
-    return InteractionMessage(
+    return InteractionCreateMessage(
         result.content.orEmpty(),
         result.tts,
         false,
@@ -18,7 +18,7 @@ fun buildEphemeralMessage(block: EphemeralMessageBuilder.() -> (Unit)): Interact
 }
 
 @InteraKTionsDslMarker
-class EphemeralMessageBuilder {
+class EphemeralMessageCreateBuilder {
     var content: String? = null
     var tts: Boolean? = null
     var allowedMentions: AllowedMentions? = null

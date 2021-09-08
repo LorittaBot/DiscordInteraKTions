@@ -7,8 +7,8 @@ import net.perfectdreams.discordinteraktions.common.context.RequestBridge
 import net.perfectdreams.discordinteraktions.common.entities.messages.EphemeralMessage
 import net.perfectdreams.discordinteraktions.common.entities.messages.Message
 import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
-import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
-import net.perfectdreams.discordinteraktions.common.utils.MessageBuilder
+import net.perfectdreams.discordinteraktions.common.utils.InteractionCreateMessage
+import net.perfectdreams.discordinteraktions.common.utils.MessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.utils.buildMessage
 
 class ButtonClickContext(
@@ -23,12 +23,12 @@ class ButtonClickContext(
         }
     }
 
-    suspend fun updateMessage(block: MessageBuilder.() -> (Unit)): Message {
+    suspend fun updateMessage(block: MessageCreateBuilder.() -> (Unit)): Message {
         val message = buildMessage(block)
         return updateMessage(message)
     }
 
-    private suspend fun updateMessage(message: InteractionMessage): Message {
+    private suspend fun updateMessage(message: InteractionCreateMessage): Message {
         if (message.isEphemeral && message.files?.isNotEmpty() == true)
             error("Ephemeral messages cannot contain attachments!")
 

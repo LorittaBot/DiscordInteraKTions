@@ -5,9 +5,9 @@ import net.perfectdreams.discordinteraktions.common.entities.messages.EphemeralM
 import net.perfectdreams.discordinteraktions.common.entities.messages.Message
 import net.perfectdreams.discordinteraktions.common.entities.messages.PublicMessage
 import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
-import net.perfectdreams.discordinteraktions.common.utils.EphemeralMessageBuilder
-import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
-import net.perfectdreams.discordinteraktions.common.utils.MessageBuilder
+import net.perfectdreams.discordinteraktions.common.utils.EphemeralMessageCreateBuilder
+import net.perfectdreams.discordinteraktions.common.utils.InteractionCreateMessage
+import net.perfectdreams.discordinteraktions.common.utils.MessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.utils.buildEphemeralMessage
 import net.perfectdreams.discordinteraktions.common.utils.buildMessage
 
@@ -42,19 +42,19 @@ abstract class InteractionContext(
         wasInitiallyDeferredEphemerally = true
     }
 
-    suspend fun sendEphemeralMessage(block: EphemeralMessageBuilder.() -> (Unit)): EphemeralMessage {
+    suspend fun sendEphemeralMessage(block: EphemeralMessageCreateBuilder.() -> (Unit)): EphemeralMessage {
         val message = buildEphemeralMessage(block)
         // TODO: Improve the code below to always be sure that it will return an ephemeral message
         return sendMessage(message) as EphemeralMessage // This will always return an ephemeral message
     }
 
-    suspend fun sendMessage(block: MessageBuilder.() -> (Unit)): PublicMessage {
+    suspend fun sendMessage(block: MessageCreateBuilder.() -> (Unit)): PublicMessage {
         val message = buildMessage(block)
         // TODO: Improve the code below to always be sure that it will return an public message
         return sendMessage(message) as PublicMessage // This will always return an public message
     }
 
-    private suspend fun sendMessage(message: InteractionMessage): Message {
+    private suspend fun sendMessage(message: InteractionCreateMessage): Message {
         if (message.isEphemeral && message.files?.isNotEmpty() == true)
             error("Ephemeral messages cannot contain attachments!")
 

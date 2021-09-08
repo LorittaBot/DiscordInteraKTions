@@ -5,7 +5,7 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.rest.builder.message.modify.EphemeralInteractionResponseModifyBuilder
 import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.common.entities.messages.EphemeralMessage
-import net.perfectdreams.discordinteraktions.common.utils.EphemeralMessageBuilder
+import net.perfectdreams.discordinteraktions.common.utils.EphemeralMessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.utils.buildEphemeralMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordActionRowBuilder
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toKordAllowedMentions
@@ -17,7 +17,7 @@ class KordEditedOriginalInteractionEphemeralMessage(
     private val interactionToken: String,
     private val message: DiscordMessage
 ) : KordEphemeralMessage(message) {
-    override suspend fun editMessage(block: EphemeralMessageBuilder.() -> Unit): EphemeralMessage {
+    override suspend fun editMessage(block: EphemeralMessageCreateBuilder.() -> Unit): EphemeralMessage {
         val message = buildEphemeralMessage(block)
         val newMessage = rest.interaction.modifyInteractionResponse(
             applicationId,

@@ -12,7 +12,7 @@ import net.perfectdreams.discordinteraktions.common.context.InteractionRequestSt
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
 import net.perfectdreams.discordinteraktions.common.context.manager.RequestManager
 import net.perfectdreams.discordinteraktions.common.entities.messages.Message
-import net.perfectdreams.discordinteraktions.common.utils.InteractionMessage
+import net.perfectdreams.discordinteraktions.common.utils.InteractionCreateMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordEditedOriginalInteractionPublicMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordEphemeralMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordPublicMessage
@@ -49,7 +49,7 @@ class HttpRequestManager(
 
     override suspend fun deferChannelMessageEphemerally() =  error("Can't defer a interaction that was already deferred!")
 
-    override suspend fun sendMessage(message: InteractionMessage): Message {
+    override suspend fun sendMessage(message: InteractionCreateMessage): Message {
         // *Technically* we can respond to the initial interaction via HTTP too
         val kordMessage = rest.interaction.createFollowupMessage(
             applicationId,
@@ -104,7 +104,7 @@ class HttpRequestManager(
         TODO("Not yet implemented")
     }
 
-    override suspend fun updateMessage(message: InteractionMessage, isEphemeral: Boolean): Message {
+    override suspend fun updateMessage(message: InteractionCreateMessage, isEphemeral: Boolean): Message {
         val newMessage = rest.interaction.modifyInteractionResponse(
             applicationId,
             interactionToken,

@@ -1,14 +1,13 @@
 package net.perfectdreams.discordinteraktions.common.utils
 
 import net.perfectdreams.discordinteraktions.common.components.ComponentsBuilder
-import net.perfectdreams.discordinteraktions.common.components.actionrow.ActionRowBuilder
 import java.io.InputStream
 
-fun buildMessage(block: MessageBuilder.() -> (Unit)): InteractionMessage {
-    val result = MessageBuilder().apply(block)
+fun buildMessage(block: MessageCreateBuilder.() -> (Unit)): InteractionCreateMessage {
+    val result = MessageCreateBuilder().apply(block)
 
-    return InteractionMessage(
-        result.content.orEmpty(),
+    return InteractionCreateMessage(
+        result.content,
         result.tts,
         result.removeAlreadyUploadedFiles,
         result.files,
@@ -20,7 +19,7 @@ fun buildMessage(block: MessageBuilder.() -> (Unit)): InteractionMessage {
 }
 
 @InteraKTionsDslMarker
-class MessageBuilder {
+class MessageCreateBuilder {
     var content: String? = null
     var tts: Boolean? = null
     var allowedMentions: AllowedMentions? = null
@@ -46,13 +45,13 @@ class MessageBuilder {
 
 // Follows Discord's field order
 // https://discord.com/developers/docs/resources/channel#create-message
-data class InteractionMessage(
-    val content: String,
-    val tts: Boolean? = null,
+data class InteractionCreateMessage(
+    val content: String?,
+    val tts: Boolean?,
     val removeAlreadyUploadedFiles: Boolean,
-    val files: Map<String, InputStream>? = null,
-    val embeds: List<EmbedBuilder>? = null,
-    val allowedMentions: AllowedMentions? = null,
+    val files: Map<String, InputStream>?,
+    val embeds: List<EmbedBuilder>?,
+    val allowedMentions: AllowedMentions?,
     var isEphemeral: Boolean,
-    val components: List<ActionRowComponent>? = null
+    val components: List<ActionRowComponent>?
 )
