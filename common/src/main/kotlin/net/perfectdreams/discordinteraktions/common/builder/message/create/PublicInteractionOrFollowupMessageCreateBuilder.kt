@@ -4,7 +4,6 @@ import dev.kord.rest.NamedFile
 import dev.kord.rest.builder.component.MessageComponentBuilder
 import dev.kord.rest.builder.message.AllowedMentionsBuilder
 import dev.kord.rest.builder.message.EmbedBuilder
-import dev.kord.rest.builder.message.create.PersistentMessageCreateBuilder
 
 /**
  * Message builder for publicly responding to an interaction.
