@@ -106,8 +106,8 @@ class InitialHttpRequestManager(
                 this.content = message.content
                 this.tts = message.tts
                 this.allowedMentions = message.allowedMentions
-                this.components.addAll(message.components)
-                this.embeds.addAll(message.embeds)
+                message.components?.let { this.components.addAll(it) }
+                message.embeds?.let { this.embeds.addAll(it) }
                 this.files.addAll(message.files)
             }.toRequest()
         )
@@ -129,8 +129,8 @@ class InitialHttpRequestManager(
                 this.content = message.content
                 this.tts = message.tts
                 this.allowedMentions = message.allowedMentions
-                this.components.addAll(message.components)
-                this.embeds.addAll(message.embeds)
+                message.components?.let { this.components.addAll(it) }
+                message.embeds?.let { this.embeds.addAll(it) }
             }.toRequest()
         )
 

@@ -10,9 +10,9 @@ class EphemeralInteractionOrFollowupMessageCreateBuilder : EphemeralMessageCreat
 
     override var tts: Boolean? = null
 
-    override val embeds: MutableList<EmbedBuilder> = mutableListOf()
+    override var embeds: MutableList<EmbedBuilder>? = mutableListOf()
 
     override var allowedMentions: AllowedMentionsBuilder? = null
 
-    override val components: MutableList<MessageComponentBuilder> = mutableListOf()
+    override var components: MutableList<MessageComponentBuilder>? = mutableListOf()
 }
