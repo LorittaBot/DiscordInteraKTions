@@ -66,6 +66,8 @@ class HttpRequestManager(
             }.toRequest()
         )
 
+        bridge.state.value = InteractionRequestState.ALREADY_REPLIED
+
         return KordPublicFollowupMessage(
             rest,
             applicationId,
@@ -88,6 +90,8 @@ class HttpRequestManager(
             }.toRequest()
         )
 
+        bridge.state.value = InteractionRequestState.ALREADY_REPLIED
+        
         return KordEphemeralFollowupMessage(
             rest,
             applicationId,
