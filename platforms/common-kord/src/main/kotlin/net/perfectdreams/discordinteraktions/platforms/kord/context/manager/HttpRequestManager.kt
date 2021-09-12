@@ -91,7 +91,7 @@ class HttpRequestManager(
         )
 
         bridge.state.value = InteractionRequestState.ALREADY_REPLIED
-        
+
         return KordEphemeralFollowupMessage(
             rest,
             applicationId,
