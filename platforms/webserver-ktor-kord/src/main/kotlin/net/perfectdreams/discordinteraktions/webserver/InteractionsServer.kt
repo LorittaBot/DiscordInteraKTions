@@ -35,7 +35,6 @@ class InteractionsServer(
         private val logger = KotlinLogging.logger {}
     }
 
-    val http = HttpClient {}
     val rest = RestClient(token)
     val commandManager = CommandManager()
     val interactionRequestHandler: InteractionRequestHandler = DefaultInteractionRequestHandler(

@@ -1,6 +1,6 @@
 package net.perfectdreams.discordinteraktions.common.commands
 
-import net.perfectdreams.discordinteraktions.api.entities.Snowflake
+import dev.kord.common.entity.Snowflake
 
 interface CommandRegistry {
     suspend fun updateAllCommandsInGuild(guildId: Snowflake, deleteUnknownCommands: Boolean)

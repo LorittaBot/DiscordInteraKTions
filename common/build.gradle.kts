@@ -8,6 +8,9 @@ group = "net.perfectdreams.discordinteraktions"
 
 dependencies {
     implementation(kotlin("stdlib"))
+
+    api("dev.kord:kord-rest:0.8.x-SNAPSHOT")
+
     api(project(":interaction-declarations"))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")

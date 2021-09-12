@@ -1,8 +1,11 @@
 package net.perfectdreams.discordinteraktions.common.commands
 
 import net.perfectdreams.discordinteraktions.common.commands.interaction.InteractionCommandExecutor
+import net.perfectdreams.discordinteraktions.common.components.ComponentDeclaration
 import net.perfectdreams.discordinteraktions.common.components.buttons.ButtonClickExecutor
 import net.perfectdreams.discordinteraktions.common.components.buttons.ButtonClickExecutorDeclaration
+import net.perfectdreams.discordinteraktions.common.components.selects.SelectMenuExecutor
+import net.perfectdreams.discordinteraktions.common.components.selects.SelectMenuExecutorDeclaration
 import net.perfectdreams.discordinteraktions.declarations.commands.InteractionCommandDeclaration
 import net.perfectdreams.discordinteraktions.declarations.commands.wrappers.InteractionCommandDeclarationWrapper
 
@@ -12,6 +15,12 @@ open class CommandManager {
 
     val buttonDeclarations = mutableListOf<ButtonClickExecutorDeclaration>()
     val buttonExecutors = mutableListOf<ButtonClickExecutor>()
+
+    val selectMenusDeclarations = mutableListOf<SelectMenuExecutorDeclaration>()
+    val selectMenusExecutors = mutableListOf<SelectMenuExecutor>()
+
+    val componentDeclarations: List<String>
+        get() = buttonDeclarations.map { it.id } + selectMenusDeclarations.map { it.id }
 
     fun register(declarationWrapper: InteractionCommandDeclarationWrapper, vararg executors: InteractionCommandExecutor) {
         val declaration = declarationWrapper.declaration()
@@ -24,10 +33,18 @@ open class CommandManager {
     }
 
     fun register(declaration: ButtonClickExecutorDeclaration, executor: ButtonClickExecutor) {
-        if (declarations.any { it.name == declaration.id })
-            error("There's already a button executor registered with the ID ${declaration.id}!")
+        if (componentDeclarations.any { it == declaration.id })
+            error("There's already a component executor registered with the ID ${declaration.id}!")
 
         buttonDeclarations.add(declaration)
         buttonExecutors.add(executor)
+    }
+
+    fun register(declaration: SelectMenuExecutorDeclaration, executor: SelectMenuExecutor) {
+        if (componentDeclarations.any { it == declaration.id })
+            error("There's already a component executor registered with the ID ${declaration.id}!")
+
+        selectMenusDeclarations.add(declaration)
+        selectMenusExecutors.add(executor)
     }
 }

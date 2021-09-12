@@ -1,9 +1,9 @@
 package net.perfectdreams.discordinteraktions.platforms.kord
 
+import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.DefaultGateway
 import dev.kord.gateway.start
 import dev.kord.rest.service.RestClient
-import net.perfectdreams.discordinteraktions.api.entities.Snowflake
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.commands.slash.SlashCommandExecutor
 import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext

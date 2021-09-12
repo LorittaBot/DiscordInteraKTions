@@ -1,8 +1,8 @@
 package net.perfectdreams.discordinteraktions.common.entities.messages
 
-import net.perfectdreams.discordinteraktions.api.entities.Snowflake
+import dev.kord.common.entity.Snowflake
 
 interface Message {
     val id: Snowflake
-    val content: String
+    val content: String?
 }
