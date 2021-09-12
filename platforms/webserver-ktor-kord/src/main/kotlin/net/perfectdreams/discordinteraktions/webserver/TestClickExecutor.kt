@@ -4,6 +4,7 @@ import dev.kord.rest.builder.message.modify.allowedMentions
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.perfectdreams.discordinteraktions.api.entities.User
+import net.perfectdreams.discordinteraktions.common.builder.message.allowedMentions
 import net.perfectdreams.discordinteraktions.common.components.buttons.ButtonClickExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.components.buttons.ButtonClickWithNoDataExecutor
 import net.perfectdreams.discordinteraktions.common.context.components.ComponentContext

@@ -24,6 +24,8 @@ import net.perfectdreams.discordinteraktions.common.builder.message.modify.Publi
 import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
 import net.perfectdreams.discordinteraktions.common.context.manager.RequestManager
+import net.perfectdreams.discordinteraktions.common.entities.messages.EditableEphemeralMessage
+import net.perfectdreams.discordinteraktions.common.entities.messages.EditablePersistentMessage
 import net.perfectdreams.discordinteraktions.common.entities.messages.EphemeralMessage
 import net.perfectdreams.discordinteraktions.common.entities.messages.Message
 import net.perfectdreams.discordinteraktions.common.entities.messages.PublicMessage
@@ -101,7 +103,7 @@ class InitialHttpRequestManager(
         )
     }
 
-    override suspend fun sendPublicMessage(message: PublicInteractionOrFollowupMessageCreateBuilder): PublicMessage {
+    override suspend fun sendPublicMessage(message: PublicInteractionOrFollowupMessageCreateBuilder): EditablePersistentMessage {
         // *Technically* we can respond to the initial interaction via HTTP too
         val kordMessage = rest.interaction.createInteractionResponse(
             applicationId,
@@ -124,7 +126,7 @@ class InitialHttpRequestManager(
         )
     }
 
-    override suspend fun sendEphemeralMessage(message: EphemeralInteractionOrFollowupMessageCreateBuilder): EphemeralMessage {
+    override suspend fun sendEphemeralMessage(message: EphemeralInteractionOrFollowupMessageCreateBuilder): EditableEphemeralMessage {
         // *Technically* we can respond to the initial interaction via HTTP too
         val kordMessage = rest.interaction.createInteractionResponse(
             applicationId,
@@ -167,7 +169,7 @@ class InitialHttpRequestManager(
         )
     }
 
-    override suspend fun updateMessage(message: PublicInteractionMessageModifyBuilder): Message {
+    override suspend fun updateMessage(message: PublicInteractionMessageModifyBuilder): EditablePersistentMessage {
         rest.interaction.createInteractionResponse(
             request.id,
             interactionToken,
@@ -203,7 +205,7 @@ class InitialHttpRequestManager(
         )
     }
 
-    override suspend fun updateEphemeralMessage(message: EphemeralInteractionMessageModifyBuilder): Message {
+    override suspend fun updateEphemeralMessage(message: EphemeralInteractionMessageModifyBuilder): EditableEphemeralMessage {
         rest.interaction.createInteractionResponse(
             request.id,
             interactionToken,

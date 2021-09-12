@@ -8,12 +8,4 @@ import net.perfectdreams.discordinteraktions.common.entities.messages.EphemeralM
 open class KordEphemeralMessage(val handle: DiscordMessage) : EphemeralMessage {
     override val id = handle.id
     override val content by handle::content
-
-    override suspend fun editMessage(block: EphemeralMessageModifyBuilder.() -> Unit): EphemeralMessage {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun editMessage(message: EphemeralMessageModifyBuilder): EphemeralMessage {
-        TODO("Not yet implemented")
-    }
 }

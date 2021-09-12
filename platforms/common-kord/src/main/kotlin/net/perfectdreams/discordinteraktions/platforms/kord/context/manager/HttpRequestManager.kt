@@ -5,7 +5,6 @@ import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.builder.message.create.EphemeralFollowupMessageCreateBuilder
 import dev.kord.rest.builder.message.create.PublicFollowupMessageCreateBuilder
-import dev.kord.rest.builder.message.modify.EphemeralInteractionResponseModifyBuilder
 import dev.kord.rest.service.RestClient
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.builder.message.create.EphemeralInteractionOrFollowupMessageCreateBuilder
@@ -15,9 +14,8 @@ import net.perfectdreams.discordinteraktions.common.builder.message.modify.Publi
 import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
 import net.perfectdreams.discordinteraktions.common.context.manager.RequestManager
-import net.perfectdreams.discordinteraktions.common.entities.messages.EphemeralMessage
-import net.perfectdreams.discordinteraktions.common.entities.messages.Message
-import net.perfectdreams.discordinteraktions.common.entities.messages.PublicMessage
+import net.perfectdreams.discordinteraktions.common.entities.messages.EditableEphemeralMessage
+import net.perfectdreams.discordinteraktions.common.entities.messages.EditablePersistentMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordEphemeralFollowupMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordOriginalInteractionEphemeralMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordOriginalInteractionPublicMessage
@@ -52,7 +50,7 @@ class HttpRequestManager(
 
     override suspend fun deferChannelMessageEphemerally() =  error("Can't defer a interaction that was already deferred!")
 
-    override suspend fun sendPublicMessage(message: PublicInteractionOrFollowupMessageCreateBuilder): PublicMessage {
+    override suspend fun sendPublicMessage(message: PublicInteractionOrFollowupMessageCreateBuilder): EditablePersistentMessage {
         // *Technically* we can respond to the initial interaction via HTTP too
         val kordMessage = rest.interaction.createFollowupMessage(
             applicationId,
@@ -77,7 +75,7 @@ class HttpRequestManager(
         )
     }
 
-    override suspend fun sendEphemeralMessage(message: EphemeralInteractionOrFollowupMessageCreateBuilder): EphemeralMessage {
+    override suspend fun sendEphemeralMessage(message: EphemeralInteractionOrFollowupMessageCreateBuilder): EditableEphemeralMessage {
         // *Technically* we can respond to the initial interaction via HTTP too
         val kordMessage = rest.interaction.createFollowupMessage(
             applicationId,
@@ -103,7 +101,7 @@ class HttpRequestManager(
 
     override suspend fun deferUpdateMessage() = error("Can't defer a interaction that was already deferred!")
 
-    override suspend fun updateMessage(message: PublicInteractionMessageModifyBuilder): Message {
+    override suspend fun updateMessage(message: PublicInteractionMessageModifyBuilder): EditablePersistentMessage {
         val interactionMessage = KordOriginalInteractionPublicMessage(
             rest,
             applicationId,
@@ -126,7 +124,7 @@ class HttpRequestManager(
         return newMessage
     }
 
-    override suspend fun updateEphemeralMessage(message: EphemeralInteractionMessageModifyBuilder): Message {
+    override suspend fun updateEphemeralMessage(message: EphemeralInteractionMessageModifyBuilder): EditableEphemeralMessage {
         val interactionMessage = KordOriginalInteractionEphemeralMessage(
             rest,
             applicationId,

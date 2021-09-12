@@ -3,6 +3,8 @@ package net.perfectdreams.discordinteraktions.common.context
 import net.perfectdreams.discordinteraktions.api.entities.User
 import net.perfectdreams.discordinteraktions.common.builder.message.create.EphemeralInteractionOrFollowupMessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.create.PublicInteractionOrFollowupMessageCreateBuilder
+import net.perfectdreams.discordinteraktions.common.entities.messages.EditableEphemeralMessage
+import net.perfectdreams.discordinteraktions.common.entities.messages.EditablePersistentMessage
 import net.perfectdreams.discordinteraktions.common.entities.messages.EphemeralMessage
 import net.perfectdreams.discordinteraktions.common.entities.messages.Message
 import net.perfectdreams.discordinteraktions.common.entities.messages.PublicMessage
@@ -39,15 +41,13 @@ abstract class InteractionContext(
         wasInitiallyDeferredEphemerally = true
     }
 
-    suspend fun sendEphemeralMessage(block: EphemeralInteractionOrFollowupMessageCreateBuilder.() -> (Unit)): EphemeralMessage {
-        return sendEphemeralMessage(EphemeralInteractionOrFollowupMessageCreateBuilder().apply(block)) as EphemeralMessage // This will always return an ephemeral message
-    }
+    suspend fun sendMessage(block: PublicInteractionOrFollowupMessageCreateBuilder.() -> (Unit))
+            = sendPublicMessage(PublicInteractionOrFollowupMessageCreateBuilder().apply(block))
 
-    suspend fun sendMessage(block: PublicInteractionOrFollowupMessageCreateBuilder.() -> (Unit)): PublicMessage {
-        return sendPublicMessage(PublicInteractionOrFollowupMessageCreateBuilder().apply(block)) as PublicMessage // This will always return an public message
-    }
+    suspend fun sendEphemeralMessage(block: EphemeralInteractionOrFollowupMessageCreateBuilder.() -> (Unit))
+            = sendEphemeralMessage(EphemeralInteractionOrFollowupMessageCreateBuilder().apply(block))
 
-    private suspend fun sendPublicMessage(message: PublicInteractionOrFollowupMessageCreateBuilder): Message {
+    private suspend fun sendPublicMessage(message: PublicInteractionOrFollowupMessageCreateBuilder): EditablePersistentMessage {
         // Check if state matches what we expect
         if (bridge.state.value == InteractionRequestState.DEFERRED_CHANNEL_MESSAGE)
             if (wasInitiallyDeferredEphemerally)
@@ -62,7 +62,7 @@ abstract class InteractionContext(
         return bridge.manager.sendPublicMessage(message)
     }
 
-    private suspend fun sendEphemeralMessage(message: EphemeralInteractionOrFollowupMessageCreateBuilder): Message {
+    private suspend fun sendEphemeralMessage(message: EphemeralInteractionOrFollowupMessageCreateBuilder): EditableEphemeralMessage {
         // Check if state matches what we expect
         if (bridge.state.value == InteractionRequestState.DEFERRED_CHANNEL_MESSAGE)
             if (!wasInitiallyDeferredEphemerally)

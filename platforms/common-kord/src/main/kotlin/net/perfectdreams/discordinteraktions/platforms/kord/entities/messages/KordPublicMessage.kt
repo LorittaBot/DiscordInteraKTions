@@ -8,12 +8,4 @@ import net.perfectdreams.discordinteraktions.common.entities.messages.PublicMess
 open class KordPublicMessage(val handle: DiscordMessage) : PublicMessage {
     override val id = handle.id
     override val content by handle::content
-
-    override suspend fun editMessage(block: PersistentMessageModifyBuilder.() -> Unit): PublicMessage {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun editMessage(message: PersistentMessageModifyBuilder): PublicMessage {
-        TODO("Not yet implemented")
-    }
 }
