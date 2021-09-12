@@ -4,6 +4,7 @@ import dev.kord.common.entity.DiscordMessage
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.builder.message.modify.PublicFollowupMessageModifyBuilder
 import dev.kord.rest.service.RestClient
+import net.perfectdreams.discordinteraktions.common.builder.message.modify.PersistentMessageModifyBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.modify.PublicInteractionOrFollowupMessageModifyBuilder
 import net.perfectdreams.discordinteraktions.common.entities.messages.PublicMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.runIfNotMissing
@@ -17,8 +18,10 @@ class KordPublicFollowupMessage(
     override val id = handle.id
     override val content by handle::content
 
-    override suspend fun editMessage(block: PublicInteractionOrFollowupMessageModifyBuilder.() -> Unit): PublicMessage {
-        val message = PublicInteractionOrFollowupMessageModifyBuilder().apply(block)
+    override suspend fun editMessage(block: PersistentMessageModifyBuilder.() -> Unit)
+            = editMessage(PublicInteractionOrFollowupMessageModifyBuilder().apply(block))
+
+    override suspend fun editMessage(message: PersistentMessageModifyBuilder): PublicMessage {
         val newMessage = rest.interaction.modifyFollowupMessage(
             applicationId,
             interactionToken,

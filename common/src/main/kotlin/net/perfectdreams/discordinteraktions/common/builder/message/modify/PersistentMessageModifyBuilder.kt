@@ -12,6 +12,8 @@ import java.nio.file.Path
  * Message builder for a message that persists between client reloads.
  */
 interface PersistentMessageModifyBuilder : MessageModifyBuilder {
+    // We need to access the delegated stuff ourselves
+    var state: MessageModifyStateHolder
 
     /**
      * The files to include as attachments

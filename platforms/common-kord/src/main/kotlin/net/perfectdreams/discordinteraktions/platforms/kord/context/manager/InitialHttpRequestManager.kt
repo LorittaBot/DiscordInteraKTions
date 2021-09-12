@@ -6,6 +6,8 @@ import dev.kord.common.entity.InteractionResponseType
 import dev.kord.common.entity.MessageFlag
 import dev.kord.common.entity.MessageFlags
 import dev.kord.common.entity.Snowflake
+import dev.kord.common.entity.optional.Optional
+import dev.kord.common.entity.optional.coerceToMissing
 import dev.kord.common.entity.optional.optional
 import dev.kord.rest.builder.message.create.EphemeralInteractionResponseCreateBuilder
 import dev.kord.rest.builder.message.create.PublicInteractionResponseCreateBuilder
@@ -17,6 +19,8 @@ import dev.kord.rest.service.RestClient
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.builder.message.create.EphemeralInteractionOrFollowupMessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.create.PublicInteractionOrFollowupMessageCreateBuilder
+import net.perfectdreams.discordinteraktions.common.builder.message.modify.EphemeralInteractionMessageModifyBuilder
+import net.perfectdreams.discordinteraktions.common.builder.message.modify.PublicInteractionMessageModifyBuilder
 import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
 import net.perfectdreams.discordinteraktions.common.context.manager.RequestManager
@@ -163,11 +167,22 @@ class InitialHttpRequestManager(
         )
     }
 
-    override suspend fun updateMessage(message: PublicInteractionResponseModifyBuilder): Message {
-        rest.interaction.modifyInteractionResponse(
+    override suspend fun updateMessage(message: PublicInteractionMessageModifyBuilder): Message {
+        rest.interaction.createInteractionResponse(
             request.id,
             interactionToken,
-            message.toRequest()
+            InteractionResponseCreateRequest(
+                type = InteractionResponseType.UpdateMessage,
+                data = Optional(
+                    InteractionApplicationCommandCallbackData(
+                        content = Optional(message.content).coerceToMissing(),
+                        embeds = Optional(message.embeds?.map { it.toRequest() } ?: listOf()),
+                        allowedMentions = Optional(message.allowedMentions?.build()).coerceToMissing(),
+                        components = message.components?.map { it.build() }.optional().coerceToMissing(),
+                        flags = MessageFlags {}.optional()
+                    )
+                )
+            )
         )
 
         bridge.state.value = InteractionRequestState.ALREADY_REPLIED
@@ -188,14 +203,23 @@ class InitialHttpRequestManager(
         )
     }
 
-    override suspend fun updateEphemeralMessage(message: EphemeralInteractionResponseModifyBuilder): Message {
-        rest.interaction.modifyInteractionResponse(
+    override suspend fun updateEphemeralMessage(message: EphemeralInteractionMessageModifyBuilder): Message {
+        rest.interaction.createInteractionResponse(
             request.id,
             interactionToken,
-            message.toRequest()
+            InteractionResponseCreateRequest(
+                type = InteractionResponseType.UpdateMessage,
+                data = Optional(
+                    InteractionApplicationCommandCallbackData(
+                        content = Optional(message.content).coerceToMissing(),
+                        embeds = Optional(message.embeds?.map { it.toRequest() } ?: listOf()),
+                        allowedMentions = Optional(message.allowedMentions?.build()).coerceToMissing(),
+                        components = message.components?.map { it.build() }.optional().coerceToMissing(),
+                        flags = MessageFlags {}.optional()
+                    )
+                )
+            )
         )
-
-        bridge.state.value = InteractionRequestState.ALREADY_REPLIED
 
         bridge.manager = HttpRequestManager(
             bridge,

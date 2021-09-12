@@ -4,6 +4,8 @@ import dev.kord.rest.builder.message.modify.EphemeralInteractionResponseModifyBu
 import dev.kord.rest.builder.message.modify.PublicInteractionResponseModifyBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.create.EphemeralInteractionOrFollowupMessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.create.PublicInteractionOrFollowupMessageCreateBuilder
+import net.perfectdreams.discordinteraktions.common.builder.message.modify.EphemeralInteractionMessageModifyBuilder
+import net.perfectdreams.discordinteraktions.common.builder.message.modify.PublicInteractionMessageModifyBuilder
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
 import net.perfectdreams.discordinteraktions.common.entities.messages.EphemeralMessage
 import net.perfectdreams.discordinteraktions.common.entities.messages.Message
@@ -47,10 +49,10 @@ abstract class RequestManager(val bridge: RequestBridge) {
     /**
      * The usual way of editing a message to a specific channel/user.
      */
-    abstract suspend fun updateMessage(message: PublicInteractionResponseModifyBuilder): Message
+    abstract suspend fun updateMessage(message: PublicInteractionMessageModifyBuilder): Message
 
     /**
      * The usual way of editing a message to a specific channel/user.
      */
-    abstract suspend fun updateEphemeralMessage(message: EphemeralInteractionResponseModifyBuilder): Message
+    abstract suspend fun updateEphemeralMessage(message: EphemeralInteractionMessageModifyBuilder): Message
 }

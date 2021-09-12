@@ -26,6 +26,8 @@ import kotlinx.serialization.json.putJsonObject
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.builder.message.create.EphemeralInteractionOrFollowupMessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.create.PublicInteractionOrFollowupMessageCreateBuilder
+import net.perfectdreams.discordinteraktions.common.builder.message.modify.EphemeralInteractionMessageModifyBuilder
+import net.perfectdreams.discordinteraktions.common.builder.message.modify.PublicInteractionMessageModifyBuilder
 import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
 import net.perfectdreams.discordinteraktions.common.context.manager.RequestManager
@@ -201,7 +203,7 @@ class WebServerRequestManager(
         )
     }
 
-    override suspend fun updateMessage(message: PublicInteractionResponseModifyBuilder): Message {
+    override suspend fun updateMessage(message: PublicInteractionMessageModifyBuilder): Message {
         call.respondText(
             Json.encodeToString(
                 InteractionResponseCreateRequest(
@@ -238,7 +240,7 @@ class WebServerRequestManager(
         )
     }
 
-    override suspend fun updateEphemeralMessage(message: EphemeralInteractionResponseModifyBuilder): Message {
+    override suspend fun updateEphemeralMessage(message: EphemeralInteractionMessageModifyBuilder): Message {
         call.respondText(
             Json.encodeToString(
                 InteractionResponseCreateRequest(

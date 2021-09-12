@@ -6,11 +6,12 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.rest.builder.message.create.EphemeralFollowupMessageCreateBuilder
 import dev.kord.rest.builder.message.create.PublicFollowupMessageCreateBuilder
 import dev.kord.rest.builder.message.modify.EphemeralInteractionResponseModifyBuilder
-import dev.kord.rest.builder.message.modify.PublicInteractionResponseModifyBuilder
 import dev.kord.rest.service.RestClient
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.builder.message.create.EphemeralInteractionOrFollowupMessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.create.PublicInteractionOrFollowupMessageCreateBuilder
+import net.perfectdreams.discordinteraktions.common.builder.message.modify.EphemeralInteractionMessageModifyBuilder
+import net.perfectdreams.discordinteraktions.common.builder.message.modify.PublicInteractionMessageModifyBuilder
 import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
 import net.perfectdreams.discordinteraktions.common.context.manager.RequestManager
@@ -102,12 +103,15 @@ class HttpRequestManager(
 
     override suspend fun deferUpdateMessage() = error("Can't defer a interaction that was already deferred!")
 
-    override suspend fun updateMessage(message: PublicInteractionResponseModifyBuilder): Message {
-        rest.interaction.modifyInteractionResponse(
-            request.id,
+    override suspend fun updateMessage(message: PublicInteractionMessageModifyBuilder): Message {
+        val interactionMessage = KordOriginalInteractionPublicMessage(
+            rest,
+            applicationId,
             interactionToken,
-            message.toRequest()
+            null
         )
+
+        val newMessage = interactionMessage.editMessage(message)
 
         bridge.state.value = InteractionRequestState.ALREADY_REPLIED
 
@@ -119,20 +123,18 @@ class HttpRequestManager(
             request
         )
 
-        return KordOriginalInteractionPublicMessage(
-            rest,
-            applicationId,
-            interactionToken,
-            message.content
-        )
+        return newMessage
     }
 
-    override suspend fun updateEphemeralMessage(message: EphemeralInteractionResponseModifyBuilder): Message {
-        rest.interaction.modifyInteractionResponse(
-            request.id,
+    override suspend fun updateEphemeralMessage(message: EphemeralInteractionMessageModifyBuilder): Message {
+        val interactionMessage = KordOriginalInteractionEphemeralMessage(
+            rest,
+            applicationId,
             interactionToken,
-            message.toRequest()
+            null
         )
+
+        val newMessage = interactionMessage.editMessage(message)
 
         bridge.state.value = InteractionRequestState.ALREADY_REPLIED
 
@@ -144,11 +146,6 @@ class HttpRequestManager(
             request
         )
 
-        return KordOriginalInteractionEphemeralMessage(
-            rest,
-            applicationId,
-            interactionToken,
-            message.content
-        )
+        return newMessage
     }
 }

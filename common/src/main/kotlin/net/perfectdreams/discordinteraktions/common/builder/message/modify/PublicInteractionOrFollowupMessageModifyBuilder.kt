@@ -10,7 +10,7 @@ import dev.kord.rest.builder.message.EmbedBuilder
 // From Kord, however this is a interaction OR followup modify builder
 class PublicInteractionOrFollowupMessageModifyBuilder : PersistentMessageModifyBuilder {
     // We need to access the delegated stuff ourselves
-    var state = MessageModifyStateHolder()
+    override var state = MessageModifyStateHolder()
 
     override var files: MutableList<NamedFile>? by state::files.delegate()
 
