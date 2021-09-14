@@ -37,9 +37,9 @@ import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.Ko
  * by directly interacting with the Discord Rest API.
  *
  * @param rest The application rest client
- * @param applicationId The bot's application id
+ * @param applicationId The bot's application ID
  * @param interactionToken The request's token
- * @param request The interaction (wrapped by the [InteractionRequestHandler]
+ * @param request The Discord Interaction request
  */
 @OptIn(KordPreview::class)
 class InitialHttpRequestManager(
@@ -106,7 +106,7 @@ class InitialHttpRequestManager(
     override suspend fun sendPublicMessage(message: PublicInteractionOrFollowupMessageCreateBuilder): EditablePersistentMessage {
         // *Technically* we can respond to the initial interaction via HTTP too
         rest.interaction.createInteractionResponse(
-            applicationId,
+            request.id,
             request.token,
             PublicInteractionResponseCreateBuilder().apply {
                 this.content = message.content
@@ -129,7 +129,7 @@ class InitialHttpRequestManager(
     override suspend fun sendEphemeralMessage(message: EphemeralInteractionOrFollowupMessageCreateBuilder): EditableEphemeralMessage {
         // *Technically* we can respond to the initial interaction via HTTP too
         rest.interaction.createInteractionResponse(
-            applicationId,
+            request.id,
             request.token,
             EphemeralInteractionResponseCreateBuilder().apply {
                 this.content = message.content
