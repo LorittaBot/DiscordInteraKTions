@@ -105,7 +105,7 @@ class InitialHttpRequestManager(
 
     override suspend fun sendPublicMessage(message: PublicInteractionOrFollowupMessageCreateBuilder): EditablePersistentMessage {
         // *Technically* we can respond to the initial interaction via HTTP too
-        val kordMessage = rest.interaction.createInteractionResponse(
+        rest.interaction.createInteractionResponse(
             applicationId,
             request.token,
             PublicInteractionResponseCreateBuilder().apply {
@@ -128,7 +128,7 @@ class InitialHttpRequestManager(
 
     override suspend fun sendEphemeralMessage(message: EphemeralInteractionOrFollowupMessageCreateBuilder): EditableEphemeralMessage {
         // *Technically* we can respond to the initial interaction via HTTP too
-        val kordMessage = rest.interaction.createInteractionResponse(
+        rest.interaction.createInteractionResponse(
             applicationId,
             request.token,
             EphemeralInteractionResponseCreateBuilder().apply {
