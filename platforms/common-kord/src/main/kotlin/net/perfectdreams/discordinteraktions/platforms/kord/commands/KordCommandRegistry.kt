@@ -8,6 +8,7 @@ import dev.kord.rest.builder.interaction.MessageCommandCreateBuilder
 import dev.kord.rest.builder.interaction.SubCommandBuilder
 import dev.kord.rest.builder.interaction.UserCommandCreateBuilder
 import dev.kord.rest.builder.interaction.boolean
+import dev.kord.rest.builder.interaction.channel
 import dev.kord.rest.builder.interaction.int
 import dev.kord.rest.builder.interaction.number
 import dev.kord.rest.builder.interaction.string
@@ -189,6 +190,10 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
                 builder.user(cmdOption.name, cmdOption.description) {
                     this.required = !cmdOption.type.isNullable
                 }
+            CommandOptionType.Channel, CommandOptionType.NullableChannel ->
+                builder.channel(cmdOption.name, cmdOption.description) {
+                    this.required = !cmdOption.type.isNullable
+                }
             else -> error("Unsupported type ${cmdOption.type}")
         }
     }
@@ -218,6 +223,10 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
                 }
             CommandOptionType.User, CommandOptionType.NullableUser ->
                 builder.user(cmdOption.name, cmdOption.description) {
+                    this.required = !cmdOption.type.isNullable
+                }
+            CommandOptionType.Channel, CommandOptionType.NullableChannel ->
+                builder.channel(cmdOption.name, cmdOption.description) {
                     this.required = !cmdOption.type.isNullable
                 }
             else -> error("Unsupported type ${cmdOption.type}")

@@ -12,6 +12,7 @@ import net.perfectdreams.discordinteraktions.declarations.commands.UserCommandDe
 import net.perfectdreams.discordinteraktions.declarations.commands.slash.SlashCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOption
 import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOptionType
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordChannel
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
 
 object CommandDeclarationUtils {
@@ -194,8 +195,7 @@ object CommandDeclarationUtils {
                 val kordInstance = resolvedMap[userId] ?: return null
 
                 // Now we need to wrap the kord user in our own implementation!
-                TODO("Channel arguments are not supported yet")
-                // return KordChannel(kordInstance)
+                return KordChannel(kordInstance)
             }
             CommandOptionType.Role, CommandOptionType.NullableRole -> {
                 val userId = argument.value as Snowflake
