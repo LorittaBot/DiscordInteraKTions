@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "net.perfectdreams.discordinteraktions"
-version = "0.0.9"
+version = "0.0.10-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -30,7 +30,7 @@ allprojects {
 
 subprojects {
     apply<MavenPublishPlugin>()
-    version = "0.0.9"
+    version = "0.0.10-SNAPSHOT"
 
     publishing {
         repositories {
