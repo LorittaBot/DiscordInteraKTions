@@ -64,6 +64,7 @@ class KordComponentChecker(val commandManager: CommandManager) {
             GuildComponentContext(
                 bridge,
                 kordUser,
+                request.channelId,
                 kordPublicMessage,
                 interactionData,
                 guildId,
@@ -73,6 +74,7 @@ class KordComponentChecker(val commandManager: CommandManager) {
             ComponentContext(
                 bridge,
                 kordUser,
+                request.channelId,
                 kordPublicMessage,
                 interactionData
             )

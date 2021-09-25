@@ -35,6 +35,38 @@ class KordCommandChecker(val commandManager: CommandManager) {
 
         val applicationCommandType = request.data.type.value ?: error("Application Command Type is null, so we don't know what it is going to be used for!")
 
+        val kordUser = KordUser(request.member.value?.user?.value ?: request.user.value ?: error("oh no"))
+        val guildId = request.guildId.value
+
+        val interactionData = InteractionData(request.data.resolved.value?.toDiscordInteraKTionsResolvedObjects())
+
+        // If the guild ID is not null, then it means that the interaction happened in a guild!
+        val commandContext = if (guildId != null) {
+            val member = request.member.value!! // Should NEVER be null!
+            val kordMember = KordInteractionMember(
+                member,
+                KordUser(member.user.value!!) // Also should NEVER be null!
+            )
+
+            GuildApplicationCommandContext(
+                bridge,
+                kordUser,
+                request.channelId,
+                interactionData,
+                guildId,
+                kordMember
+            )
+        } else {
+            ApplicationCommandContext(
+                bridge,
+                KordUser(
+                    request.member.value?.user?.value ?: request.user.value ?: error("oh no")
+                ),
+                request.channelId,
+                interactionData
+            )
+        }
+
         when (applicationCommandType) {
             is ApplicationCommandType.Unknown -> {
                 error("Received unknown command type! ID: ${applicationCommandType.value}")
@@ -65,36 +97,6 @@ class KordCommandChecker(val commandManager: CommandManager) {
                     relativeOptions ?: listOf()
                 )
 
-                val kordUser = KordUser(request.member.value?.user?.value ?: request.user.value ?: error("oh no"))
-                val guildId = request.guildId.value
-
-                val interactionData = InteractionData(request.data.resolved.value?.toDiscordInteraKTionsResolvedObjects())
-
-                // If the guild ID is not null, then it means that the interaction happened in a guild!
-                val commandContext = if (guildId != null) {
-                    val member = request.member.value!! // Should NEVER be null!
-                    val kordMember = KordInteractionMember(
-                        member,
-                        KordUser(member.user.value!!) // Also should NEVER be null!
-                    )
-
-                    GuildApplicationCommandContext(
-                        bridge,
-                        kordUser,
-                        interactionData,
-                        guildId,
-                        kordMember
-                    )
-                } else {
-                    ApplicationCommandContext(
-                        bridge,
-                        KordUser(
-                            request.member.value?.user?.value ?: request.user.value ?: error("oh no")
-                        ),
-                        interactionData
-                    )
-                }
-
                 GlobalScope.launch {
                     executor.execute(
                         commandContext,
@@ -124,42 +126,13 @@ class KordCommandChecker(val commandManager: CommandManager) {
                     it.signature() == executorDeclaration.parent
                 } as UserCommandExecutor
 
-                val kordUser = KordUser(request.member.value?.user?.value ?: request.user.value ?: error("oh no"))
-                val guildId = request.guildId.value
-
                 // TODO: Remove this workaround when Kord fixes the targetUser to targetId
                 // val targetUserId = request.data.targetUser.value ?: error("Target User ID is null in a User Command! Bug?")
-                val interactionData = InteractionData(request.data.resolved.value?.toDiscordInteraKTionsResolvedObjects())
                 val targetUser = interactionData.resolved?.users?.values?.first() ?: error("Target User is null in a User Command! Bug?")
                 // val targetUser = interactionData.resolved?.users?.get(targetUserId.toDiscordInteraKTionsSnowflake()) ?: error("Target User is null in a User Command! Bug?")
 
                 // TODO: Same thing as above
                 val targetMember = interactionData.resolved?.members?.values?.firstOrNull()
-
-                // If the guild ID is not null, then it means that the interaction happened in a guild!
-                val commandContext = if (guildId != null) {
-                    val member = request.member.value!! // Should NEVER be null!
-                    val kordMember = KordInteractionMember(
-                        member,
-                        KordUser(member.user.value!!) // Also should NEVER be null!
-                    )
-
-                    GuildApplicationCommandContext(
-                        bridge,
-                        kordUser,
-                        interactionData,
-                        guildId,
-                        kordMember
-                    )
-                } else {
-                    ApplicationCommandContext(
-                        bridge,
-                        KordUser(
-                            request.member.value?.user?.value ?: request.user.value ?: error("oh no")
-                        ),
-                        interactionData
-                    )
-                }
 
                 GlobalScope.launch {
                     executor.execute(commandContext, targetUser, targetMember)
@@ -185,37 +158,8 @@ class KordCommandChecker(val commandManager: CommandManager) {
                     it.signature() == executorDeclaration.parent
                 } as MessageCommandExecutor
 
-                val kordUser = KordUser(request.member.value?.user?.value ?: request.user.value ?: error("oh no"))
-                val guildId = request.guildId.value
-
-                val interactionData = InteractionData(request.data.resolved.value?.toDiscordInteraKTionsResolvedObjects())
                 // TODO: Remove this workaround when Kord fixes the targetUser to targetId
                 val targetMessage = interactionData.resolved?.messages?.values?.first() ?: error("Target Message is null in a Message Command! Bug?")
-
-                // If the guild ID is not null, then it means that the interaction happened in a guild!
-                val commandContext = if (guildId != null) {
-                    val member = request.member.value!! // Should NEVER be null!
-                    val kordMember = KordInteractionMember(
-                        member,
-                        KordUser(member.user.value!!) // Also should NEVER be null!
-                    )
-
-                    GuildApplicationCommandContext(
-                        bridge,
-                        kordUser,
-                        interactionData,
-                        guildId,
-                        kordMember
-                    )
-                } else {
-                    ApplicationCommandContext(
-                        bridge,
-                        KordUser(
-                            request.member.value?.user?.value ?: request.user.value ?: error("oh no")
-                        ),
-                        interactionData
-                    )
-                }
 
                 GlobalScope.launch {
                     executor.execute(commandContext, targetMessage)

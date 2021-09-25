@@ -9,7 +9,8 @@ import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 open class GuildApplicationCommandContext(
     bridge: RequestBridge,
     sender: User,
+    channelId: Snowflake,
     data: InteractionData,
     val guildId: Snowflake,
     val member: Member
-) : ApplicationCommandContext(bridge, sender, data)
+) : ApplicationCommandContext(bridge, sender, channelId, data)

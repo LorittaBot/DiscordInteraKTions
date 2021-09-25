@@ -1,5 +1,6 @@
 package net.perfectdreams.discordinteraktions.common.context
 
+import dev.kord.common.entity.Snowflake
 import net.perfectdreams.discordinteraktions.api.entities.User
 import net.perfectdreams.discordinteraktions.common.builder.message.create.EphemeralInteractionOrFollowupMessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.create.PublicInteractionOrFollowupMessageCreateBuilder
@@ -13,6 +14,7 @@ import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 abstract class InteractionContext(
     var bridge: RequestBridge,
     val sender: User,
+    val channelId: Snowflake,
     val data: InteractionData
 ) {
     val isDeferred

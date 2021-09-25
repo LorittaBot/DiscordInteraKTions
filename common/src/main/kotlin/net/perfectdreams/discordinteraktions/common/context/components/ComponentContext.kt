@@ -1,5 +1,6 @@
 package net.perfectdreams.discordinteraktions.common.context.components
 
+import dev.kord.common.entity.Snowflake
 import dev.kord.rest.builder.message.modify.EphemeralInteractionResponseModifyBuilder
 import dev.kord.rest.builder.message.modify.PublicInteractionResponseModifyBuilder
 import net.perfectdreams.discordinteraktions.api.entities.User
@@ -17,9 +18,10 @@ import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 open class ComponentContext(
     bridge: RequestBridge,
     sender: User,
+    channelId: Snowflake,
     val message: Message,
     data: InteractionData
-) : InteractionContext(bridge, sender, data) {
+) : InteractionContext(bridge, sender, channelId, data) {
     suspend fun deferUpdateMessage() {
         if (!isDeferred) {
             bridge.manager.deferUpdateMessage()
