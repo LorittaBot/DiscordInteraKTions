@@ -225,7 +225,7 @@ Add the Kord Web Server via Ktor Support module to your project
 ```kotlin
 dependencies {
     ...
-    implementation("net.perfectdreams.discordinteraktions:webserver-ktor-kord:0.0.6")
+    implementation("net.perfectdreams.discordinteraktions:webserver-ktor-kord:0.0.9")
     ...
 }
 ```
@@ -280,7 +280,7 @@ Add the Kord Gateway Support module to your project
 ```kotlin
 dependencies {
     ...
-    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.6")
+    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.9")
     ...
 }
 ```
