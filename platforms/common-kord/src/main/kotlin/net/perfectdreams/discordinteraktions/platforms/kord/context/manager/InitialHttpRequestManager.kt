@@ -118,6 +118,16 @@ class InitialHttpRequestManager(
             }.toRequest()
         )
 
+        bridge.state.value = InteractionRequestState.ALREADY_REPLIED
+
+        bridge.manager = HttpRequestManager(
+            bridge,
+            rest,
+            applicationId,
+            interactionToken,
+            request
+        )
+
         return KordOriginalInteractionPublicMessage(
             rest,
             applicationId,
@@ -138,6 +148,16 @@ class InitialHttpRequestManager(
                 message.components?.let { this.components.addAll(it) }
                 message.embeds?.let { this.embeds.addAll(it) }
             }.toRequest()
+        )
+
+        bridge.state.value = InteractionRequestState.ALREADY_REPLIED
+
+        bridge.manager = HttpRequestManager(
+            bridge,
+            rest,
+            applicationId,
+            interactionToken,
+            request
         )
 
         return KordOriginalInteractionEphemeralMessage(
@@ -222,6 +242,8 @@ class InitialHttpRequestManager(
                 )
             )
         )
+
+        bridge.state.value = InteractionRequestState.ALREADY_REPLIED
 
         bridge.manager = HttpRequestManager(
             bridge,
