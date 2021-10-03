@@ -2,7 +2,7 @@ package net.perfectdreams.discordinteraktions.platforms.kord.entities.messages
 
 import dev.kord.common.entity.DiscordMessage
 import dev.kord.common.entity.Snowflake
-import dev.kord.rest.builder.message.modify.PublicFollowupMessageModifyBuilder
+import dev.kord.rest.builder.message.modify.FollowupMessageModifyBuilder
 import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.common.builder.message.modify.PersistentMessageModifyBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.modify.PublicInteractionOrFollowupMessageModifyBuilder
@@ -26,7 +26,7 @@ class KordPublicFollowupMessage(
             applicationId,
             interactionToken,
             handle.id,
-            PublicFollowupMessageModifyBuilder().apply {
+            FollowupMessageModifyBuilder().apply {
                 runIfNotMissing(message.state.content) { this.content = it }
                 runIfNotMissing(message.state.allowedMentions) { this.allowedMentions = it }
                 runIfNotMissing(message.state.components) { this.components = it }

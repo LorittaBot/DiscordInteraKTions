@@ -1,17 +1,13 @@
 package net.perfectdreams.discordinteraktions.common.context.components
 
 import dev.kord.common.entity.Snowflake
-import dev.kord.rest.builder.message.modify.EphemeralInteractionResponseModifyBuilder
-import dev.kord.rest.builder.message.modify.PublicInteractionResponseModifyBuilder
 import net.perfectdreams.discordinteraktions.api.entities.User
 import net.perfectdreams.discordinteraktions.common.builder.message.modify.EphemeralInteractionMessageModifyBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.modify.PublicInteractionMessageModifyBuilder
 import net.perfectdreams.discordinteraktions.common.context.InteractionContext
-import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
 import net.perfectdreams.discordinteraktions.common.entities.messages.EditableEphemeralMessage
 import net.perfectdreams.discordinteraktions.common.entities.messages.EditablePersistentMessage
-import net.perfectdreams.discordinteraktions.common.entities.messages.EphemeralMessage
 import net.perfectdreams.discordinteraktions.common.entities.messages.Message
 import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 

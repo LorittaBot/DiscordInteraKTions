@@ -3,8 +3,7 @@ package net.perfectdreams.discordinteraktions.platforms.kord.context.manager
 import dev.kord.common.annotation.KordPreview
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Snowflake
-import dev.kord.rest.builder.message.create.EphemeralFollowupMessageCreateBuilder
-import dev.kord.rest.builder.message.create.PublicFollowupMessageCreateBuilder
+import dev.kord.rest.builder.message.create.FollowupMessageCreateBuilder
 import dev.kord.rest.service.RestClient
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.builder.message.create.EphemeralInteractionOrFollowupMessageCreateBuilder
@@ -55,7 +54,7 @@ class HttpRequestManager(
         val kordMessage = rest.interaction.createFollowupMessage(
             applicationId,
             request.token,
-            PublicFollowupMessageCreateBuilder().apply {
+            FollowupMessageCreateBuilder(false).apply {
                 this.content = message.content
                 this.tts = message.tts
                 this.allowedMentions = message.allowedMentions
@@ -80,7 +79,7 @@ class HttpRequestManager(
         val kordMessage = rest.interaction.createFollowupMessage(
             applicationId,
             request.token,
-            EphemeralFollowupMessageCreateBuilder().apply {
+            FollowupMessageCreateBuilder(true).apply {
                 this.content = message.content
                 this.tts = message.tts
                 this.allowedMentions = message.allowedMentions

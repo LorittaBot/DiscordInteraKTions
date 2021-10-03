@@ -9,10 +9,7 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.optional.Optional
 import dev.kord.common.entity.optional.coerceToMissing
 import dev.kord.common.entity.optional.optional
-import dev.kord.rest.builder.message.create.EphemeralInteractionResponseCreateBuilder
-import dev.kord.rest.builder.message.create.PublicInteractionResponseCreateBuilder
-import dev.kord.rest.builder.message.modify.EphemeralInteractionResponseModifyBuilder
-import dev.kord.rest.builder.message.modify.PublicInteractionResponseModifyBuilder
+import dev.kord.rest.builder.message.create.InteractionResponseCreateBuilder
 import dev.kord.rest.json.request.InteractionApplicationCommandCallbackData
 import dev.kord.rest.json.request.InteractionResponseCreateRequest
 import dev.kord.rest.service.RestClient
@@ -108,7 +105,7 @@ class InitialHttpRequestManager(
         rest.interaction.createInteractionResponse(
             request.id,
             request.token,
-            PublicInteractionResponseCreateBuilder().apply {
+            InteractionResponseCreateBuilder(false).apply {
                 this.content = message.content
                 this.tts = message.tts
                 this.allowedMentions = message.allowedMentions
@@ -141,7 +138,7 @@ class InitialHttpRequestManager(
         rest.interaction.createInteractionResponse(
             request.id,
             request.token,
-            EphemeralInteractionResponseCreateBuilder().apply {
+            InteractionResponseCreateBuilder(true).apply {
                 this.content = message.content
                 this.tts = message.tts
                 this.allowedMentions = message.allowedMentions

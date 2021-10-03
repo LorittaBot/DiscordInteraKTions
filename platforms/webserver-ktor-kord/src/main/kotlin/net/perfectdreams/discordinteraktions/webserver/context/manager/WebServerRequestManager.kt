@@ -10,8 +10,6 @@ import dev.kord.common.entity.optional.coerceToMissing
 import dev.kord.common.entity.optional.map
 import dev.kord.common.entity.optional.optional
 import dev.kord.common.entity.optional.toPrimitive
-import dev.kord.rest.builder.message.modify.EphemeralInteractionResponseModifyBuilder
-import dev.kord.rest.builder.message.modify.PublicInteractionResponseModifyBuilder
 import dev.kord.rest.json.request.InteractionApplicationCommandCallbackData
 import dev.kord.rest.json.request.InteractionResponseCreateRequest
 import dev.kord.rest.service.RestClient
