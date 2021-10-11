@@ -13,6 +13,7 @@ import net.perfectdreams.discordinteraktions.declarations.commands.slash.SlashCo
 import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOption
 import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOptionType
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordChannel
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordRole
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
 
 object CommandDeclarationUtils {
@@ -205,8 +206,7 @@ object CommandDeclarationUtils {
                 val kordInstance = resolvedMap[userId] ?: return null
 
                 // Now we need to wrap the kord user in our own implementation!
-                TODO("Role arguments are not supported yet")
-                // return KordRole(kordInstance)
+                return KordRole(kordInstance)
             }
             else -> { argument.value }
         }
