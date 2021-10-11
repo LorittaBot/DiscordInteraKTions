@@ -244,7 +244,7 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
                 }
             CommandOptionType.Role, CommandOptionType.NullableRole ->
                 builder.role(cmdOption.name, cmdOption.description) {
-                    this. required = !cmdOption.type.isNullable
+                    this.required = !cmdOption.type.isNullable
                 }
             else -> error("Unsupported type ${cmdOption.type}")
         }
