@@ -164,7 +164,7 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
                     this.required = !cmdOption.type.isNullable
 
                     for (choice in cmdOption.choices) {
-                        choice(choice.name, (choice.value as Long).toInt())
+                        choice(choice.name, choice.value as Long)
                     }
                 }
             CommandOptionType.Number, CommandOptionType.NullableNumber ->
@@ -211,7 +211,7 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
                     this.required = !cmdOption.type.isNullable
 
                     for (choice in cmdOption.choices) {
-                        choice(choice.name, (choice.value as Long).toInt())
+                        choice(choice.name, choice.value as Long)
                     }
                 }
             CommandOptionType.Number, CommandOptionType.NullableNumber ->
