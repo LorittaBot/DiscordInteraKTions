@@ -322,6 +322,8 @@ suspend fun main() {
 
     client.gateway.gateways.forEach {
         it.value.installDiscordInteraKTions( // We will install the Discord InteraKTions listener on every gateway
+            applicationId,
+            client.rest,
             commandManager
         )
     }
