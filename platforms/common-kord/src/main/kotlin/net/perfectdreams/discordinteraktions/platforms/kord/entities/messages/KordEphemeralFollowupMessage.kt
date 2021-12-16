@@ -4,13 +4,17 @@ import dev.kord.common.entity.DiscordMessage
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.builder.message.modify.FollowupMessageModifyBuilder
 import dev.kord.rest.service.RestClient
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
 import net.perfectdreams.discordinteraktions.common.builder.message.modify.EphemeralInteractionOrFollowupMessageModifyBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.modify.EphemeralMessageModifyBuilder
 import net.perfectdreams.discordinteraktions.common.entities.messages.EditableEphemeralMessage
 import net.perfectdreams.discordinteraktions.common.entities.messages.EphemeralMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.runIfNotMissing
 
+@Serializable
 open class KordEphemeralFollowupMessage(
+    @Contextual
     private val rest: RestClient,
     private val applicationId: Snowflake,
     private val interactionToken: String,
