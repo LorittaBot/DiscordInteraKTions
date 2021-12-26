@@ -5,14 +5,13 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.common.builder.message.modify.InteractionOrFollowupMessageModifyBuilder
 import net.perfectdreams.discordinteraktions.common.entities.messages.EditableMessage
-import net.perfectdreams.discordinteraktions.common.entities.messages.PublicMessage
 
 class KordPublicFollowupMessage(
     private val rest: RestClient,
     private val applicationId: Snowflake,
     private val interactionToken: String,
-    val handle: DiscordMessage
-) : PublicMessage, EditableMessage {
+    handle: DiscordMessage
+) : KordPublicMessage(handle), EditableMessage {
     override val id = handle.id
     override val content by handle::content
 
@@ -22,7 +21,7 @@ class KordPublicFollowupMessage(
         val newMessage = rest.interaction.modifyFollowupMessage(
             applicationId,
             interactionToken,
-            handle.id,
+            data.id,
             convertToFollowupMessageModifyBuilder(message).toRequest()
         )
 

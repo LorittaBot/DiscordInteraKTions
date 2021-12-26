@@ -122,8 +122,7 @@ class InitialHttpRequestManager(
         return KordOriginalInteractionPublicMessage(
             rest,
             applicationId,
-            interactionToken,
-            message.content
+            interactionToken
         )
     }
 
@@ -155,8 +154,7 @@ class InitialHttpRequestManager(
         return KordOriginalInteractionEphemeralMessage(
             rest,
             applicationId,
-            interactionToken,
-            message.content
+            interactionToken
         )
     }
 
@@ -212,8 +210,7 @@ class InitialHttpRequestManager(
         return KordOriginalInteractionPublicMessage(
             rest,
             applicationId,
-            interactionToken,
-            message.content
+            interactionToken
         )
     }
 }

@@ -133,8 +133,7 @@ class WebServerRequestManager(
         return KordOriginalInteractionPublicMessage(
             rest,
             applicationId,
-            interactionToken,
-            message.content
+            interactionToken
         )
     }
 
@@ -173,8 +172,7 @@ class WebServerRequestManager(
         return KordOriginalInteractionEphemeralMessage(
             rest,
             applicationId,
-            interactionToken,
-            message.content
+            interactionToken
         )
     }
 
@@ -229,8 +227,7 @@ class WebServerRequestManager(
         return KordOriginalInteractionPublicMessage(
             rest,
             applicationId,
-            interactionToken,
-            message.content
+            interactionToken
         )
     }
 }

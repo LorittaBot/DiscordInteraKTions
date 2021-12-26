@@ -10,15 +10,15 @@ class KordEditedOriginalInteractionPublicMessage(
     private val rest: RestClient,
     private val applicationId: Snowflake,
     private val interactionToken: String,
-    private val message: DiscordMessage
-) : KordPublicMessage(message), EditableMessage {
+    data: DiscordMessage
+) : KordPublicMessage(data), EditableMessage {
     override suspend fun editMessage(block: InteractionOrFollowupMessageModifyBuilder.() -> Unit): EditableMessage = editMessage(InteractionOrFollowupMessageModifyBuilder().apply(block))
 
     override suspend fun editMessage(message: InteractionOrFollowupMessageModifyBuilder): EditableMessage {
         val newMessage = rest.interaction.modifyFollowupMessage(
             applicationId,
             interactionToken,
-            this.message.id,
+            this.data.id,
             convertToFollowupMessageModifyBuilder(message).toRequest()
         )
 

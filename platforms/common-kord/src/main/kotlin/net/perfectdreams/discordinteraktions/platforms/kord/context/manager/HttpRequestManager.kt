@@ -101,8 +101,7 @@ class HttpRequestManager(
         val interactionMessage = KordOriginalInteractionPublicMessage(
             rest,
             applicationId,
-            interactionToken,
-            null
+            interactionToken
         )
 
         val newMessage = interactionMessage.editMessage(message)
