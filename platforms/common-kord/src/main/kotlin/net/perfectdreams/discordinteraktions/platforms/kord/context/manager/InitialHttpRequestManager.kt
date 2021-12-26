@@ -131,7 +131,7 @@ class InitialHttpRequestManager(
         rest.interaction.createInteractionResponse(
             request.id,
             request.token,
-            InteractionResponseCreateBuilder(false).apply {
+            InteractionResponseCreateBuilder(true).apply {
                 this.content = message.content
                 this.tts = message.tts
                 this.allowedMentions = message.allowedMentions

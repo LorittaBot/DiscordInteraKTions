@@ -4,6 +4,7 @@ import dev.kord.common.entity.ResolvedObjects
 import dev.kord.common.entity.optional.Optional
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordMember
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordPublicMessage
 
 /**
@@ -23,7 +24,7 @@ fun ResolvedObjects.toDiscordInteraKTionsResolvedObjects(): net.perfectdreams.di
     }?.toMap()
 
     val messages = this.messages.value?.map {
-        it.key to KordPublicMessage(
+        it.key to KordMessage(
             it.value
         )
     }?.toMap()
