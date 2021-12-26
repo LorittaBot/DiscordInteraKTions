@@ -4,6 +4,7 @@ import dev.kord.common.entity.ApplicationCommandType
 import dev.kord.common.entity.DiscordInteraction
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.commands.message.MessageCommandExecutor
 import net.perfectdreams.discordinteraktions.common.commands.slash.SlashCommandExecutor
@@ -24,10 +25,14 @@ import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
  * Checks, matches and executes commands, this is a class because we share code between the `gateway-kord` and `webserver-ktor-kord` modules
  */
 class KordCommandChecker(val commandManager: CommandManager) {
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
+
     fun checkAndExecute(request: DiscordInteraction, requestManager: RequestManager) {
         val bridge = requestManager.bridge
 
-        println(request.data.name)
+        logger.debug { request.data.name }
 
         // Processing subcommands is kinda hard, but not impossible!
         val commandLabels = CommandDeclarationUtils.findAllSubcommandDeclarationNames(request)
@@ -72,7 +77,7 @@ class KordCommandChecker(val commandManager: CommandManager) {
                 error("Received unknown command type! ID: ${applicationCommandType.value}")
             }
             ApplicationCommandType.ChatInput -> {
-                println("Subcommand Labels: $commandLabels; Root Options: $relativeOptions")
+                logger.debug { "Subcommand Labels: $commandLabels; Root Options: $relativeOptions" }
 
                 val command = commandManager.declarations
                     .asSequence()
@@ -104,7 +109,7 @@ class KordCommandChecker(val commandManager: CommandManager) {
                             arguments
                         )
                     )
-                    println("Finished execution!")
+                    logger.debug { "Finished $applicationCommandType's execution!" }
                 }
             }
 
@@ -136,7 +141,7 @@ class KordCommandChecker(val commandManager: CommandManager) {
 
                 GlobalScope.launch {
                     executor.execute(commandContext, targetUser, targetMember)
-                    println("Finished execution!")
+                    logger.debug { "Finished $applicationCommandType's execution!" }
                 }
             }
 
@@ -163,7 +168,7 @@ class KordCommandChecker(val commandManager: CommandManager) {
 
                 GlobalScope.launch {
                     executor.execute(commandContext, targetMessage)
-                    println("Finished execution!")
+                    logger.debug { "Finished $applicationCommandType's execution!" }
                 }
             }
         }

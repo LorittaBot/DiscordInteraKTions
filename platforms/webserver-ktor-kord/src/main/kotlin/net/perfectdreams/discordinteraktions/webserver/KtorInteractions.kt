@@ -15,6 +15,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.verifier.InteractionRequestVerifier
 
 /**
@@ -33,27 +34,28 @@ fun Routing.installDiscordInteractions(
     handler: InteractionRequestHandler
 ) {
     val keyVerifier = InteractionRequestVerifier(publicKey)
+    val logger = KotlinLogging.logger {}
 
     post(path) {
         val signature = call.request.header("X-Signature-Ed25519")!!
         val timestamp = call.request.header("X-Signature-Timestamp")!!
 
-        println("Signature Header: $signature")
-        println("Timestamp: $timestamp")
+        logger.debug { "Signature Header: $signature" }
+        logger.debug { "Timestamp: $timestamp" }
         val text = withContext(Dispatchers.IO) {
             call.receiveStream().bufferedReader(charset = Charsets.UTF_8).readText()
         }
 
-        println("Payload: $text")
+        logger.debug { "Payload: $text" }
 
         val parse = Json.parseToJsonElement(text)
             .jsonObject
 
         val type = parse["type"]!!.jsonPrimitive.int
 
-        println("Type: $type")
+        logger.debug { "Type: $type" }
 
-        println("Checking Signature...")
+        logger.debug { "Checking Signature..." }
 
         val verified = keyVerifier.verifyKey(
             text,
@@ -67,7 +69,7 @@ fun Routing.installDiscordInteractions(
         }
 
         // println("Our Signature: $output")
-        println(parse)
+        logger.debug { parse }
 
         when (type) {
             InteractionType.Ping.type -> handler.onPing(call)

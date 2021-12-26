@@ -6,6 +6,7 @@ import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Option
 import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.SubCommand
+import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.declarations.commands.InteractionCommandDeclaration
 import net.perfectdreams.discordinteraktions.declarations.commands.SlashCommandDeclaration
 import net.perfectdreams.discordinteraktions.declarations.commands.UserCommandDeclaration
@@ -17,6 +18,8 @@ import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordRole
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
 
 object CommandDeclarationUtils {
+    private val logger = KotlinLogging.logger {}
+
     /**
      * Finds all command declaration names in the [request]
      *
@@ -174,8 +177,8 @@ object CommandDeclarationUtils {
     }
 
     private fun convertOption(interaKTionOption: CommandOption<*>, argument: CommandArgument<*>, request: DiscordInteraction): Any? {
-        println(interaKTionOption.type)
-        println(argument.value)
+        logger.debug { interaKTionOption.type }
+        logger.debug { argument.value }
 
         return when (interaKTionOption.type) {
             CommandOptionType.User, CommandOptionType.NullableUser -> {
