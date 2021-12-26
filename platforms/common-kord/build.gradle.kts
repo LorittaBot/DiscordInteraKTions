@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     kotlin("jvm")
     `maven-publish`
@@ -10,7 +8,7 @@ group = "net.perfectdreams.discordinteraktions"
 dependencies {
     implementation(kotlin("stdlib"))
     api(project(":common"))
-    implementation("dev.kord:kord-rest:0.8.x-SNAPSHOT")
+    implementation("dev.kord:kord-rest:${Versions.KORD}")
 }
 
 tasks.test {
