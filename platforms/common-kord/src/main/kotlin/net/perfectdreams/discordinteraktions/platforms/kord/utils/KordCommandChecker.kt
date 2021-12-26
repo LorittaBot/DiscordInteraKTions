@@ -131,13 +131,9 @@ class KordCommandChecker(val commandManager: CommandManager) {
                     it.signature() == executorDeclaration.parent
                 } as UserCommandExecutor
 
-                // TODO: Remove this workaround when Kord fixes the targetUser to targetId
-                // val targetUserId = request.data.targetUser.value ?: error("Target User ID is null in a User Command! Bug?")
-                val targetUser = interactionData.resolved?.users?.values?.first() ?: error("Target User is null in a User Command! Bug?")
-                // val targetUser = interactionData.resolved?.users?.get(targetUserId.toDiscordInteraKTionsSnowflake()) ?: error("Target User is null in a User Command! Bug?")
-
-                // TODO: Same thing as above
-                val targetMember = interactionData.resolved?.members?.values?.firstOrNull()
+                val targetUserId = request.data.targetId.value
+                val targetUser = interactionData.resolved?.users?.get(targetUserId) ?: error("Target User is null in a User Command! Bug?")
+                val targetMember = interactionData.resolved?.members?.get(targetUserId)
 
                 GlobalScope.launch {
                     executor.execute(commandContext, targetUser, targetMember)
@@ -163,8 +159,8 @@ class KordCommandChecker(val commandManager: CommandManager) {
                     it.signature() == executorDeclaration.parent
                 } as MessageCommandExecutor
 
-                // TODO: Remove this workaround when Kord fixes the targetUser to targetId
-                val targetMessage = interactionData.resolved?.messages?.values?.first() ?: error("Target Message is null in a Message Command! Bug?")
+                val targetMessageId = request.data.targetId.value
+                val targetMessage = interactionData.resolved?.messages?.get(targetMessageId) ?: error("Target Message is null in a Message Command! Bug?")
 
                 GlobalScope.launch {
                     executor.execute(commandContext, targetMessage)
