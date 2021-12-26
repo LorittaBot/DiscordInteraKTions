@@ -23,7 +23,7 @@ While Discord InteraKTions has a bunch of nifty features, it still doesn't suppo
 * [X] Abstractions On Top of Kord
 * [X] *(Experimental)* User/Message Commands (Context Menu)
 * [X] *(Experimental)* Buttons
-* [ ] Select Menus
+* [X] Select Menus
 * [ ] Permissions
 * [ ] *Good* Documentation
 * [ ] Being a good project :3
@@ -225,7 +225,7 @@ Add the Kord Web Server via Ktor Support module to your project
 ```kotlin
 dependencies {
     ...
-    implementation("net.perfectdreams.discordinteraktions:webserver-ktor-kord:0.0.9")
+    implementation("net.perfectdreams.discordinteraktions:webserver-ktor-kord:0.0.10-SNAPSHOT") // Check latest version in https://github.com/LorittaBot/DiscordInteraKTions/blob/main/build.gradle.kts#L9
     ...
 }
 ```
@@ -280,7 +280,7 @@ Add the Kord Gateway Support module to your project
 ```kotlin
 dependencies {
     ...
-    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.9")
+    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.10-SNAPSHOT") // Check latest version in https://github.com/LorittaBot/DiscordInteraKTions/blob/main/build.gradle.kts#L9
     ...
 }
 ```
