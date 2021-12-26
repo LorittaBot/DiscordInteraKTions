@@ -280,7 +280,7 @@ Add the Kord Gateway Support module to your project
 ```kotlin
 dependencies {
     ...
-    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.10-SNAPSHOT") // Check latest version in https://github.com/LorittaBot/DiscordInteraKTions/blob/main/buildSrc/src/main/kotlin/Versions.kt
+    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.11-SNAPSHOT") // Check latest version in https://github.com/LorittaBot/DiscordInteraKTions/blob/main/buildSrc/src/main/kotlin/Versions.kt
     ...
 }
 ```
