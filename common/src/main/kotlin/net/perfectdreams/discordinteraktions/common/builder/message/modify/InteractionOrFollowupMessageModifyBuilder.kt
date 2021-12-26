@@ -6,11 +6,12 @@ import dev.kord.rest.NamedFile
 import dev.kord.rest.builder.component.MessageComponentBuilder
 import dev.kord.rest.builder.message.AllowedMentionsBuilder
 import dev.kord.rest.builder.message.EmbedBuilder
+import net.perfectdreams.discordinteraktions.common.builder.message.create.MessageCreateBuilder
 
-// From Kord, we copied this to allow our extension methods to be available when using methods that use modify
-class PublicInteractionMessageModifyBuilder : PersistentMessageModifyBuilder {
+// From Kord, however this is a interaction OR followup modify builder
+class InteractionOrFollowupMessageModifyBuilder : MessageModifyBuilder {
     // We need to access the delegated stuff ourselves
-    override var state = MessageModifyStateHolder()
+    var state = MessageModifyStateHolder()
 
     override var files: MutableList<NamedFile>? by state::files.delegate()
 

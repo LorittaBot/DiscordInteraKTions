@@ -1,12 +1,9 @@
 package net.perfectdreams.discordinteraktions.common.context.manager
 
-import net.perfectdreams.discordinteraktions.common.builder.message.create.EphemeralInteractionOrFollowupMessageCreateBuilder
-import net.perfectdreams.discordinteraktions.common.builder.message.create.PublicInteractionOrFollowupMessageCreateBuilder
-import net.perfectdreams.discordinteraktions.common.builder.message.modify.EphemeralInteractionMessageModifyBuilder
-import net.perfectdreams.discordinteraktions.common.builder.message.modify.PublicInteractionMessageModifyBuilder
+import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
+import net.perfectdreams.discordinteraktions.common.builder.message.modify.InteractionOrFollowupMessageModifyBuilder
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
-import net.perfectdreams.discordinteraktions.common.entities.messages.EditableEphemeralMessage
-import net.perfectdreams.discordinteraktions.common.entities.messages.EditablePersistentMessage
+import net.perfectdreams.discordinteraktions.common.entities.messages.EditableMessage
 
 abstract class RequestManager(val bridge: RequestBridge) {
     /**
@@ -28,12 +25,12 @@ abstract class RequestManager(val bridge: RequestBridge) {
     /**
      * The usual way of sending messages to a specific channel/user.
      */
-    abstract suspend fun sendPublicMessage(message: PublicInteractionOrFollowupMessageCreateBuilder): EditablePersistentMessage
+    abstract suspend fun sendPublicMessage(message: InteractionOrFollowupMessageCreateBuilder): EditableMessage
 
     /**
      * The usual way of sending messages to a specific channel/user.
      */
-    abstract suspend fun sendEphemeralMessage(message: EphemeralInteractionOrFollowupMessageCreateBuilder): EditableEphemeralMessage
+    abstract suspend fun sendEphemeralMessage(message: InteractionOrFollowupMessageCreateBuilder): EditableMessage
 
     /**
      * A deferred response is the one that you can use to
@@ -46,10 +43,5 @@ abstract class RequestManager(val bridge: RequestBridge) {
     /**
      * The usual way of editing a message to a specific channel/user.
      */
-    abstract suspend fun updateMessage(message: PublicInteractionMessageModifyBuilder): EditablePersistentMessage
-
-    /**
-     * The usual way of editing a message to a specific channel/user.
-     */
-    abstract suspend fun updateEphemeralMessage(message: EphemeralInteractionMessageModifyBuilder): EditableEphemeralMessage
+    abstract suspend fun updateMessage(message: InteractionOrFollowupMessageModifyBuilder): EditableMessage
 }

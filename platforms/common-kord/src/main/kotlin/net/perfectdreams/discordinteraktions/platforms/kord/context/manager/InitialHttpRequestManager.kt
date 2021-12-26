@@ -14,18 +14,12 @@ import dev.kord.rest.json.request.InteractionApplicationCommandCallbackData
 import dev.kord.rest.json.request.InteractionResponseCreateRequest
 import dev.kord.rest.service.RestClient
 import mu.KotlinLogging
-import net.perfectdreams.discordinteraktions.common.builder.message.create.EphemeralInteractionOrFollowupMessageCreateBuilder
-import net.perfectdreams.discordinteraktions.common.builder.message.create.PublicInteractionOrFollowupMessageCreateBuilder
-import net.perfectdreams.discordinteraktions.common.builder.message.modify.EphemeralInteractionMessageModifyBuilder
-import net.perfectdreams.discordinteraktions.common.builder.message.modify.PublicInteractionMessageModifyBuilder
+import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
+import net.perfectdreams.discordinteraktions.common.builder.message.modify.InteractionOrFollowupMessageModifyBuilder
 import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
 import net.perfectdreams.discordinteraktions.common.context.manager.RequestManager
-import net.perfectdreams.discordinteraktions.common.entities.messages.EditableEphemeralMessage
-import net.perfectdreams.discordinteraktions.common.entities.messages.EditablePersistentMessage
-import net.perfectdreams.discordinteraktions.common.entities.messages.EphemeralMessage
-import net.perfectdreams.discordinteraktions.common.entities.messages.Message
-import net.perfectdreams.discordinteraktions.common.entities.messages.PublicMessage
+import net.perfectdreams.discordinteraktions.common.entities.messages.EditableMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordOriginalInteractionEphemeralMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordOriginalInteractionPublicMessage
 
@@ -100,7 +94,7 @@ class InitialHttpRequestManager(
         )
     }
 
-    override suspend fun sendPublicMessage(message: PublicInteractionOrFollowupMessageCreateBuilder): EditablePersistentMessage {
+    override suspend fun sendPublicMessage(message: InteractionOrFollowupMessageCreateBuilder): EditableMessage {
         // *Technically* we can respond to the initial interaction via HTTP too
         rest.interaction.createInteractionResponse(
             request.id,
@@ -111,7 +105,7 @@ class InitialHttpRequestManager(
                 this.allowedMentions = message.allowedMentions
                 message.components?.let { this.components.addAll(it) }
                 message.embeds?.let { this.embeds.addAll(it) }
-                this.files.addAll(message.files)
+                message.files?.let { this.files.addAll(it) }
             }.toRequest()
         )
 
@@ -133,17 +127,18 @@ class InitialHttpRequestManager(
         )
     }
 
-    override suspend fun sendEphemeralMessage(message: EphemeralInteractionOrFollowupMessageCreateBuilder): EditableEphemeralMessage {
+    override suspend fun sendEphemeralMessage(message: InteractionOrFollowupMessageCreateBuilder): EditableMessage {
         // *Technically* we can respond to the initial interaction via HTTP too
         rest.interaction.createInteractionResponse(
             request.id,
             request.token,
-            InteractionResponseCreateBuilder(true).apply {
+            InteractionResponseCreateBuilder(false).apply {
                 this.content = message.content
                 this.tts = message.tts
                 this.allowedMentions = message.allowedMentions
                 message.components?.let { this.components.addAll(it) }
                 message.embeds?.let { this.embeds.addAll(it) }
+                message.files?.let { this.files.addAll(it) }
             }.toRequest()
         )
 
@@ -186,7 +181,7 @@ class InitialHttpRequestManager(
         )
     }
 
-    override suspend fun updateMessage(message: PublicInteractionMessageModifyBuilder): EditablePersistentMessage {
+    override suspend fun updateMessage(message: InteractionOrFollowupMessageModifyBuilder): EditableMessage {
         rest.interaction.createInteractionResponse(
             request.id,
             interactionToken,
@@ -215,42 +210,6 @@ class InitialHttpRequestManager(
         )
 
         return KordOriginalInteractionPublicMessage(
-            rest,
-            applicationId,
-            interactionToken,
-            message.content
-        )
-    }
-
-    override suspend fun updateEphemeralMessage(message: EphemeralInteractionMessageModifyBuilder): EditableEphemeralMessage {
-        rest.interaction.createInteractionResponse(
-            request.id,
-            interactionToken,
-            InteractionResponseCreateRequest(
-                type = InteractionResponseType.UpdateMessage,
-                data = Optional(
-                    InteractionApplicationCommandCallbackData(
-                        content = Optional(message.content).coerceToMissing(),
-                        embeds = Optional(message.embeds?.map { it.toRequest() } ?: listOf()),
-                        allowedMentions = Optional(message.allowedMentions?.build()).coerceToMissing(),
-                        components = message.components?.map { it.build() }.optional().coerceToMissing(),
-                        flags = MessageFlags {}.optional()
-                    )
-                )
-            )
-        )
-
-        bridge.state.value = InteractionRequestState.ALREADY_REPLIED
-
-        bridge.manager = HttpRequestManager(
-            bridge,
-            rest,
-            applicationId,
-            interactionToken,
-            request
-        )
-
-        return KordOriginalInteractionEphemeralMessage(
             rest,
             applicationId,
             interactionToken,

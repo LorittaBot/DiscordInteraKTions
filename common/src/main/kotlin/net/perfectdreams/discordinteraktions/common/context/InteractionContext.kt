@@ -2,13 +2,8 @@ package net.perfectdreams.discordinteraktions.common.context
 
 import dev.kord.common.entity.Snowflake
 import net.perfectdreams.discordinteraktions.api.entities.User
-import net.perfectdreams.discordinteraktions.common.builder.message.create.EphemeralInteractionOrFollowupMessageCreateBuilder
-import net.perfectdreams.discordinteraktions.common.builder.message.create.PublicInteractionOrFollowupMessageCreateBuilder
-import net.perfectdreams.discordinteraktions.common.entities.messages.EditableEphemeralMessage
-import net.perfectdreams.discordinteraktions.common.entities.messages.EditablePersistentMessage
-import net.perfectdreams.discordinteraktions.common.entities.messages.EphemeralMessage
-import net.perfectdreams.discordinteraktions.common.entities.messages.Message
-import net.perfectdreams.discordinteraktions.common.entities.messages.PublicMessage
+import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
+import net.perfectdreams.discordinteraktions.common.entities.messages.EditableMessage
 import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 
 abstract class InteractionContext(
@@ -43,19 +38,19 @@ abstract class InteractionContext(
         wasInitiallyDeferredEphemerally = true
     }
 
-    suspend fun sendMessage(block: PublicInteractionOrFollowupMessageCreateBuilder.() -> (Unit))
-            = sendPublicMessage(PublicInteractionOrFollowupMessageCreateBuilder().apply(block))
+    suspend fun sendMessage(block: InteractionOrFollowupMessageCreateBuilder.() -> (Unit))
+            = sendPublicMessage(InteractionOrFollowupMessageCreateBuilder(false).apply(block))
 
-    suspend fun sendEphemeralMessage(block: EphemeralInteractionOrFollowupMessageCreateBuilder.() -> (Unit))
-            = sendEphemeralMessage(EphemeralInteractionOrFollowupMessageCreateBuilder().apply(block))
+    suspend fun sendEphemeralMessage(block: InteractionOrFollowupMessageCreateBuilder.() -> (Unit))
+            = sendEphemeralMessage(InteractionOrFollowupMessageCreateBuilder(true).apply(block))
 
-    private suspend fun sendPublicMessage(message: PublicInteractionOrFollowupMessageCreateBuilder): EditablePersistentMessage {
+    private suspend fun sendPublicMessage(message: InteractionOrFollowupMessageCreateBuilder): EditableMessage {
         // Check if state matches what we expect
         if (bridge.state.value == InteractionRequestState.DEFERRED_CHANNEL_MESSAGE)
             if (wasInitiallyDeferredEphemerally)
                 error("Trying to send a public message but the message was originally deferred ephemerally! Change the \"deferMessage(...)\" call to be public")
 
-        if (message.files.isNotEmpty() && !isDeferred) {
+        if (message.files?.isNotEmpty() == true && !isDeferred) {
             // If the message has files and our current bridge state is "NOT_REPLIED_YET", then it means that we need to defer before sending the file!
             // (Because currently you can only send files by editing the original interaction message or with a follow up message
             deferChannelMessage()
@@ -64,11 +59,17 @@ abstract class InteractionContext(
         return bridge.manager.sendPublicMessage(message)
     }
 
-    private suspend fun sendEphemeralMessage(message: EphemeralInteractionOrFollowupMessageCreateBuilder): EditableEphemeralMessage {
+    private suspend fun sendEphemeralMessage(message: InteractionOrFollowupMessageCreateBuilder): EditableMessage {
         // Check if state matches what we expect
         if (bridge.state.value == InteractionRequestState.DEFERRED_CHANNEL_MESSAGE)
             if (!wasInitiallyDeferredEphemerally)
                 error("Trying to send a ephemeral message but the message was originally deferred as public! Change the \"deferMessage(...)\" call to be ephemeral")
+
+        if (message.files?.isNotEmpty() == true && !isDeferred) {
+            // If the message has files and our current bridge state is "NOT_REPLIED_YET", then it means that we need to defer before sending the file!
+            // (Because currently you can only send files by editing the original interaction message or with a follow up message
+            deferChannelMessage()
+        }
 
         return bridge.manager.sendEphemeralMessage(message)
     }
