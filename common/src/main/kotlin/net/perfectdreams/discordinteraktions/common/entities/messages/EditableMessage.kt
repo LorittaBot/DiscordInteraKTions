@@ -15,7 +15,7 @@ interface EditableMessage {
         runIfNotMissing(message.state.components) { this.components = it }
         runIfNotMissing(message.state.embeds) { this.embeds = it }
         runIfNotMissing(message.state.attachments) { this.attachments = it }
-        runIfNotMissing(message.state.files) { this.files = files }
+        runIfNotMissing(message.state.files) { this.files = it }
     }
 
     fun convertToFollowupMessageModifyBuilder(message: InteractionOrFollowupMessageModifyBuilder) = FollowupMessageModifyBuilder().apply {
@@ -24,7 +24,7 @@ interface EditableMessage {
         runIfNotMissing(message.state.components) { this.components = it }
         runIfNotMissing(message.state.embeds) { this.embeds = it }
         runIfNotMissing(message.state.attachments) { this.attachments = it }
-        runIfNotMissing(message.state.files) { this.files = files }
+        runIfNotMissing(message.state.files) { this.files = it }
     }
 
     fun <T> runIfNotMissing(optional: Optional<T>, callback: (T?) -> (Unit)) {
