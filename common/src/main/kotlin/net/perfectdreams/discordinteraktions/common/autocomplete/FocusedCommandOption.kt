@@ -1,6 +1,6 @@
 package net.perfectdreams.discordinteraktions.common.autocomplete
 
-data class CommandOption<T>(
+data class FocusedCommandOption(
     val name: String,
-    val value: T
+    val value: String
 )

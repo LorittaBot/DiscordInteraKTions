@@ -4,7 +4,7 @@ import dev.kord.gateway.start
 import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteExecutor
 import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteExecutorDeclaration
-import net.perfectdreams.discordinteraktions.common.autocomplete.CommandOption
+import net.perfectdreams.discordinteraktions.common.autocomplete.FocusedCommandOption
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.commands.slash.SlashCommandExecutor
 import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
@@ -31,6 +31,11 @@ suspend fun main() {
     commandManager.register(
         AutocompleteTestExecutor,
         AutocompleteTestExecutor()
+    )
+
+    commandManager.register(
+        AutocompleteIntTestExecutor,
+        AutocompleteIntTestExecutor()
     )
 
     val registry = KordCommandRegistry(
@@ -66,20 +71,38 @@ object TestCommand : SlashCommandDeclarationWrapper {
 class AutocompleteTestExecutor : AutocompleteExecutor<String> {
     companion object : AutocompleteExecutorDeclaration<String>(AutocompleteTestExecutor::class)
 
-    override suspend fun onAutocomplete(focusedOption: CommandOption<String>): Map<String, String> {
+    override suspend fun onAutocomplete(focusedOption: FocusedCommandOption): Map<String, String> {
         // TODO: Maybe create a nice DSL similar to Kord?
         return mapOf(
             "What you typed: ${focusedOption.value}" to focusedOption.value,
             "OwO!" to "owo",
             "UwU!" to "uwu",
             UUID.randomUUID().toString() to "ayaya"
-        )
+        ).filter { it.key.startsWith(focusedOption.value) }
+    }
+}
+
+class AutocompleteIntTestExecutor : AutocompleteExecutor<Long> {
+    companion object : AutocompleteExecutorDeclaration<Long>(AutocompleteIntTestExecutor::class)
+
+    override suspend fun onAutocomplete(focusedOption: FocusedCommandOption): Map<String, Long> {
+        // TODO: Maybe create a nice DSL similar to Kord?
+        return mapOf(
+            "What you typed: ${focusedOption.value}" to 0L,
+            "OwO!" to 1L,
+            "UwU!" to 2L,
+            UUID.randomUUID().toString() to 3L
+        ).filter { it.key.startsWith(focusedOption.value) }
     }
 }
 
 class TestACCommandExecutor : SlashCommandExecutor() {
     companion object : SlashCommandExecutorDeclaration(TestACCommandExecutor::class) {
         object Options : CommandOptions() {
+            val x = integer("int", "an integer idk")
+                .autocomplete(AutocompleteIntTestExecutor)
+                .register()
+
             val str = string("test", "an integer idk")
                 .autocomplete(AutocompleteTestExecutor)
                 .register()
@@ -90,7 +113,7 @@ class TestACCommandExecutor : SlashCommandExecutor() {
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.sendMessage {
-            content = args[Options.str]
+            content = "${args[Options.str]} - ${args[Options.x]}"
         }
     }
 }

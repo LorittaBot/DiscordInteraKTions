@@ -10,6 +10,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteExecutor
+import net.perfectdreams.discordinteraktions.common.autocomplete.FocusedCommandOption
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.context.manager.RequestManager
 import net.perfectdreams.discordinteraktions.common.utils.InteraKTionsExceptions
@@ -40,14 +41,10 @@ class KordAutocompleteChecker(val commandManager: CommandManager) {
 
         val slashCommandExecutorDeclaration = command.executor ?: return
 
-        val focusedDiscordOption = relativeOptions.firstOrNull {
-            when (it) {
-                is CommandArgument.StringArgument -> it.focused.discordBoolean
-                is CommandArgument.IntegerArgument -> it.focused.discordBoolean
-                is CommandArgument.NumberArgument -> it.focused.discordBoolean
-                else -> false
-            }
-        } ?: error("There isn't any focused option on the autocomplete request! Bug?")
+        val focusedDiscordOption = relativeOptions.filterIsInstance<CommandArgument.AutoCompleteArgument>()
+            .firstOrNull() ?: error("There isn't any autocomplete option on the autocomplete request! Bug?")
+
+        require(focusedDiscordOption.focused.discordBoolean) { "Autocomplete argument is not set to focused! Bug?" }
 
         val option = slashCommandExecutorDeclaration.options.arguments.firstOrNull {
             it.name == focusedDiscordOption.name
@@ -58,20 +55,20 @@ class KordAutocompleteChecker(val commandManager: CommandManager) {
             .firstOrNull { it.signature() == autocompleteDeclaration.parent } ?: InteraKTionsExceptions.missingExecutor("autocomplete")
 
         GlobalScope.launch {
+            val focusedCommandOption = FocusedCommandOption(
+                focusedDiscordOption.name,
+                focusedDiscordOption.value
+            )
+
             when (option.type) {
                 CommandOptionType.String, CommandOptionType.NullableString -> {
                     autocompleteExecutor as AutocompleteExecutor<String>
-                    val autocompleteResult = autocompleteExecutor.onAutocomplete(
-                        net.perfectdreams.discordinteraktions.common.autocomplete.CommandOption(
-                            focusedDiscordOption.name,
-                            (focusedDiscordOption as CommandArgument.StringArgument).value
-                        )
-                    )
+                    val autocompleteResult = autocompleteExecutor.onAutocomplete(focusedCommandOption)
                     bridge.manager.sendStringAutocomplete(
                         (StringChoiceBuilder("<auto-complete>", "")
                             .apply {
                                 for ((name, value) in autocompleteResult) {
-                                    choice(name, value as String)
+                                    choice(name, value)
                                 }
                             }.choices ?: listOf()) as List<Choice<String>>
                     )
@@ -79,35 +76,25 @@ class KordAutocompleteChecker(val commandManager: CommandManager) {
 
                 CommandOptionType.Integer, CommandOptionType.NullableInteger -> {
                     autocompleteExecutor as AutocompleteExecutor<Long>
-                    val autocompleteResult = autocompleteExecutor.onAutocomplete(
-                        net.perfectdreams.discordinteraktions.common.autocomplete.CommandOption(
-                            focusedDiscordOption.name,
-                            (focusedDiscordOption as CommandArgument.IntegerArgument).value
-                        )
-                    )
+                    val autocompleteResult = autocompleteExecutor.onAutocomplete(focusedCommandOption)
                     bridge.manager.sendIntegerAutocomplete(
-                        IntChoiceBuilder("<auto-complete>", "")
+                        (IntChoiceBuilder("<auto-complete>", "")
                             .apply {
                                 for ((name, value) in autocompleteResult) {
-                                    choice(name, value as Long)
+                                    choice(name, value)
                                 }
-                            }.choices as List<Choice<Long>>
+                            }.choices ?: listOf()) as List<Choice<Long>>
                     )
                 }
 
                 CommandOptionType.Number, CommandOptionType.NullableNumber -> {
                     autocompleteExecutor as AutocompleteExecutor<Double>
-                    val autocompleteResult = autocompleteExecutor.onAutocomplete(
-                        net.perfectdreams.discordinteraktions.common.autocomplete.CommandOption(
-                            focusedDiscordOption.name,
-                            (focusedDiscordOption as CommandArgument.NumberArgument).value
-                        )
-                    )
+                    val autocompleteResult = autocompleteExecutor.onAutocomplete(focusedCommandOption)
                     bridge.manager.sendNumberAutocomplete(
                         NumberChoiceBuilder("<auto-complete>", "")
                             .apply {
                                 for ((name, value) in autocompleteResult) {
-                                    choice(name, value as Double)
+                                    choice(name, value)
                                 }
                             }.choices as List<Choice<Double>>
                     )
