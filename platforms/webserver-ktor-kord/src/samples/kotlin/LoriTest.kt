@@ -10,9 +10,6 @@ import net.perfectdreams.discordinteraktions.declarations.commands.slash.slashCo
 import net.perfectdreams.discordinteraktions.declarations.commands.wrappers.SlashCommandDeclarationWrapper
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
 import net.perfectdreams.discordinteraktions.webserver.InteractionsServer
-import net.perfectdreams.discordinteraktions.webserver.SelectExecutor
-import net.perfectdreams.discordinteraktions.webserver.TestClickExecutor
-import net.perfectdreams.discordinteraktions.webserver.TestClickWithDataExecutor
 import java.io.File
 
 suspend fun main() {
