@@ -1,32 +1,19 @@
 package net.perfectdreams.discordinteraktions.platforms.kord.utils
 
-import dev.kord.common.entity.ApplicationCommandType
 import dev.kord.common.entity.ComponentType
 import dev.kord.common.entity.DiscordInteraction
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
-import net.perfectdreams.discordinteraktions.common.commands.message.MessageCommandExecutor
-import net.perfectdreams.discordinteraktions.common.commands.slash.SlashCommandExecutor
-import net.perfectdreams.discordinteraktions.common.commands.user.UserCommandExecutor
 import net.perfectdreams.discordinteraktions.common.components.buttons.ButtonClickWithDataExecutor
 import net.perfectdreams.discordinteraktions.common.components.buttons.ButtonClickWithNoDataExecutor
 import net.perfectdreams.discordinteraktions.common.components.selects.SelectMenuWithDataExecutor
 import net.perfectdreams.discordinteraktions.common.components.selects.SelectMenuWithNoDataExecutor
-import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
-import net.perfectdreams.discordinteraktions.common.context.RequestBridge
-import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
-import net.perfectdreams.discordinteraktions.common.context.commands.GuildApplicationCommandContext
-import net.perfectdreams.discordinteraktions.common.context.commands.slash.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.context.components.ComponentContext
 import net.perfectdreams.discordinteraktions.common.context.components.GuildComponentContext
 import net.perfectdreams.discordinteraktions.common.context.manager.RequestManager
 import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
-import net.perfectdreams.discordinteraktions.common.utils.Observable
-import net.perfectdreams.discordinteraktions.declarations.commands.MessageCommandDeclaration
-import net.perfectdreams.discordinteraktions.declarations.commands.SlashCommandDeclaration
-import net.perfectdreams.discordinteraktions.declarations.commands.UserCommandDeclaration
-import net.perfectdreams.discordinteraktions.platforms.kord.commands.CommandDeclarationUtils
+import net.perfectdreams.discordinteraktions.common.utils.InteraKTionsExceptions
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordInteractionMember
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordPublicMessage
@@ -90,11 +77,11 @@ class KordComponentChecker(val commandManager: CommandManager) {
                     .filter {
                         it.id == executorId
                     }
-                    .first()
+                    .firstOrNull() ?: InteraKTionsExceptions.missingDeclaration("button")
 
-                val executor = commandManager.buttonExecutors.first {
+                val executor = commandManager.buttonExecutors.firstOrNull {
                     it.signature() == buttonExecutorDeclaration.parent
-                }
+                } ?: InteraKTionsExceptions.missingExecutor("button")
 
                 GlobalScope.launch {
                     if (executor is ButtonClickWithNoDataExecutor)
@@ -116,11 +103,11 @@ class KordComponentChecker(val commandManager: CommandManager) {
                     .filter {
                         it.id == executorId
                     }
-                    .first()
+                    .firstOrNull() ?: InteraKTionsExceptions.missingDeclaration("select menu")
 
-                val executor = commandManager.selectMenusExecutors.first {
+                val executor = commandManager.selectMenusExecutors.firstOrNull {
                     it.signature() == executorDeclaration.parent
-                }
+                } ?: InteraKTionsExceptions.missingExecutor("select menu")
 
                 GlobalScope.launch {
                     if (executor is SelectMenuWithNoDataExecutor)

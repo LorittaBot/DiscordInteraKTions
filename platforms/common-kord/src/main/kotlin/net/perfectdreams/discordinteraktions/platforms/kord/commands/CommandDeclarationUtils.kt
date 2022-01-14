@@ -164,7 +164,7 @@ object CommandDeclarationUtils {
      * @param commandLabels  the command labels
      * @return the matched declaration
      */
-    inline fun <reified T : InteractionCommandDeclaration> getApplicationCommandDeclarationFromLabel(commandManager: CommandManager, commandLabels: List<CommandLabel>): T = commandManager.declarations
+    inline fun <reified T : InteractionCommandDeclaration> getApplicationCommandDeclarationFromLabel(commandManager: CommandManager, commandLabels: List<CommandLabel>): T? = commandManager.declarations
         .asSequence()
         .filterIsInstance<T>()
         .mapNotNull {
@@ -173,7 +173,7 @@ object CommandDeclarationUtils {
                 it
             )
         }
-        .first() as T // I don't know why this cast is needed
+        .firstOrNull() as T? // I don't know why this cast is needed
 
     open class CommandLabel(val label: String)
     class RootCommandLabel(label: String) : CommandLabel(label)

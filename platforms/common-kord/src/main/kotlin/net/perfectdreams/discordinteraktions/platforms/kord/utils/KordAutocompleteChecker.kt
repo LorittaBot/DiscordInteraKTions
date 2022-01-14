@@ -12,8 +12,8 @@ import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteExecutor
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.context.manager.RequestManager
+import net.perfectdreams.discordinteraktions.common.utils.InteraKTionsExceptions
 import net.perfectdreams.discordinteraktions.declarations.commands.SlashCommandDeclaration
-import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOption
 import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOptionType
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.CommandDeclarationUtils
 
@@ -36,6 +36,7 @@ class KordAutocompleteChecker(val commandManager: CommandManager) {
             ?: error("Relative Options are null on the request, this shouldn't happen on a autocomplete request! Bug?")
 
         val command = CommandDeclarationUtils.getApplicationCommandDeclarationFromLabel<SlashCommandDeclaration>(commandManager, commandLabels)
+            ?: InteraKTionsExceptions.missingDeclaration("slash command")
 
         val slashCommandExecutorDeclaration = command.executor ?: return
 
@@ -52,9 +53,9 @@ class KordAutocompleteChecker(val commandManager: CommandManager) {
             it.name == focusedDiscordOption.name
         } ?: error("I couldn't find a matching option for ${focusedDiscordOption.name}! Did you update the application command body externally?")
 
-        val autocompleteDeclaration = option.autoCompleteExecutorDeclaration!!
+        val autocompleteDeclaration = option.autoCompleteExecutorDeclaration ?: error("Received autocomplete request for ${focusedDiscordOption.name}, but there isn't any autocomplete executor declaration set on the option! Did you update the application command body externally?")
         val autocompleteExecutor = commandManager.autocompleteExecutors
-            .firstOrNull { it.signature() == autocompleteDeclaration.parent }!!
+            .firstOrNull { it.signature() == autocompleteDeclaration.parent } ?: InteraKTionsExceptions.missingExecutor("autocomplete")
 
         GlobalScope.launch {
             when (option.type) {

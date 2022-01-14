@@ -14,6 +14,7 @@ import net.perfectdreams.discordinteraktions.common.context.commands.GuildApplic
 import net.perfectdreams.discordinteraktions.common.context.commands.slash.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.context.manager.RequestManager
 import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
+import net.perfectdreams.discordinteraktions.common.utils.InteraKTionsExceptions
 import net.perfectdreams.discordinteraktions.declarations.commands.MessageCommandDeclaration
 import net.perfectdreams.discordinteraktions.declarations.commands.SlashCommandDeclaration
 import net.perfectdreams.discordinteraktions.declarations.commands.UserCommandDeclaration
@@ -80,11 +81,12 @@ class KordCommandChecker(val commandManager: CommandManager) {
                 logger.debug { "Subcommand Labels: $commandLabels; Root Options: $relativeOptions" }
 
                 val command = CommandDeclarationUtils.getApplicationCommandDeclarationFromLabel<SlashCommandDeclaration>(commandManager, commandLabels)
+                    ?: InteraKTionsExceptions.missingDeclaration("slash command")
 
                 val executorDeclaration = command.executor ?: return
-                val executor = commandManager.executors.first {
+                val executor = commandManager.executors.firstOrNull {
                     it.signature() == executorDeclaration.parent
-                } as SlashCommandExecutor
+                } as SlashCommandExecutor? ?: InteraKTionsExceptions.missingExecutor("slash command")
 
                 // Convert the Nested Options into a map, then we can access them with our Discord InteraKTion options!
                 val arguments = CommandDeclarationUtils.convertOptions(
@@ -106,11 +108,12 @@ class KordCommandChecker(val commandManager: CommandManager) {
 
             ApplicationCommandType.User -> {
                 val command = CommandDeclarationUtils.getApplicationCommandDeclarationFromLabel<UserCommandDeclaration>(commandManager, commandLabels)
+                    ?: InteraKTionsExceptions.missingDeclaration("user command")
 
                 val executorDeclaration = command.executor
-                val executor = commandManager.executors.first {
+                val executor = commandManager.executors.firstOrNull {
                     it.signature() == executorDeclaration.parent
-                } as UserCommandExecutor
+                } as UserCommandExecutor? ?: InteraKTionsExceptions.missingExecutor("user command")
 
                 val targetUserId = request.data.targetId.value
                 val targetUser = interactionData.resolved?.users?.get(targetUserId) ?: error("Target User is null in a User Command! Bug?")
@@ -124,11 +127,12 @@ class KordCommandChecker(val commandManager: CommandManager) {
 
             ApplicationCommandType.Message -> {
                 val command = CommandDeclarationUtils.getApplicationCommandDeclarationFromLabel<MessageCommandDeclaration>(commandManager, commandLabels)
+                    ?: InteraKTionsExceptions.missingDeclaration("message command")
 
                 val executorDeclaration = command.executor
-                val executor = commandManager.executors.first {
+                val executor = commandManager.executors.firstOrNull {
                     it.signature() == executorDeclaration.parent
-                } as MessageCommandExecutor
+                } as MessageCommandExecutor? ?: InteraKTionsExceptions.missingExecutor("message command")
 
                 val targetMessageId = request.data.targetId.value
                 val targetMessage = interactionData.resolved?.messages?.get(targetMessageId) ?: error("Target Message is null in a Message Command! Bug?")
