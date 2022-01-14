@@ -79,16 +79,7 @@ class KordCommandChecker(val commandManager: CommandManager) {
             ApplicationCommandType.ChatInput -> {
                 logger.debug { "Subcommand Labels: $commandLabels; Root Options: $relativeOptions" }
 
-                val command = commandManager.declarations
-                    .asSequence()
-                    .filterIsInstance<SlashCommandDeclaration>() // We only care about Slash Command Declarations here
-                    .mapNotNull {
-                        CommandDeclarationUtils.getLabelsConnectedToCommandDeclaration(
-                            commandLabels,
-                            it
-                        )
-                    }
-                    .first()
+                val command = CommandDeclarationUtils.getApplicationCommandDeclarationFromLabel<SlashCommandDeclaration>(commandManager, commandLabels)
 
                 val executorDeclaration = command.executor ?: return
                 val executor = commandManager.executors.first {
@@ -114,17 +105,7 @@ class KordCommandChecker(val commandManager: CommandManager) {
             }
 
             ApplicationCommandType.User -> {
-                val command = commandManager.declarations
-                    .asSequence()
-                    .filterIsInstance<UserCommandDeclaration>()
-                    .mapNotNull {
-                        CommandDeclarationUtils.getLabelsConnectedToCommandDeclaration(
-                            commandLabels,
-                            it
-                        )
-                    }
-                    .filterIsInstance<UserCommandDeclaration>()
-                    .first()
+                val command = CommandDeclarationUtils.getApplicationCommandDeclarationFromLabel<UserCommandDeclaration>(commandManager, commandLabels)
 
                 val executorDeclaration = command.executor
                 val executor = commandManager.executors.first {
@@ -142,17 +123,7 @@ class KordCommandChecker(val commandManager: CommandManager) {
             }
 
             ApplicationCommandType.Message -> {
-                val command = commandManager.declarations
-                    .asSequence()
-                    .filterIsInstance<MessageCommandDeclaration>()
-                    .mapNotNull {
-                        CommandDeclarationUtils.getLabelsConnectedToCommandDeclaration(
-                            commandLabels,
-                            it
-                        )
-                    }
-                    .filterIsInstance<MessageCommandDeclaration>()
-                    .first()
+                val command = CommandDeclarationUtils.getApplicationCommandDeclarationFromLabel<MessageCommandDeclaration>(commandManager, commandLabels)
 
                 val executorDeclaration = command.executor
                 val executor = commandManager.executors.first {

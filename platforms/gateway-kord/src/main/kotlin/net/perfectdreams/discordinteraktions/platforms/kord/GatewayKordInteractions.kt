@@ -12,6 +12,7 @@ import net.perfectdreams.discordinteraktions.common.context.InteractionRequestSt
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
 import net.perfectdreams.discordinteraktions.common.utils.Observable
 import net.perfectdreams.discordinteraktions.platforms.kord.context.manager.InitialHttpRequestManager
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordAutocompleteChecker
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordCommandChecker
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordComponentChecker
 
@@ -23,6 +24,7 @@ fun Gateway.installDiscordInteraKTions(
 ) {
     val kordCommandChecker = KordCommandChecker(commandManager)
     val kordComponentChecker = KordComponentChecker(commandManager)
+    val kordAutocompleteChecker = KordAutocompleteChecker(commandManager)
 
     on<InteractionCreate> {
         val request = this.interaction
@@ -45,11 +47,15 @@ fun Gateway.installDiscordInteraKTions(
                 request,
                 requestManager
             )
-        else if (request.type == InteractionType.Component) {
+        else if (request.type == InteractionType.Component)
             kordComponentChecker.checkAndExecute(
                 request,
                 requestManager
             )
-        }
+        else if (request.type == InteractionType.AutoComplete)
+            kordAutocompleteChecker.checkAndExecute(
+                request,
+                requestManager
+            )
     }
 }

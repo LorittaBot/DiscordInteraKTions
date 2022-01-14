@@ -29,6 +29,7 @@ import net.perfectdreams.discordinteraktions.common.utils.Observable
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordInteractionMember
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordPublicMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordAutocompleteChecker
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordCommandChecker
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordComponentChecker
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.toDiscordInteraKTionsResolvedObjects
@@ -52,6 +53,7 @@ class DefaultInteractionRequestHandler(
 
     private val kordCommandChecker = KordCommandChecker(commandManager)
     private val kordComponentChecker = KordComponentChecker(commandManager)
+    private val kordAutocompleteChecker = KordAutocompleteChecker(commandManager)
 
     /**
      * Method called when we receive an interaction of the
@@ -133,6 +135,40 @@ class DefaultInteractionRequestHandler(
         bridge.manager = requestManager
 
         kordComponentChecker.checkAndExecute(
+            request,
+            requestManager
+        )
+
+        observableState.awaitChange()
+        logger.info { "State was changed to ${observableState.value}, so this means we already replied via the Web Server! Leaving request scope..." }
+    }
+
+    /**
+     * Method called when we receive an interaction of the
+     * Autocomplete type.
+     *
+     * We'll basically handle this by logging the event
+     * and executing the requested command.
+     *
+     * @param call The Ktor call containing the request details.
+     * @param request The interaction data.
+     */
+    override suspend fun onAutocomplete(call: ApplicationCall, request: DiscordInteraction) {
+        val observableState = Observable(InteractionRequestState.NOT_REPLIED_YET)
+        val bridge = RequestBridge(observableState)
+
+        val requestManager = WebServerRequestManager(
+            bridge,
+            rest,
+            applicationId,
+            request.token,
+            request,
+            call
+        )
+
+        bridge.manager = requestManager
+
+        kordAutocompleteChecker.checkAndExecute(
             request,
             requestManager
         )

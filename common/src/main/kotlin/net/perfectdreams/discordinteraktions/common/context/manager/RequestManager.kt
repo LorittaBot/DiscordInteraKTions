@@ -1,5 +1,6 @@
 package net.perfectdreams.discordinteraktions.common.context.manager
 
+import dev.kord.common.entity.Choice
 import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.modify.InteractionOrFollowupMessageModifyBuilder
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
@@ -44,4 +45,10 @@ abstract class RequestManager(val bridge: RequestBridge) {
      * The usual way of editing a message to a specific channel/user.
      */
     abstract suspend fun updateMessage(message: InteractionOrFollowupMessageModifyBuilder): EditableMessage
+
+    abstract suspend fun sendStringAutocomplete(list: List<Choice<String>>)
+
+    abstract suspend fun sendIntegerAutocomplete(list: List<Choice<Long>>)
+
+    abstract suspend fun sendNumberAutocomplete(list: List<Choice<Double>>)
 }
