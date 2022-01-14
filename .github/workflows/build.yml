@@ -17,10 +17,6 @@ jobs:
       with: 
         submodules: recursive
 
-    - name: Get current time
-      uses: gerred/actions/current-time@master
-      id: current-time
-
     - name: Setup Java JDK
       uses: actions/setup-java@v1.4.3
       with:
@@ -29,13 +25,16 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    # Runs a single command using the runners shell
     - name: Build with Gradle
-      run: "./gradlew build -Dgithub.build.id=$GITHUB_RUN_ID -Dbuild.number=$GITHUB_RUN_NUMBER -Dgit.branch=$GITHUB_REF -Dcommit.hash=$GITHUB_SHA -Dcompiled.at=${{ steps.current-time.outputs.time }}"
+      uses: gradle/gradle-build-action@v2
+      with:
+        arguments: build
 
-    # Publish Artifacts
     - name: Publish to PerfectDreams' repository
+      if: github.ref == 'refs/heads/cinnamon'
+      uses: gradle/gradle-build-action@v2
       env:
-        USERNAME: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
-        PASSWORD: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
-      run: "./gradlew publish -DUSERNAME=$USERNAME -DPASSWORD=$PASSWORD"
+        ORG_GRADLE_PROJECT_PerfectDreamsUsername: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
+        ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
+      with:
+        arguments: publish
