@@ -1,18 +1,18 @@
-package net.perfectdreams.discordinteraktions.webserver
-
 import dev.kord.common.entity.DiscordPartialEmoji
 import dev.kord.common.entity.Snowflake
-import dev.kord.rest.builder.message.create.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.commands.slash.SlashCommandExecutor
 import net.perfectdreams.discordinteraktions.common.components.selectMenu
 import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.context.commands.slash.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.declarations.commands.slash.SlashCommandExecutorDeclaration
-import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOptions
 import net.perfectdreams.discordinteraktions.declarations.commands.slash.slashCommand
 import net.perfectdreams.discordinteraktions.declarations.commands.wrappers.SlashCommandDeclarationWrapper
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
+import net.perfectdreams.discordinteraktions.webserver.InteractionsServer
+import net.perfectdreams.discordinteraktions.webserver.SelectExecutor
+import net.perfectdreams.discordinteraktions.webserver.TestClickExecutor
+import net.perfectdreams.discordinteraktions.webserver.TestClickWithDataExecutor
 import java.io.File
 
 suspend fun main() {

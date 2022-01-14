@@ -1,5 +1,3 @@
-package net.perfectdreams.discordinteraktions.platforms.kord
-
 import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.DefaultGateway
 import dev.kord.gateway.start
@@ -16,6 +14,7 @@ import net.perfectdreams.discordinteraktions.declarations.commands.slash.options
 import net.perfectdreams.discordinteraktions.declarations.commands.slash.slashCommand
 import net.perfectdreams.discordinteraktions.declarations.commands.wrappers.SlashCommandDeclarationWrapper
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
+import net.perfectdreams.discordinteraktions.platforms.kord.installDiscordInteraKTions
 import java.io.File
 import java.util.*
 
