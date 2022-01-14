@@ -99,7 +99,8 @@ open class CommandOptions {
         type,
         name,
         description,
-        mutableListOf()
+        mutableListOf(),
+        null
     )
 
     fun <T> CommandOptionBuilder<T>.register(): CommandOption<T> {
@@ -110,7 +111,8 @@ open class CommandOptions {
             this.type,
             this.name,
             this.description,
-            this.choices
+            this.choices,
+            this.autocompleteExecutorDeclaration
         )
 
         arguments.add(option)

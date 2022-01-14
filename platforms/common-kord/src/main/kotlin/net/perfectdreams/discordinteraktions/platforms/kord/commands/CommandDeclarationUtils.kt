@@ -7,9 +7,9 @@ import dev.kord.common.entity.Option
 import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.SubCommand
 import mu.KotlinLogging
+import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.declarations.commands.InteractionCommandDeclaration
 import net.perfectdreams.discordinteraktions.declarations.commands.SlashCommandDeclaration
-import net.perfectdreams.discordinteraktions.declarations.commands.UserCommandDeclaration
 import net.perfectdreams.discordinteraktions.declarations.commands.slash.SlashCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOption
 import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOptionType
@@ -28,7 +28,7 @@ object CommandDeclarationUtils {
      * If a command has multiple subcommands and subgroups (example: `/loritta morenitta/cute`, where `morenitta/cute` is two subcommands) then the list
      * will have a [CommandLabel] and a [SubCommandLabel]
      *
-     * @see getLabelsConnectedToCommandDeclaration
+     * @see getLabelsConnectedToSlashCommandDeclaration
      *
      * @param request the command interaction
      * @return a list with all of the labels
@@ -87,13 +87,16 @@ object CommandDeclarationUtils {
      * @return the matched declaration
      */
     fun getLabelsConnectedToCommandDeclaration(labels: List<CommandLabel>, declaration: InteractionCommandDeclaration): InteractionCommandDeclaration? {
+        if (declaration is SlashCommandDeclaration)
+            return getLabelsConnectedToSlashCommandDeclaration(labels, declaration)
+
         // Let's not over complicate this, we already know that Discord only supports one level deep of nesting
         // (so group -> subcommand)
         // So let's do easy and quick checks
         if (labels.first() is RootCommandLabel && labels.first().label == declaration.name) {
             // Matches the root label! Yay!
             if (labels.size == 1)
-                // If there is only a Root Label, then it means we found our root declaration!
+            // If there is only a Root Label, then it means we found our root declaration!
                 return declaration
         }
         return null
@@ -109,7 +112,7 @@ object CommandDeclarationUtils {
      * @param declaration     the declaration that must be found
      * @return the matched declaration
      */
-    fun getLabelsConnectedToCommandDeclaration(labels: List<CommandLabel>, declaration: SlashCommandDeclaration): SlashCommandDeclaration? {
+    private fun getLabelsConnectedToSlashCommandDeclaration(labels: List<CommandLabel>, declaration: SlashCommandDeclaration): SlashCommandDeclaration? {
         // Let's not over complicate this, we already know that Discord only supports one level deep of nesting
         // (so group -> subcommand)
         // So let's do easy and quick checks
@@ -151,6 +154,26 @@ object CommandDeclarationUtils {
         }
         return null
     }
+
+    /**
+     * Matches an application command declaration via the [commandLabels]
+     *
+     * @see getLabelsConnectedToSlashCommandDeclaration
+     *
+     * @param commandManager the command manager
+     * @param commandLabels  the command labels
+     * @return the matched declaration
+     */
+    inline fun <reified T : InteractionCommandDeclaration> getApplicationCommandDeclarationFromLabel(commandManager: CommandManager, commandLabels: List<CommandLabel>): T = commandManager.declarations
+        .asSequence()
+        .filterIsInstance<T>()
+        .mapNotNull {
+            getLabelsConnectedToCommandDeclaration(
+                commandLabels,
+                it
+            )
+        }
+        .first() as T // I don't know why this cast is needed
 
     open class CommandLabel(val label: String)
     class RootCommandLabel(label: String) : CommandLabel(label)

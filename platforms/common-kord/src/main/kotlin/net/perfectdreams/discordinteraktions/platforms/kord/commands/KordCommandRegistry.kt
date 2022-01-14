@@ -2,6 +2,7 @@ package net.perfectdreams.discordinteraktions.platforms.kord.commands
 
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.builder.interaction.ApplicationCommandCreateBuilder
+import dev.kord.rest.builder.interaction.BaseInputChatBuilder
 import dev.kord.rest.builder.interaction.ChatInputCreateBuilder
 import dev.kord.rest.builder.interaction.GroupCommandBuilder
 import dev.kord.rest.builder.interaction.MessageCommandCreateBuilder
@@ -156,12 +157,13 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
         return commandData
     }
 
-    private fun convertCommandOptionToKord(cmdOption: CommandOption<*>, builder: ChatInputCreateBuilder) {
+    private fun convertCommandOptionToKord(cmdOption: CommandOption<*>, builder: BaseInputChatBuilder) {
         when (cmdOption.type) {
             // TODO: Add all possible types
             CommandOptionType.Integer, CommandOptionType.NullableInteger ->
                 builder.int(cmdOption.name, cmdOption.description) {
                     this.required = !cmdOption.type.isNullable
+                    this.autocomplete = cmdOption.autoCompleteExecutorDeclaration != null
 
                     for (choice in cmdOption.choices) {
                         choice(choice.name, choice.value as Long)
@@ -170,6 +172,7 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
             CommandOptionType.Number, CommandOptionType.NullableNumber ->
                 builder.number(cmdOption.name, cmdOption.description) {
                     this.required = !cmdOption.type.isNullable
+                    this.autocomplete = cmdOption.autoCompleteExecutorDeclaration != null
 
                     for (choice in cmdOption.choices) {
                         choice(choice.name, choice.value as Double)
@@ -178,53 +181,7 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
             CommandOptionType.String, CommandOptionType.NullableString ->
                 builder.string(cmdOption.name, cmdOption.description) {
                     this.required = !cmdOption.type.isNullable
-
-                    for (choice in cmdOption.choices) {
-                        choice(choice.name, choice.value as String)
-                    }
-                }
-            CommandOptionType.Bool, CommandOptionType.NullableBool ->
-                builder.boolean(cmdOption.name, cmdOption.description) {
-                    this.required = !cmdOption.type.isNullable
-                }
-            CommandOptionType.User, CommandOptionType.NullableUser ->
-                builder.user(cmdOption.name, cmdOption.description) {
-                    this.required = !cmdOption.type.isNullable
-                }
-            CommandOptionType.Channel, CommandOptionType.NullableChannel ->
-                builder.channel(cmdOption.name, cmdOption.description) {
-                    this.required = !cmdOption.type.isNullable
-                }
-            CommandOptionType.Role, CommandOptionType.NullableRole ->
-                builder.role(cmdOption.name, cmdOption.description) {
-                    this.required = !cmdOption.type.isNullable
-                }
-            else -> error("Unsupported type ${cmdOption.type}")
-        }
-    }
-
-    private fun convertCommandOptionToKord(cmdOption: CommandOption<*>, builder: SubCommandBuilder) {
-        when (cmdOption.type) {
-            // TODO: Add all possible types
-            CommandOptionType.Integer, CommandOptionType.NullableInteger ->
-                builder.int(cmdOption.name, cmdOption.description) {
-                    this.required = !cmdOption.type.isNullable
-
-                    for (choice in cmdOption.choices) {
-                        choice(choice.name, choice.value as Long)
-                    }
-                }
-            CommandOptionType.Number, CommandOptionType.NullableNumber ->
-                builder.number(cmdOption.name, cmdOption.description) {
-                    this.required = !cmdOption.type.isNullable
-
-                    for (choice in cmdOption.choices) {
-                        choice(choice.name, choice.value as Double)
-                    }
-                }
-            CommandOptionType.String, CommandOptionType.NullableString ->
-                builder.string(cmdOption.name, cmdOption.description) {
-                    this.required = !cmdOption.type.isNullable
+                    this.autocomplete = cmdOption.autoCompleteExecutorDeclaration != null
 
                     for (choice in cmdOption.choices) {
                         choice(choice.name, choice.value as String)

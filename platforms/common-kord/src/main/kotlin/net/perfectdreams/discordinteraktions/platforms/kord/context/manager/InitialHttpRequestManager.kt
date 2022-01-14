@@ -1,6 +1,8 @@
 package net.perfectdreams.discordinteraktions.platforms.kord.context.manager
 
 import dev.kord.common.annotation.KordPreview
+import dev.kord.common.entity.Choice
+import dev.kord.common.entity.DiscordAutoComplete
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.InteractionResponseType
 import dev.kord.common.entity.MessageFlag
@@ -211,6 +213,30 @@ class InitialHttpRequestManager(
             rest,
             applicationId,
             interactionToken
+        )
+    }
+
+    override suspend fun sendStringAutocomplete(list: List<Choice<String>>) {
+        rest.interaction.createAutoCompleteInteractionResponse(
+            request.id,
+            interactionToken,
+            DiscordAutoComplete(list)
+        )
+    }
+
+    override suspend fun sendIntegerAutocomplete(list: List<Choice<Long>>) {
+        rest.interaction.createAutoCompleteInteractionResponse(
+            request.id,
+            interactionToken,
+            DiscordAutoComplete(list)
+        )
+    }
+
+    override suspend fun sendNumberAutocomplete(list: List<Choice<Double>>) {
+        rest.interaction.createAutoCompleteInteractionResponse(
+            request.id,
+            interactionToken,
+            DiscordAutoComplete(list)
         )
     }
 }

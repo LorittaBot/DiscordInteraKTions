@@ -1,5 +1,7 @@
 package net.perfectdreams.discordinteraktions.webserver.context.manager
 
+import dev.kord.common.entity.Choice
+import dev.kord.common.entity.DiscordAutoComplete
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.InteractionResponseType
 import dev.kord.common.entity.MessageFlag
@@ -10,6 +12,7 @@ import dev.kord.common.entity.optional.coerceToMissing
 import dev.kord.common.entity.optional.map
 import dev.kord.common.entity.optional.optional
 import dev.kord.common.entity.optional.toPrimitive
+import dev.kord.rest.json.request.AutoCompleteResponseCreateRequest
 import dev.kord.rest.json.request.InteractionApplicationCommandCallbackData
 import dev.kord.rest.json.request.InteractionResponseCreateRequest
 import dev.kord.rest.service.RestClient
@@ -229,5 +232,47 @@ class WebServerRequestManager(
             applicationId,
             interactionToken
         )
+    }
+
+    override suspend fun sendStringAutocomplete(list: List<Choice<String>>) {
+        call.respondText(
+            Json.encodeToString(
+                AutoCompleteResponseCreateRequest(
+                    InteractionResponseType.ApplicationCommandAutoCompleteResult,
+                    DiscordAutoComplete(list)
+                )
+            ),
+            ContentType.Application.Json
+        )
+
+        bridge.state.value = InteractionRequestState.ALREADY_REPLIED
+    }
+
+    override suspend fun sendIntegerAutocomplete(list: List<Choice<Long>>) {
+        call.respondText(
+            Json.encodeToString(
+                AutoCompleteResponseCreateRequest(
+                    InteractionResponseType.ApplicationCommandAutoCompleteResult,
+                    DiscordAutoComplete(list)
+                )
+            ),
+            ContentType.Application.Json
+        )
+
+        bridge.state.value = InteractionRequestState.ALREADY_REPLIED
+    }
+
+    override suspend fun sendNumberAutocomplete(list: List<Choice<Double>>) {
+        call.respondText(
+            Json.encodeToString(
+                AutoCompleteResponseCreateRequest(
+                    InteractionResponseType.ApplicationCommandAutoCompleteResult,
+                    DiscordAutoComplete(list)
+                )
+            ),
+            ContentType.Application.Json
+        )
+
+        bridge.state.value = InteractionRequestState.ALREADY_REPLIED
     }
 }

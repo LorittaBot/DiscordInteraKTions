@@ -83,6 +83,11 @@ fun Routing.installDiscordInteractions(
                 val interaction = InteractionsServer.json.decodeFromString<DiscordInteraction>(text)
                 handler.onComponent(call, interaction)
             }
+            InteractionType.AutoComplete.type -> {
+                // Kord still has some fields missing (like "deaf") so we need to decode ignoring missing fields
+                val interaction = InteractionsServer.json.decodeFromString<DiscordInteraction>(text)
+                handler.onAutocomplete(call, interaction)
+            }
         }
     }
 }

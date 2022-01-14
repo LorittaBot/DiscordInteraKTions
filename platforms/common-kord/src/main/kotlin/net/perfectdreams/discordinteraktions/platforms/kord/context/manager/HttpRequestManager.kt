@@ -1,6 +1,7 @@
 package net.perfectdreams.discordinteraktions.platforms.kord.context.manager
 
 import dev.kord.common.annotation.KordPreview
+import dev.kord.common.entity.Choice
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.builder.message.create.FollowupMessageCreateBuilder
@@ -118,4 +119,10 @@ class HttpRequestManager(
 
         return newMessage
     }
+
+    override suspend fun sendStringAutocomplete(list: List<Choice<String>>) = error("Can't send a autocomplete request via the HttpRequestManager")
+
+    override suspend fun sendIntegerAutocomplete(list: List<Choice<Long>>) = error("Can't send a autocomplete request via the HttpRequestManager")
+
+    override suspend fun sendNumberAutocomplete(list: List<Choice<Double>>) = error("Can't send a autocomplete request via the HttpRequestManager")
 }
