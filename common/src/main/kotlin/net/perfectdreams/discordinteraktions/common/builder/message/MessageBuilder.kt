@@ -1,6 +1,5 @@
 package net.perfectdreams.discordinteraktions.common.builder.message
 
-import dev.kord.common.annotation.KordPreview
 import dev.kord.rest.NamedFile
 import dev.kord.rest.builder.component.ActionRowBuilder
 import dev.kord.rest.builder.component.MessageComponentBuilder

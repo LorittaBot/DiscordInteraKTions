@@ -1,5 +1,5 @@
 plugins {
-    `interaktions-sampled-module`
+    kotlin("jvm")
     `maven-publish`
 }
 
@@ -8,7 +8,6 @@ group = "net.perfectdreams.discordinteraktions"
 dependencies {
     implementation(kotlin("stdlib"))
     api(project(":common"))
-    api(project(":platforms:common-kord"))
     implementation("dev.kord:kord-rest:${Versions.KORD}")
     implementation("dev.kord:kord-gateway:${Versions.KORD}")
 }

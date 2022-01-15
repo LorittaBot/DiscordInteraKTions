@@ -3,12 +3,11 @@ package net.perfectdreams.discordinteraktions.webserver
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.service.RestClient
 import io.ktor.application.*
-import io.ktor.client.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 
@@ -22,7 +21,7 @@ import net.perfectdreams.discordinteraktions.common.commands.CommandManager
  * @param port HTTP server port to bind
  */
 class InteractionsServer(
-    val applicationId: Long,
+    val applicationId: Snowflake,
     val publicKey: String,
     val token: String,
     val port: Int = 12212
@@ -38,7 +37,7 @@ class InteractionsServer(
     val rest = RestClient(token)
     val commandManager = CommandManager()
     val interactionRequestHandler: InteractionRequestHandler = DefaultInteractionRequestHandler(
-        Snowflake(applicationId),
+        applicationId,
         commandManager,
         rest
     )
