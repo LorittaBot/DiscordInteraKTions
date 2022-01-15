@@ -100,7 +100,7 @@ class CharacterExecutor : SlashCommandExecutor() {
         // By default, if you don't override the options, no options will be set
         override val options = Option
 
-        object Option : CommandOptions() {
+        object Option : ApplicationCommandOptions() {
             val character = string("character", "Select a Character!") // Here we are creating a String option
                 .choice("loritta", "Loritta Morenitta :3") // ...with custom choices!
                 .choice("pantufa", "Pantufa ;w;")
