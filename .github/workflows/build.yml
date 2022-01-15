@@ -31,7 +31,7 @@ jobs:
         arguments: build
 
     - name: Publish to PerfectDreams' repository
-      if: github.ref == 'refs/heads/cinnamon'
+      if: github.ref == 'refs/heads/main'
       uses: gradle/gradle-build-action@v2
       env:
         ORG_GRADLE_PROJECT_PerfectDreamsUsername: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
