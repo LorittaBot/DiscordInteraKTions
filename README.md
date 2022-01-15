@@ -1,4 +1,3 @@
-
 <h1 align="center">👩‍💻 Discord InteraKTions 👩‍💻</h1>
 
 **🚧 Experiemental Project 🚧** / **Not finished yet so you shouldn't use it!!**
@@ -43,7 +42,7 @@ First, let's see how a command looks like, just so you can get a feel on how you
 ```kotlin
 suspend fun main() {
     val interactionsServer = InteractionsServer(
-        12345L, // Your application ID, get it from the Discord Developers' dashboard!
+        Snowflake(12345L), // Your application ID, get it from the Discord Developers' dashboard!
         "application_public_key_here", // The application's public key, get it from the Discord Developers' dashboard!
         "application_token_here", // The application's token, get it from the Discord Developers' dashboard!
         12212 // The webserver port
@@ -196,12 +195,14 @@ override suspend fun execute(context: ApplicationCommandContext, args: SlashComm
     context.sendMessage {
         content = "haha funni image"
 
-        file("image.png", File("/path/to/file/image.png").inputStream())
+        addFile("image.png", File("/path/to/file/image.png").inputStream())
     }
 }
 ```
 
 If you already used interactions before, you know that you can't send images in the `Create Interaction Response` API call, so in this case, Discord InteraKTions will automatically defer and then use the `Edit Original Interaction Response` call!
+
+Check out our [sample bot](/tree/main/sample/src/main/kotlin/com/mrpowergamerbr/nicolebot) to learn more examples!
 
 ### 🛠️ Installation
 
@@ -225,7 +226,7 @@ Add the Kord Web Server via Ktor Support module to your project
 ```kotlin
 dependencies {
     ...
-    implementation("net.perfectdreams.discordinteraktions:webserver-ktor-kord:0.0.11-SNAPSHOT") // Check latest version in https://github.com/LorittaBot/DiscordInteraKTions/blob/main/buildSrc/src/main/kotlin/Versions.kt
+    implementation("net.perfectdreams.discordinteraktions:webserver-ktor-kord:0.0.12-SNAPSHOT") // Check latest version in https://github.com/LorittaBot/DiscordInteraKTions/blob/main/buildSrc/src/main/kotlin/Versions.kt
     ...
 }
 ```
@@ -280,7 +281,7 @@ Add the Kord Gateway Support module to your project
 ```kotlin
 dependencies {
     ...
-    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.11-SNAPSHOT") // Check latest version in https://github.com/LorittaBot/DiscordInteraKTions/blob/main/buildSrc/src/main/kotlin/Versions.kt
+    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.12-SNAPSHOT") // Check latest version in https://github.com/LorittaBot/DiscordInteraKTions/blob/main/buildSrc/src/main/kotlin/Versions.kt
     ...
 }
 ```
