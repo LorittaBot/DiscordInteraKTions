@@ -202,7 +202,7 @@ override suspend fun execute(context: ApplicationCommandContext, args: SlashComm
 
 If you already used interactions before, you know that you can't send images in the `Create Interaction Response` API call, so in this case, Discord InteraKTions will automatically defer and then use the `Edit Original Interaction Response` call!
 
-Check out our [sample bot](/tree/main/sample/src/main/kotlin/com/mrpowergamerbr/nicolebot) to learn more examples!
+Check out our [sample bot](/sample/src/main/kotlin/com/mrpowergamerbr/nicolebot) to learn more examples!
 
 ### 🛠️ Installation
 
