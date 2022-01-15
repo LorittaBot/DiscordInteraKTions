@@ -12,10 +12,10 @@ import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteExecutor
 import net.perfectdreams.discordinteraktions.common.autocomplete.FocusedCommandOption
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
+import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclaration
 import net.perfectdreams.discordinteraktions.common.context.manager.RequestManager
 import net.perfectdreams.discordinteraktions.common.utils.InteraKTionsExceptions
-import net.perfectdreams.discordinteraktions.declarations.commands.SlashCommandDeclaration
-import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOptionType
+import net.perfectdreams.discordinteraktions.common.commands.options.CommandOptionType
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.CommandDeclarationUtils
 
 /**

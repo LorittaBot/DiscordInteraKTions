@@ -5,10 +5,10 @@ import dev.kord.common.entity.DiscordInteraction
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
-import net.perfectdreams.discordinteraktions.common.components.buttons.ButtonClickWithDataExecutor
-import net.perfectdreams.discordinteraktions.common.components.buttons.ButtonClickWithNoDataExecutor
-import net.perfectdreams.discordinteraktions.common.components.selects.SelectMenuWithDataExecutor
-import net.perfectdreams.discordinteraktions.common.components.selects.SelectMenuWithNoDataExecutor
+import net.perfectdreams.discordinteraktions.common.components.ButtonClickExecutor
+import net.perfectdreams.discordinteraktions.common.components.ButtonClickWithDataExecutor
+import net.perfectdreams.discordinteraktions.common.components.SelectMenuExecutor
+import net.perfectdreams.discordinteraktions.common.components.SelectMenuWithDataExecutor
 import net.perfectdreams.discordinteraktions.common.context.components.ComponentContext
 import net.perfectdreams.discordinteraktions.common.context.components.GuildComponentContext
 import net.perfectdreams.discordinteraktions.common.context.manager.RequestManager
@@ -84,17 +84,17 @@ class KordComponentChecker(val commandManager: CommandManager) {
                 } ?: InteraKTionsExceptions.missingExecutor("button")
 
                 GlobalScope.launch {
-                    if (executor is ButtonClickWithNoDataExecutor)
-                        executor.onClick(
+                    when (executor) {
+                        is ButtonClickExecutor -> executor.onClick(
                             kordUser,
                             componentContext
                         )
-                    else if (executor is ButtonClickWithDataExecutor)
-                        executor.onClick(
+                        is ButtonClickWithDataExecutor -> executor.onClick(
                             kordUser,
                             componentContext,
                             data
                         )
+                    }
                 }
             }
             ComponentType.SelectMenu -> {
@@ -110,19 +110,19 @@ class KordComponentChecker(val commandManager: CommandManager) {
                 } ?: InteraKTionsExceptions.missingExecutor("select menu")
 
                 GlobalScope.launch {
-                    if (executor is SelectMenuWithNoDataExecutor)
-                        executor.onSelect(
+                    when (executor) {
+                        is SelectMenuExecutor -> executor.onSelect(
                             kordUser,
                             componentContext,
                             request.data.values.value ?: error("Values list is null!")
                         )
-                    else if (executor is SelectMenuWithDataExecutor)
-                        executor.onSelect(
+                        is SelectMenuWithDataExecutor -> executor.onSelect(
                             kordUser,
                             componentContext,
                             data,
                             request.data.values.value ?: error("Values list is null!")
                         )
+                    }
                 }
             }
         }

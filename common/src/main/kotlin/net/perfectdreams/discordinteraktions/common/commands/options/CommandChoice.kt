@@ -1,4 +1,4 @@
-package net.perfectdreams.discordinteraktions.declarations.commands.slash.options
+package net.perfectdreams.discordinteraktions.common.commands.options
 
 class CommandChoice<T>(
 	// We need to store the command option type due to type erasure

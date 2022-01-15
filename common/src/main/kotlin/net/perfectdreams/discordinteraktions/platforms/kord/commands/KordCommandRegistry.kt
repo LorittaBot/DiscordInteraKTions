@@ -16,15 +16,15 @@ import dev.kord.rest.builder.interaction.role
 import dev.kord.rest.builder.interaction.string
 import dev.kord.rest.builder.interaction.user
 import dev.kord.rest.service.RestClient
+import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.commands.CommandRegistry
-import net.perfectdreams.discordinteraktions.declarations.commands.InteractionCommandDeclaration
-import net.perfectdreams.discordinteraktions.declarations.commands.MessageCommandDeclaration
-import net.perfectdreams.discordinteraktions.declarations.commands.SlashCommandDeclaration
-import net.perfectdreams.discordinteraktions.declarations.commands.SlashCommandGroupDeclaration
-import net.perfectdreams.discordinteraktions.declarations.commands.UserCommandDeclaration
-import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOption
-import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOptionType
+import net.perfectdreams.discordinteraktions.common.commands.MessageCommandDeclaration
+import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclaration
+import net.perfectdreams.discordinteraktions.common.commands.SlashCommandGroupDeclaration
+import net.perfectdreams.discordinteraktions.common.commands.UserCommandDeclaration
+import net.perfectdreams.discordinteraktions.common.commands.options.CommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.CommandOptionType
 
 class KordCommandRegistry(private val applicationId: Snowflake, private val rest: RestClient, private val manager: CommandManager) : CommandRegistry {
     override suspend fun updateAllCommandsInGuild(guildId: Snowflake, deleteUnknownCommands: Boolean) {
@@ -84,7 +84,7 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
         )
     }
 
-    private fun convertCommandDeclarationToKord(declaration: InteractionCommandDeclaration): ApplicationCommandCreateBuilder {
+    private fun convertCommandDeclarationToKord(declaration: ApplicationCommandDeclaration): ApplicationCommandCreateBuilder {
         when (declaration) {
             is UserCommandDeclaration -> {
                 return UserCommandCreateBuilder(declaration.name)

@@ -1,6 +1,6 @@
 import net.perfectdreams.discordinteraktions.api.entities.User
-import net.perfectdreams.discordinteraktions.common.components.buttons.ButtonClickExecutorDeclaration
-import net.perfectdreams.discordinteraktions.common.components.buttons.ButtonClickWithDataExecutor
+import net.perfectdreams.discordinteraktions.common.components.ButtonClickExecutorDeclaration
+import net.perfectdreams.discordinteraktions.common.components.ButtonClickWithDataExecutor
 import net.perfectdreams.discordinteraktions.common.context.components.ComponentContext
 
 class TestClickWithDataExecutor : ButtonClickWithDataExecutor {

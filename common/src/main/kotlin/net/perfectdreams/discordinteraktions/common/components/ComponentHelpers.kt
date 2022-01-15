@@ -4,8 +4,6 @@ import dev.kord.common.entity.ButtonStyle
 import dev.kord.rest.builder.component.ActionRowBuilder
 import dev.kord.rest.builder.component.ButtonBuilder
 import dev.kord.rest.builder.component.SelectMenuBuilder
-import net.perfectdreams.discordinteraktions.common.components.buttons.ButtonClickExecutorDeclaration
-import net.perfectdreams.discordinteraktions.common.components.selects.SelectMenuExecutorDeclaration
 
 fun ActionRowBuilder.interactiveButton(
     style: ButtonStyle,

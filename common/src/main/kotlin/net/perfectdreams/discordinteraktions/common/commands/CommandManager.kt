@@ -2,23 +2,22 @@ package net.perfectdreams.discordinteraktions.common.commands
 
 import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteExecutor
 import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteExecutorDeclaration
-import net.perfectdreams.discordinteraktions.common.commands.interaction.InteractionCommandExecutor
-import net.perfectdreams.discordinteraktions.common.components.buttons.ButtonClickExecutor
-import net.perfectdreams.discordinteraktions.common.components.buttons.ButtonClickExecutorDeclaration
-import net.perfectdreams.discordinteraktions.common.components.selects.SelectMenuExecutor
-import net.perfectdreams.discordinteraktions.common.components.selects.SelectMenuExecutorDeclaration
-import net.perfectdreams.discordinteraktions.declarations.commands.InteractionCommandDeclaration
-import net.perfectdreams.discordinteraktions.declarations.commands.wrappers.InteractionCommandDeclarationWrapper
+import net.perfectdreams.discordinteraktions.common.components.ButtonClickBaseExecutor
+import net.perfectdreams.discordinteraktions.common.components.ButtonClickExecutor
+import net.perfectdreams.discordinteraktions.common.components.ButtonClickExecutorDeclaration
+import net.perfectdreams.discordinteraktions.common.components.SelectMenuBaseExecutor
+import net.perfectdreams.discordinteraktions.common.components.SelectMenuExecutor
+import net.perfectdreams.discordinteraktions.common.components.SelectMenuExecutorDeclaration
 
 open class CommandManager {
-    val declarations = mutableListOf<InteractionCommandDeclaration>()
-    val executors = mutableListOf<InteractionCommandExecutor>()
+    val declarations = mutableListOf<ApplicationCommandDeclaration>()
+    val executors = mutableListOf<ApplicationCommandExecutor>()
 
     val buttonDeclarations = mutableListOf<ButtonClickExecutorDeclaration>()
-    val buttonExecutors = mutableListOf<ButtonClickExecutor>()
+    val buttonExecutors = mutableListOf<ButtonClickBaseExecutor>()
 
     val selectMenusDeclarations = mutableListOf<SelectMenuExecutorDeclaration>()
-    val selectMenusExecutors = mutableListOf<SelectMenuExecutor>()
+    val selectMenusExecutors = mutableListOf<SelectMenuBaseExecutor>()
 
     val autocompleteDeclarations = mutableListOf<AutocompleteExecutorDeclaration<*>>()
     val autocompleteExecutors = mutableListOf<AutocompleteExecutor<*>>()
@@ -26,7 +25,8 @@ open class CommandManager {
     val componentDeclarations: List<String>
         get() = buttonDeclarations.map { it.id } + selectMenusDeclarations.map { it.id }
 
-    fun register(declarationWrapper: InteractionCommandDeclarationWrapper, vararg executors: InteractionCommandExecutor) {
+    fun register(declarationWrapper: ApplicationCommandDeclarationWrapper, vararg executors: ApplicationCommandExecutor) {
+        // TODO: Validate if all executors of the command are present
         val declaration = declarationWrapper.declaration()
 
         if (declarations.any { it.name == declaration.name })
@@ -36,7 +36,7 @@ open class CommandManager {
         this.executors.addAll(executors)
     }
 
-    fun register(declaration: ButtonClickExecutorDeclaration, executor: ButtonClickExecutor) {
+    fun register(declaration: ButtonClickExecutorDeclaration, executor: ButtonClickBaseExecutor) {
         if (componentDeclarations.any { it == declaration.id })
             error("There's already a component executor registered with the ID ${declaration.id}!")
 
@@ -44,7 +44,7 @@ open class CommandManager {
         buttonExecutors.add(executor)
     }
 
-    fun register(declaration: SelectMenuExecutorDeclaration, executor: SelectMenuExecutor) {
+    fun register(declaration: SelectMenuExecutorDeclaration, executor: SelectMenuBaseExecutor) {
         if (componentDeclarations.any { it == declaration.id })
             error("There's already a component executor registered with the ID ${declaration.id}!")
 

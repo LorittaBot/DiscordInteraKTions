@@ -1,8 +1,6 @@
-package net.perfectdreams.discordinteraktions.declarations.commands.slash
+package net.perfectdreams.discordinteraktions.common.commands
 
-import net.perfectdreams.discordinteraktions.declarations.commands.SlashCommandDeclaration
-import net.perfectdreams.discordinteraktions.declarations.commands.SlashCommandGroupDeclaration
-
+// ===[ SLASH COMMANDS ]===
 fun slashCommand(name: String, description: String, block: SlashCommandDeclarationBuilder.() -> (Unit)): SlashCommandDeclaration {
     return SlashCommandDeclarationBuilder(name, description)
         .apply(block)
@@ -48,6 +46,34 @@ class SlashCommandGroupDeclarationBuilder(val name: String, val description: Str
             name,
             description,
             subcommands
+        )
+    }
+}
+
+// ===[ USER COMMANDS ]===
+fun userCommand(name: String, executor: UserCommandExecutorDeclaration): UserCommandDeclaration {
+    return UserCommandDeclarationBuilder(name, executor).build()
+}
+
+class UserCommandDeclarationBuilder(val name: String, val executor: UserCommandExecutorDeclaration) {
+    fun build(): UserCommandDeclaration {
+        return UserCommandDeclaration(
+            name,
+            executor
+        )
+    }
+}
+
+// ===[ MESSAGE COMMANDS ]===
+fun messageCommand(name: String, executor: MessageCommandExecutorDeclaration): MessageCommandDeclaration {
+    return MessageCommandDeclarationBuilder(name, executor).build()
+}
+
+class MessageCommandDeclarationBuilder(val name: String, val executor: MessageCommandExecutorDeclaration) {
+    fun build(): MessageCommandDeclaration {
+        return MessageCommandDeclaration(
+            name,
+            executor
         )
     }
 }

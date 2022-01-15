@@ -7,12 +7,12 @@ import dev.kord.common.entity.Option
 import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.SubCommand
 import mu.KotlinLogging
+import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
-import net.perfectdreams.discordinteraktions.declarations.commands.InteractionCommandDeclaration
-import net.perfectdreams.discordinteraktions.declarations.commands.SlashCommandDeclaration
-import net.perfectdreams.discordinteraktions.declarations.commands.slash.SlashCommandExecutorDeclaration
-import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOption
-import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOptionType
+import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclaration
+import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.discordinteraktions.common.commands.options.CommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.CommandOptionType
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordChannel
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordRole
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
@@ -86,7 +86,7 @@ object CommandDeclarationUtils {
      * @param declaration     the declaration that must be found
      * @return the matched declaration
      */
-    fun getLabelsConnectedToCommandDeclaration(labels: List<CommandLabel>, declaration: InteractionCommandDeclaration): InteractionCommandDeclaration? {
+    fun getLabelsConnectedToCommandDeclaration(labels: List<CommandLabel>, declaration: ApplicationCommandDeclaration): ApplicationCommandDeclaration? {
         if (declaration is SlashCommandDeclaration)
             return getLabelsConnectedToSlashCommandDeclaration(labels, declaration)
 
@@ -164,7 +164,7 @@ object CommandDeclarationUtils {
      * @param commandLabels  the command labels
      * @return the matched declaration
      */
-    inline fun <reified T : InteractionCommandDeclaration> getApplicationCommandDeclarationFromLabel(commandManager: CommandManager, commandLabels: List<CommandLabel>): T? = commandManager.declarations
+    inline fun <reified T : ApplicationCommandDeclaration> getApplicationCommandDeclarationFromLabel(commandManager: CommandManager, commandLabels: List<CommandLabel>): T? = commandManager.declarations
         .asSequence()
         .filterIsInstance<T>()
         .mapNotNull {

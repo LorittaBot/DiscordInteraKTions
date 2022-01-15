@@ -1,13 +1,13 @@
 import dev.kord.common.entity.DiscordPartialEmoji
 import dev.kord.common.entity.Snowflake
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
-import net.perfectdreams.discordinteraktions.common.commands.slash.SlashCommandExecutor
+import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclarationWrapper
+import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor
+import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.discordinteraktions.common.commands.slashCommand
 import net.perfectdreams.discordinteraktions.common.components.selectMenu
 import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.context.commands.slash.SlashCommandArguments
-import net.perfectdreams.discordinteraktions.declarations.commands.slash.SlashCommandExecutorDeclaration
-import net.perfectdreams.discordinteraktions.declarations.commands.slash.slashCommand
-import net.perfectdreams.discordinteraktions.declarations.commands.wrappers.SlashCommandDeclarationWrapper
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
 import net.perfectdreams.discordinteraktions.webserver.InteractionsServer
 import java.io.File
