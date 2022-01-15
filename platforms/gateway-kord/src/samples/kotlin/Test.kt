@@ -5,6 +5,10 @@ import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteExecutor
 import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.autocomplete.FocusedCommandOption
+import net.perfectdreams.discordinteraktions.common.autocomplete.IntegerAutocompleteExecutor
+import net.perfectdreams.discordinteraktions.common.autocomplete.IntegerAutocompleteExecutorDeclaration
+import net.perfectdreams.discordinteraktions.common.autocomplete.StringAutocompleteExecutor
+import net.perfectdreams.discordinteraktions.common.autocomplete.StringAutocompleteExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.commands.slash.SlashCommandExecutor
 import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
@@ -68,8 +72,8 @@ object TestCommand : SlashCommandDeclarationWrapper {
     }
 }
 
-class AutocompleteTestExecutor : AutocompleteExecutor<String> {
-    companion object : AutocompleteExecutorDeclaration<String>(AutocompleteTestExecutor::class)
+class AutocompleteTestExecutor : StringAutocompleteExecutor {
+    companion object : StringAutocompleteExecutorDeclaration(AutocompleteTestExecutor::class)
 
     override suspend fun onAutocomplete(focusedOption: FocusedCommandOption): Map<String, String> {
         // TODO: Maybe create a nice DSL similar to Kord?
@@ -82,8 +86,8 @@ class AutocompleteTestExecutor : AutocompleteExecutor<String> {
     }
 }
 
-class AutocompleteIntTestExecutor : AutocompleteExecutor<Long> {
-    companion object : AutocompleteExecutorDeclaration<Long>(AutocompleteIntTestExecutor::class)
+class AutocompleteIntTestExecutor : IntegerAutocompleteExecutor {
+    companion object : IntegerAutocompleteExecutorDeclaration(AutocompleteIntTestExecutor::class)
 
     override suspend fun onAutocomplete(focusedOption: FocusedCommandOption): Map<String, Long> {
         // TODO: Maybe create a nice DSL similar to Kord?

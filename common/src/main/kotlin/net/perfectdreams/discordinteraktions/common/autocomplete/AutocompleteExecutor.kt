@@ -1,6 +1,6 @@
 package net.perfectdreams.discordinteraktions.common.autocomplete
 
-interface AutocompleteExecutor<T> {
+sealed interface AutocompleteExecutor<T> {
     suspend fun onAutocomplete(focusedOption: FocusedCommandOption): Map<String, T>
 
     /**
@@ -12,3 +12,7 @@ interface AutocompleteExecutor<T> {
      */
     open fun signature(): Any = this::class
 }
+
+interface IntegerAutocompleteExecutor : AutocompleteExecutor<Long>
+interface NumberAutocompleteExecutor : AutocompleteExecutor<Double>
+interface StringAutocompleteExecutor : AutocompleteExecutor<String>
