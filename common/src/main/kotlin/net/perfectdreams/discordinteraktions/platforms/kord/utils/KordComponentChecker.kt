@@ -54,6 +54,7 @@ class KordComponentChecker(val commandManager: CommandManager) {
                 request.channelId,
                 kordPublicMessage,
                 interactionData,
+                request,
                 guildId,
                 kordMember
             )
@@ -63,7 +64,8 @@ class KordComponentChecker(val commandManager: CommandManager) {
                 kordUser,
                 request.channelId,
                 kordPublicMessage,
-                interactionData
+                interactionData,
+                request
             )
         }
 

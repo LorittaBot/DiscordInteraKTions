@@ -59,6 +59,7 @@ class KordCommandChecker(val commandManager: CommandManager) {
                 kordUser,
                 request.channelId,
                 interactionData,
+                request,
                 guildId,
                 kordMember
             )
@@ -69,7 +70,8 @@ class KordCommandChecker(val commandManager: CommandManager) {
                     request.member.value?.user?.value ?: request.user.value ?: error("oh no")
                 ),
                 request.channelId,
-                interactionData
+                interactionData,
+                request
             )
         }
 
