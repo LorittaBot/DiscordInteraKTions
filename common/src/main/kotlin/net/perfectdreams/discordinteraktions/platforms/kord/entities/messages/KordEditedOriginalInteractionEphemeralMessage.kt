@@ -18,7 +18,7 @@ class KordEditedOriginalInteractionEphemeralMessage(
         val newMessage = rest.interaction.modifyInteractionResponse(
             applicationId,
             interactionToken,
-            convertToInteractionResponseModifyBuilder(message).toRequest()
+            message.toInteractionMessageResponseModifyBuilder().toRequest()
         )
 
         return KordEditedOriginalInteractionEphemeralMessage(

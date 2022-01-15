@@ -6,7 +6,10 @@ import dev.kord.rest.NamedFile
 import dev.kord.rest.builder.component.MessageComponentBuilder
 import dev.kord.rest.builder.message.AllowedMentionsBuilder
 import dev.kord.rest.builder.message.EmbedBuilder
+import dev.kord.rest.builder.message.modify.FollowupMessageModifyBuilder
+import dev.kord.rest.builder.message.modify.InteractionResponseModifyBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.create.MessageCreateBuilder
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.runIfNotMissing
 
 // From Kord, however this is a interaction OR followup modify builder
 class InteractionOrFollowupMessageModifyBuilder : MessageModifyBuilder {
@@ -24,4 +27,26 @@ class InteractionOrFollowupMessageModifyBuilder : MessageModifyBuilder {
     override var allowedMentions: AllowedMentionsBuilder? by state::allowedMentions.delegate()
 
     override var components: MutableList<MessageComponentBuilder>? by state::components.delegate()
+
+    override fun toFollowupMessageModifyBuilder(): FollowupMessageModifyBuilder {
+        return FollowupMessageModifyBuilder().apply {
+            runIfNotMissing(state.content) { this.content = it }
+            runIfNotMissing(state.allowedMentions) { this.allowedMentions = it }
+            runIfNotMissing(state.components) { this.components = it }
+            runIfNotMissing(state.embeds) { this.embeds = it }
+            runIfNotMissing(state.attachments) { this.attachments = it }
+            runIfNotMissing(state.files) { this.files = it }
+        }
+    }
+
+    override fun toInteractionMessageResponseModifyBuilder(): InteractionResponseModifyBuilder {
+        return InteractionResponseModifyBuilder().apply {
+            runIfNotMissing(state.content) { this.content = it }
+            runIfNotMissing(state.allowedMentions) { this.allowedMentions = it }
+            runIfNotMissing(state.components) { this.components = it }
+            runIfNotMissing(state.embeds) { this.embeds = it }
+            runIfNotMissing(state.attachments) { this.attachments = it }
+            runIfNotMissing(state.files) { this.files = it }
+        }
+    }
 }

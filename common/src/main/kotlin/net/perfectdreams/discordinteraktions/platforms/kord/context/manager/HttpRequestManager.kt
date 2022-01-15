@@ -51,14 +51,7 @@ class HttpRequestManager(
         val kordMessage = rest.interaction.createFollowupMessage(
             applicationId,
             request.token,
-            FollowupMessageCreateBuilder(false).apply {
-                this.content = message.content
-                this.tts = message.tts
-                this.allowedMentions = message.allowedMentions
-                message.components?.let { this.components.addAll(it) }
-                message.embeds?.let { this.embeds.addAll(it) }
-                message.files?.let { this.files.addAll(it) }
-            }.toRequest()
+            message.toFollowupMessageCreateBuilder().toRequest()
         )
 
         bridge.state.value = InteractionRequestState.ALREADY_REPLIED
@@ -76,14 +69,7 @@ class HttpRequestManager(
         val kordMessage = rest.interaction.createFollowupMessage(
             applicationId,
             request.token,
-            FollowupMessageCreateBuilder(true).apply {
-                this.content = message.content
-                this.tts = message.tts
-                this.allowedMentions = message.allowedMentions
-                message.components?.let { this.components.addAll(it) }
-                message.embeds?.let { this.embeds.addAll(it) }
-                message.files?.let { this.files.addAll(it) }
-            }.toRequest()
+            message.toFollowupMessageCreateBuilder().toRequest()
         )
 
         bridge.state.value = InteractionRequestState.ALREADY_REPLIED

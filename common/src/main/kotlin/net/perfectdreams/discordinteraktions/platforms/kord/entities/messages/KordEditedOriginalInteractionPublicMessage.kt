@@ -19,7 +19,7 @@ class KordEditedOriginalInteractionPublicMessage(
             applicationId,
             interactionToken,
             this.data.id,
-            convertToFollowupMessageModifyBuilder(message).toRequest()
+            message.toFollowupMessageModifyBuilder().toRequest()
         )
 
         return KordEditedOriginalInteractionPublicMessage(

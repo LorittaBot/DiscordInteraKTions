@@ -22,7 +22,7 @@ class KordPublicFollowupMessage(
             applicationId,
             interactionToken,
             data.id,
-            convertToFollowupMessageModifyBuilder(message).toRequest()
+            message.toFollowupMessageModifyBuilder().toRequest()
         )
 
         return KordPublicFollowupMessage(

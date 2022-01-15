@@ -6,6 +6,8 @@ import dev.kord.rest.builder.component.ActionRowBuilder
 import dev.kord.rest.builder.component.MessageComponentBuilder
 import dev.kord.rest.builder.message.AllowedMentionsBuilder
 import dev.kord.rest.builder.message.EmbedBuilder
+import dev.kord.rest.builder.message.create.FollowupMessageCreateBuilder
+import dev.kord.rest.builder.message.create.InteractionResponseCreateBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.InputStream

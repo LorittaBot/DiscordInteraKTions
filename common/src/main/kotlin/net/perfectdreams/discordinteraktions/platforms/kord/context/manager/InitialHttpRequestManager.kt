@@ -101,14 +101,7 @@ class InitialHttpRequestManager(
         rest.interaction.createInteractionResponse(
             request.id,
             request.token,
-            InteractionResponseCreateBuilder(false).apply {
-                this.content = message.content
-                this.tts = message.tts
-                this.allowedMentions = message.allowedMentions
-                message.components?.let { this.components.addAll(it) }
-                message.embeds?.let { this.embeds.addAll(it) }
-                message.files?.let { this.files.addAll(it) }
-            }.toRequest()
+            message.toInteractionMessageResponseCreateBuilder().toRequest()
         )
 
         bridge.state.value = InteractionRequestState.ALREADY_REPLIED
@@ -133,14 +126,7 @@ class InitialHttpRequestManager(
         rest.interaction.createInteractionResponse(
             request.id,
             request.token,
-            InteractionResponseCreateBuilder(true).apply {
-                this.content = message.content
-                this.tts = message.tts
-                this.allowedMentions = message.allowedMentions
-                message.components?.let { this.components.addAll(it) }
-                message.embeds?.let { this.embeds.addAll(it) }
-                message.files?.let { this.files.addAll(it) }
-            }.toRequest()
+            message.toInteractionMessageResponseCreateBuilder().toRequest()
         )
 
         bridge.state.value = InteractionRequestState.ALREADY_REPLIED
