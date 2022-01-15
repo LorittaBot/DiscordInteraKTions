@@ -20,9 +20,10 @@ While Discord InteraKTions has a bunch of nifty features, it still doesn't suppo
 * [X] Subcommands and Subcommand Groups
 * [X] Sending Embeds
 * [X] Abstractions On Top of Kord
-* [X] *(Experimental)* User/Message Commands (Context Menu)
-* [X] *(Experimental)* Buttons
+* [X] User/Message Commands (Context Menu)
+* [X] Buttons
 * [X] Select Menus
+* [X] *(Experimental)* Autocomplete
 * [ ] Permissions
 * [ ] *Good* Documentation
 * [ ] Being a good project :3
