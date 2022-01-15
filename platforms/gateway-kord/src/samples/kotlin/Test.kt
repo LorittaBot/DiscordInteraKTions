@@ -13,7 +13,7 @@ import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecuto
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.context.commands.slash.SlashCommandArguments
-import net.perfectdreams.discordinteraktions.common.commands.options.CommandOptions
+import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.slashCommand
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
 import net.perfectdreams.discordinteraktions.platforms.kord.installDiscordInteraKTions
@@ -100,7 +100,7 @@ class AutocompleteIntTestExecutor : IntegerAutocompleteExecutor {
 
 class TestACCommandExecutor : SlashCommandExecutor() {
     companion object : SlashCommandExecutorDeclaration(TestACCommandExecutor::class) {
-        object Options : CommandOptions() {
+        object Options : ApplicationCommandOptions() {
             val x = integer("int", "an integer idk")
                 .autocomplete(AutocompleteIntTestExecutor)
                 .register()
@@ -108,21 +108,25 @@ class TestACCommandExecutor : SlashCommandExecutor() {
             val str = string("test", "an integer idk")
                 .autocomplete(AutocompleteTestExecutor)
                 .register()
+
+            val nullableChannel = optionalChannel("channel", "an str idk")
+                .register()
         }
 
         override val options = Options
     }
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        val value = args[Options.nullableChannel]
         context.sendMessage {
-            content = "${args[Options.str]} - ${args[Options.x]}"
+            content = "${args[Options.str]} - ${args[Options.x]} - $value"
         }
     }
 }
 
 class TestCommandExecutor : SlashCommandExecutor() {
     companion object : SlashCommandExecutorDeclaration(TestCommandExecutor::class) {
-        object Options : CommandOptions() {
+        object Options : ApplicationCommandOptions() {
             val integer = integer("test", "an integer idk")
                 .choice(1, "haha, one!")
                 .choice(2, "owo")

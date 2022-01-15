@@ -11,8 +11,13 @@ import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandD
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.discordinteraktions.common.commands.options.ChannelCommandOption
 import net.perfectdreams.discordinteraktions.common.commands.options.CommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.CommandOptionType
+import net.perfectdreams.discordinteraktions.common.commands.options.NullableChannelCommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.NullableRoleCommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.NullableUserCommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.RoleCommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.UserCommandOption
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordChannel
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordRole
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
@@ -200,11 +205,11 @@ object CommandDeclarationUtils {
     }
 
     private fun convertOption(interaKTionOption: CommandOption<*>, argument: CommandArgument<*>, request: DiscordInteraction): Any? {
-        logger.debug { interaKTionOption.type }
+        logger.debug { interaKTionOption::class }
         logger.debug { argument.value }
 
-        return when (interaKTionOption.type) {
-            CommandOptionType.User, CommandOptionType.NullableUser -> {
+        return when (interaKTionOption) {
+            is UserCommandOption, is NullableUserCommandOption -> {
                 val userId = argument.value as Snowflake
 
                 val resolved = request.data.resolved.value ?: return null
@@ -214,7 +219,7 @@ object CommandDeclarationUtils {
                 // Now we need to wrap the kord user in our own implementation!
                 return KordUser(kordInstance)
             }
-            CommandOptionType.Channel, CommandOptionType.NullableChannel -> {
+            is ChannelCommandOption, is NullableChannelCommandOption -> {
                 val userId = argument.value as Snowflake
 
                 val resolved = request.data.resolved.value ?: return null
@@ -224,7 +229,7 @@ object CommandDeclarationUtils {
                 // Now we need to wrap the kord user in our own implementation!
                 return KordChannel(kordInstance)
             }
-            CommandOptionType.Role, CommandOptionType.NullableRole -> {
+            is RoleCommandOption, is NullableRoleCommandOption -> {
                 val userId = argument.value as Snowflake
 
                 val resolved = request.data.resolved.value ?: return null

@@ -3,119 +3,79 @@ package net.perfectdreams.discordinteraktions.common.commands.options
 import net.perfectdreams.discordinteraktions.api.entities.Channel
 import net.perfectdreams.discordinteraktions.api.entities.Role
 import net.perfectdreams.discordinteraktions.api.entities.User
+import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteExecutorDeclaration
 
-open class CommandOptions {
-    companion object {
-        val NO_OPTIONS = object: CommandOptions() {}
-    }
+sealed class CommandOption<T>(
+    val name: String,
+    val description: String
+)
 
-    val arguments = mutableListOf<CommandOption<*>>()
+interface NullableCommandOption
 
-    fun string(name: String, description: String) = argument<String>(
-        CommandOptionType.String,
-        name,
-        description
-    )
+sealed class ChoiceableCommandOption<T, ChoiceableType>(
+    name: String,
+    description: String,
+    val choices: List<CommandChoice<ChoiceableType>>,
+    val autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<ChoiceableType>?
+) : CommandOption<T>(name, description)
 
-    fun optionalString(name: String, description: String) = argument<String?>(
-        CommandOptionType.NullableString,
-        name,
-        description
-    )
+// ===[ STRING ]===
+class StringCommandOption(
+    name: String,
+    description: String,
+    choices: List<CommandChoice<String>>,
+    autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<String>?
+) : ChoiceableCommandOption<String, String>(name, description, choices, autoCompleteExecutorDeclaration)
 
-    fun integer(name: String, description: String) = argument<Long>(
-        CommandOptionType.Integer,
-        name,
-        description
-    )
+class NullableStringCommandOption(
+    name: String,
+    description: String,
+    choices: List<CommandChoice<String>>,
+    autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<String>?
+) : ChoiceableCommandOption<String?, String>(name, description, choices, autoCompleteExecutorDeclaration), NullableCommandOption
 
-    fun optionalInteger(name: String, description: String) = argument<Long?>(
-        CommandOptionType.NullableInteger,
-        name,
-        description
-    )
+// ===[ INTEGER ]===
+class IntegerCommandOption(
+    name: String,
+    description: String,
+    choices: List<CommandChoice<Long>>,
+    autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<Long>?
+) : ChoiceableCommandOption<Long, Long>(name, description, choices, autoCompleteExecutorDeclaration)
 
-    fun number(name: String, description: String) = argument<Double>(
-        CommandOptionType.Number,
-        name,
-        description
-    )
+class NullableIntegerCommandOption(
+    name: String,
+    description: String,
+    choices: List<CommandChoice<Long>>,
+    autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<Long>?
+) : ChoiceableCommandOption<Long?, Long>(name, description, choices, autoCompleteExecutorDeclaration), NullableCommandOption
 
-    fun optionalNumber(name: String, description: String) = argument<Double?>(
-        CommandOptionType.NullableNumber,
-        name,
-        description
-    )
+// ===[ NUMBER ]===
+class NumberCommandOption(
+    name: String,
+    description: String,
+    choices: List<CommandChoice<Double>>,
+    autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<Double>?
+) : ChoiceableCommandOption<Double, Double>(name, description, choices, autoCompleteExecutorDeclaration)
 
-    fun boolean(name: String, description: String) = argument<Boolean>(
-        CommandOptionType.Bool,
-        name,
-        description
-    )
+class NullableNumberCommandOption(
+    name: String,
+    description: String,
+    choices: List<CommandChoice<Double>>,
+    autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<Double>?
+) : ChoiceableCommandOption<Double?, Double>(name, description, choices, autoCompleteExecutorDeclaration), NullableCommandOption
 
-    fun optionalBoolean(name: String, description: String) = argument<Boolean?>(
-        CommandOptionType.NullableBool,
-        name,
-        description
-    )
+// ===[ BOOLEAN ]===
+class BooleanCommandOption(name: String, description: String) : CommandOption<Boolean>(name, description)
+class NullableBooleanCommandOption(name: String, description: String) : CommandOption<Boolean?>(name, description), NullableCommandOption
 
-    fun user(name: String, description: String) = argument<User>(
-        CommandOptionType.User,
-        name,
-        description
-    )
+// ===[ USER ]===
+class UserCommandOption(name: String, description: String) : CommandOption<User>(name, description)
+class NullableUserCommandOption(name: String, description: String) : CommandOption<User?>(name, description), NullableCommandOption
 
-    fun optionalUser(name: String, description: String) = argument<User?>(
-        CommandOptionType.NullableUser,
-        name,
-        description
-    )
+// ===[ CHANNEL ]===
+class ChannelCommandOption(name: String, description: String) : CommandOption<Channel>(name, description)
+class NullableChannelCommandOption(name: String, description: String) : CommandOption<Channel?>(name, description), NullableCommandOption
 
-    fun channel(name: String, description: String) = argument<Channel>(
-        CommandOptionType.Channel,
-        name,
-        description
-    )
-
-    fun optionalChannel(name: String, description: String) = argument<Channel?>(
-        CommandOptionType.NullableChannel,
-        name,
-        description
-    )
-
-    fun role(name: String, description: String) = argument<Role>(
-        CommandOptionType.Role,
-        name,
-        description
-    )
-
-    fun optionalRole(name: String, description: String) = argument<Role?>(
-        CommandOptionType.NullableRole,
-        name,
-        description
-    )
-
-    private fun <T> argument(type: CommandOptionType, name: String, description: String) = CommandOptionBuilder<T>(
-        type,
-        name,
-        description,
-        mutableListOf(),
-        null
-    )
-
-    fun <T> CommandOptionBuilder<T>.register(): CommandOption<T> {
-        if (arguments.any { it.name == this.name })
-            throw IllegalArgumentException("Duplicate argument!")
-
-        val option = CommandOption(
-            this.type,
-            this.name,
-            this.description,
-            this.choices,
-            this.autocompleteExecutorDeclaration
-        )
-
-        arguments.add(option)
-        return option
-    }
-}
+// ===[ ROLE ]===
+class RoleCommandOption(name: String, description: String) : CommandOption<Role>(name, description)
+class NullableRoleCommandOption(name: String, description: String) : CommandOption<Role?>(name, description), NullableCommandOption

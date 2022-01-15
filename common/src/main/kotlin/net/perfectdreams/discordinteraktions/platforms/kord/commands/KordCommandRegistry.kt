@@ -23,8 +23,23 @@ import net.perfectdreams.discordinteraktions.common.commands.MessageCommandDecla
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandGroupDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.UserCommandDeclaration
+import net.perfectdreams.discordinteraktions.common.commands.options.BooleanCommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.ChannelCommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.ChoiceableCommandOption
 import net.perfectdreams.discordinteraktions.common.commands.options.CommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.CommandOptionType
+import net.perfectdreams.discordinteraktions.common.commands.options.IntegerCommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.NullableBooleanCommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.NullableChannelCommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.NullableCommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.NullableIntegerCommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.NullableNumberCommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.NullableRoleCommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.NullableStringCommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.NullableUserCommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.NumberCommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.RoleCommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.StringCommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.UserCommandOption
 
 class KordCommandRegistry(private val applicationId: Snowflake, private val rest: RestClient, private val manager: CommandManager) : CommandRegistry {
     override suspend fun updateAllCommandsInGuild(guildId: Snowflake, deleteUnknownCommands: Boolean) {
@@ -158,52 +173,58 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
     }
 
     private fun convertCommandOptionToKord(cmdOption: CommandOption<*>, builder: BaseInputChatBuilder) {
-        when (cmdOption.type) {
+        when (cmdOption) {
             // TODO: Add all possible types
-            CommandOptionType.Integer, CommandOptionType.NullableInteger ->
-                builder.int(cmdOption.name, cmdOption.description) {
-                    this.required = !cmdOption.type.isNullable
-                    this.autocomplete = cmdOption.autoCompleteExecutorDeclaration != null
+            is IntegerCommandOption, is NullableIntegerCommandOption ->
+                if (cmdOption is ChoiceableCommandOption<*, *>) {
+                    builder.int(cmdOption.name, cmdOption.description) {
+                        this.required = cmdOption !is NullableCommandOption
+                        this.autocomplete = cmdOption.autoCompleteExecutorDeclaration != null
 
-                    for (choice in cmdOption.choices) {
-                        choice(choice.name, choice.value as Long)
+                        for (choice in cmdOption.choices) {
+                            choice(choice.name, choice.value as Long)
+                        }
                     }
-                }
-            CommandOptionType.Number, CommandOptionType.NullableNumber ->
-                builder.number(cmdOption.name, cmdOption.description) {
-                    this.required = !cmdOption.type.isNullable
-                    this.autocomplete = cmdOption.autoCompleteExecutorDeclaration != null
+                } else error("The $cmdOption should be choiceable, but it isn't! Bug?")
+            is NumberCommandOption, is NullableNumberCommandOption ->
+                if (cmdOption is ChoiceableCommandOption<*, *>) {
+                    builder.number(cmdOption.name, cmdOption.description) {
+                        this.required = cmdOption !is NullableCommandOption
+                        this.autocomplete = cmdOption.autoCompleteExecutorDeclaration != null
 
-                    for (choice in cmdOption.choices) {
-                        choice(choice.name, choice.value as Double)
+                        for (choice in cmdOption.choices) {
+                            choice(choice.name, choice.value as Double)
+                        }
                     }
-                }
-            CommandOptionType.String, CommandOptionType.NullableString ->
-                builder.string(cmdOption.name, cmdOption.description) {
-                    this.required = !cmdOption.type.isNullable
-                    this.autocomplete = cmdOption.autoCompleteExecutorDeclaration != null
+                } else error("The $cmdOption should be choiceable, but it isn't! Bug?")
+            is StringCommandOption, is NullableStringCommandOption ->
+                if (cmdOption is ChoiceableCommandOption<*, *>) {
+                    builder.string(cmdOption.name, cmdOption.description) {
+                        this.required = cmdOption !is NullableCommandOption
+                        this.autocomplete = cmdOption.autoCompleteExecutorDeclaration != null
 
-                    for (choice in cmdOption.choices) {
-                        choice(choice.name, choice.value as String)
+                        for (choice in cmdOption.choices) {
+                            choice(choice.name, choice.value as String)
+                        }
                     }
-                }
-            CommandOptionType.Bool, CommandOptionType.NullableBool ->
+                } else error("The $cmdOption should be choiceable, but it isn't! Bug?")
+            is BooleanCommandOption, is NullableBooleanCommandOption ->
                 builder.boolean(cmdOption.name, cmdOption.description) {
-                    this.required = !cmdOption.type.isNullable
+                    this.required = cmdOption !is NullableCommandOption
                 }
-            CommandOptionType.User, CommandOptionType.NullableUser ->
+            is UserCommandOption, is NullableUserCommandOption ->
                 builder.user(cmdOption.name, cmdOption.description) {
-                    this.required = !cmdOption.type.isNullable
+                    this.required = cmdOption !is NullableCommandOption
                 }
-            CommandOptionType.Channel, CommandOptionType.NullableChannel ->
+            is ChannelCommandOption, is NullableChannelCommandOption ->
                 builder.channel(cmdOption.name, cmdOption.description) {
-                    this.required = !cmdOption.type.isNullable
+                    this.required = cmdOption !is NullableCommandOption
                 }
-            CommandOptionType.Role, CommandOptionType.NullableRole ->
+            is RoleCommandOption, is NullableRoleCommandOption ->
                 builder.role(cmdOption.name, cmdOption.description) {
-                    this.required = !cmdOption.type.isNullable
+                    this.required = cmdOption !is NullableCommandOption
                 }
-            else -> error("Unsupported type ${cmdOption.type}")
+            else -> error("Unsupported type ${cmdOption::class}")
         }
     }
 }

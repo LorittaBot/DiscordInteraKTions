@@ -13,9 +13,15 @@ import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteExe
 import net.perfectdreams.discordinteraktions.common.autocomplete.FocusedCommandOption
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclaration
+import net.perfectdreams.discordinteraktions.common.commands.options.ChoiceableCommandOption
 import net.perfectdreams.discordinteraktions.common.context.manager.RequestManager
 import net.perfectdreams.discordinteraktions.common.utils.InteraKTionsExceptions
-import net.perfectdreams.discordinteraktions.common.commands.options.CommandOptionType
+import net.perfectdreams.discordinteraktions.common.commands.options.IntegerCommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.NullableIntegerCommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.NullableNumberCommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.NullableStringCommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.NumberCommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.StringCommandOption
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.CommandDeclarationUtils
 
 /**
@@ -50,6 +56,8 @@ class KordAutocompleteChecker(val commandManager: CommandManager) {
             it.name == focusedDiscordOption.name
         } ?: error("I couldn't find a matching option for ${focusedDiscordOption.name}! Did you update the application command body externally?")
 
+        require(option is ChoiceableCommandOption<*, *>) { "Command option is not choiceable, so it can't be autocompleted! Bug?" }
+
         val autocompleteDeclaration = option.autoCompleteExecutorDeclaration ?: error("Received autocomplete request for ${focusedDiscordOption.name}, but there isn't any autocomplete executor declaration set on the option! Did you update the application command body externally?")
         val autocompleteExecutor = commandManager.autocompleteExecutors
             .firstOrNull { it.signature() == autocompleteDeclaration.parent } ?: InteraKTionsExceptions.missingExecutor("autocomplete")
@@ -60,8 +68,8 @@ class KordAutocompleteChecker(val commandManager: CommandManager) {
                 focusedDiscordOption.value
             )
 
-            when (option.type) {
-                CommandOptionType.String, CommandOptionType.NullableString -> {
+            when (option) {
+                is StringCommandOption, is NullableStringCommandOption -> {
                     autocompleteExecutor as AutocompleteExecutor<String>
                     val autocompleteResult = autocompleteExecutor.onAutocomplete(focusedCommandOption)
                     bridge.manager.sendStringAutocomplete(
@@ -74,7 +82,7 @@ class KordAutocompleteChecker(val commandManager: CommandManager) {
                     )
                 }
 
-                CommandOptionType.Integer, CommandOptionType.NullableInteger -> {
+                is IntegerCommandOption, is NullableIntegerCommandOption -> {
                     autocompleteExecutor as AutocompleteExecutor<Long>
                     val autocompleteResult = autocompleteExecutor.onAutocomplete(focusedCommandOption)
                     bridge.manager.sendIntegerAutocomplete(
@@ -87,7 +95,7 @@ class KordAutocompleteChecker(val commandManager: CommandManager) {
                     )
                 }
 
-                CommandOptionType.Number, CommandOptionType.NullableNumber -> {
+                is NumberCommandOption, is NullableNumberCommandOption -> {
                     autocompleteExecutor as AutocompleteExecutor<Double>
                     val autocompleteResult = autocompleteExecutor.onAutocomplete(focusedCommandOption)
                     bridge.manager.sendNumberAutocomplete(
@@ -100,7 +108,7 @@ class KordAutocompleteChecker(val commandManager: CommandManager) {
                     )
                 }
 
-                else -> error("Unsupported Autocomplete type ${option.type}")
+                else -> error("Unsupported Autocomplete type ${option::class}")
             }
         }
     }
