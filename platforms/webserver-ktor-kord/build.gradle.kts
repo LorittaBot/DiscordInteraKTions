@@ -1,5 +1,5 @@
 plugins {
-    `interaktions-sampled-module`
+    kotlin("jvm")
     `maven-publish`
 }
 
@@ -11,7 +11,6 @@ dependencies {
     api(project(":common"))
     implementation("dev.kord:kord-rest:${Versions.KORD}")
     implementation("io.ktor:ktor-server-netty:${Versions.KTOR}")
-    samplesImplementation("ch.qos.logback:logback-core:1.3.0-alpha12")
 }
 
 tasks.test {

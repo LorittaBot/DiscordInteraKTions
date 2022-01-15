@@ -1,6 +1,5 @@
 package net.perfectdreams.discordinteraktions.platforms.kord
 
-import dev.kord.common.annotation.KordPreview
 import dev.kord.common.entity.InteractionType
 import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.Gateway
@@ -16,7 +15,6 @@ import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordAutocomple
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordCommandChecker
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordComponentChecker
 
-@KordPreview
 fun Gateway.installDiscordInteraKTions(
     applicationId: Snowflake,
     rest: RestClient,
