@@ -1,9 +1,5 @@
 package net.perfectdreams.discordinteraktions.common.commands.options
 
-import net.perfectdreams.discordinteraktions.api.entities.Channel
-import net.perfectdreams.discordinteraktions.api.entities.Role
-import net.perfectdreams.discordinteraktions.api.entities.User
-
 open class ApplicationCommandOptions {
     companion object {
         val NO_OPTIONS = object: ApplicationCommandOptions() {}

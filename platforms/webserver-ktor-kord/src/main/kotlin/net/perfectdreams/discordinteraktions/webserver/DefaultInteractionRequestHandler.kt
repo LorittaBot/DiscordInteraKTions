@@ -13,8 +13,8 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
-import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
-import net.perfectdreams.discordinteraktions.common.context.RequestBridge
+import net.perfectdreams.discordinteraktions.common.requests.InteractionRequestState
+import net.perfectdreams.discordinteraktions.common.requests.RequestBridge
 import net.perfectdreams.discordinteraktions.common.utils.Observable
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordAutocompleteChecker
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordCommandChecker

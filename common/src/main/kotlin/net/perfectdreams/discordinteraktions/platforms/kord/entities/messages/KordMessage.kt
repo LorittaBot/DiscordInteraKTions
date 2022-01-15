@@ -3,8 +3,8 @@ package net.perfectdreams.discordinteraktions.platforms.kord.entities.messages
 import dev.kord.common.entity.DiscordMessage
 import dev.kord.common.entity.Snowflake
 import kotlinx.datetime.Instant
-import net.perfectdreams.discordinteraktions.api.entities.Member
-import net.perfectdreams.discordinteraktions.api.entities.User
+import net.perfectdreams.discordinteraktions.common.entities.Member
+import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.discordinteraktions.common.entities.messages.Message
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordMember
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser

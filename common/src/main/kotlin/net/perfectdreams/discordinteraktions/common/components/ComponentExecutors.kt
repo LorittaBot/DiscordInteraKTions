@@ -1,7 +1,6 @@
 package net.perfectdreams.discordinteraktions.common.components
 
-import net.perfectdreams.discordinteraktions.api.entities.User
-import net.perfectdreams.discordinteraktions.common.context.components.ComponentContext
+import net.perfectdreams.discordinteraktions.common.entities.User
 
 sealed interface ComponentExecutor {
     /**

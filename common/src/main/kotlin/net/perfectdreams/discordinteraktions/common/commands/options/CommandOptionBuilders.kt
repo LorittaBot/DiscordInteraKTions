@@ -1,8 +1,8 @@
 package net.perfectdreams.discordinteraktions.common.commands.options
 
-import net.perfectdreams.discordinteraktions.api.entities.Channel
-import net.perfectdreams.discordinteraktions.api.entities.Role
-import net.perfectdreams.discordinteraktions.api.entities.User
+import net.perfectdreams.discordinteraktions.common.entities.Channel
+import net.perfectdreams.discordinteraktions.common.entities.Role
+import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteExecutorDeclaration
 
 sealed class CommandOptionBuilder<T, ChoiceableType>(

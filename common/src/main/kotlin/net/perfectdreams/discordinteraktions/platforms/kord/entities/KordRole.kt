@@ -5,7 +5,7 @@ import dev.kord.common.entity.DiscordRoleTags
 import dev.kord.common.entity.Permissions
 import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.optional.Optional
-import net.perfectdreams.discordinteraktions.api.entities.Role
+import net.perfectdreams.discordinteraktions.common.entities.Role
 
 class KordRole(val handle: DiscordRole) : Role {
     override val name: String = handle.name

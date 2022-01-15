@@ -9,9 +9,9 @@ import net.perfectdreams.discordinteraktions.common.components.ButtonClickExecut
 import net.perfectdreams.discordinteraktions.common.components.ButtonClickWithDataExecutor
 import net.perfectdreams.discordinteraktions.common.components.SelectMenuExecutor
 import net.perfectdreams.discordinteraktions.common.components.SelectMenuWithDataExecutor
-import net.perfectdreams.discordinteraktions.common.context.components.ComponentContext
-import net.perfectdreams.discordinteraktions.common.context.components.GuildComponentContext
-import net.perfectdreams.discordinteraktions.common.context.manager.RequestManager
+import net.perfectdreams.discordinteraktions.common.components.ComponentContext
+import net.perfectdreams.discordinteraktions.common.components.GuildComponentContext
+import net.perfectdreams.discordinteraktions.common.requests.managers.RequestManager
 import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 import net.perfectdreams.discordinteraktions.common.utils.InteraKTionsExceptions
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordInteractionMember

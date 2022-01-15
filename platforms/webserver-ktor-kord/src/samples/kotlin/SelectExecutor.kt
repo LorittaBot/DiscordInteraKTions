@@ -1,7 +1,7 @@
-import net.perfectdreams.discordinteraktions.api.entities.User
+import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.discordinteraktions.common.components.SelectMenuExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.components.SelectMenuWithDataExecutor
-import net.perfectdreams.discordinteraktions.common.context.components.ComponentContext
+import net.perfectdreams.discordinteraktions.common.components.ComponentContext
 
 class SelectExecutor : SelectMenuWithDataExecutor {
     companion object : SelectMenuExecutorDeclaration(SelectExecutor::class, "test_select")

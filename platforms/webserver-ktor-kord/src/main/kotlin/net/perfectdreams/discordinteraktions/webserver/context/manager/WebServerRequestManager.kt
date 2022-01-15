@@ -27,11 +27,11 @@ import kotlinx.serialization.json.putJsonObject
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.modify.InteractionOrFollowupMessageModifyBuilder
-import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
-import net.perfectdreams.discordinteraktions.common.context.RequestBridge
-import net.perfectdreams.discordinteraktions.common.context.manager.RequestManager
+import net.perfectdreams.discordinteraktions.common.requests.InteractionRequestState
+import net.perfectdreams.discordinteraktions.common.requests.RequestBridge
+import net.perfectdreams.discordinteraktions.common.requests.managers.RequestManager
 import net.perfectdreams.discordinteraktions.common.entities.messages.EditableMessage
-import net.perfectdreams.discordinteraktions.platforms.kord.context.manager.HttpRequestManager
+import net.perfectdreams.discordinteraktions.common.requests.managers.HttpRequestManager
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordOriginalInteractionEphemeralMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordOriginalInteractionPublicMessage
 

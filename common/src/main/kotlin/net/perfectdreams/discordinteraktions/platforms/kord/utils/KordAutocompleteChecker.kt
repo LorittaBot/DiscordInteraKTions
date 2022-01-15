@@ -14,7 +14,7 @@ import net.perfectdreams.discordinteraktions.common.autocomplete.FocusedCommandO
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.options.ChoiceableCommandOption
-import net.perfectdreams.discordinteraktions.common.context.manager.RequestManager
+import net.perfectdreams.discordinteraktions.common.requests.managers.RequestManager
 import net.perfectdreams.discordinteraktions.common.utils.InteraKTionsExceptions
 import net.perfectdreams.discordinteraktions.common.commands.options.IntegerCommandOption
 import net.perfectdreams.discordinteraktions.common.commands.options.NullableIntegerCommandOption

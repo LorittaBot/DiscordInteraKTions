@@ -1,8 +1,8 @@
 package net.perfectdreams.discordinteraktions.platforms.kord.entities
 
 import dev.kord.common.entity.DiscordInteractionGuildMember
-import net.perfectdreams.discordinteraktions.api.entities.Member
-import net.perfectdreams.discordinteraktions.api.entities.User
+import net.perfectdreams.discordinteraktions.common.entities.Member
+import net.perfectdreams.discordinteraktions.common.entities.User
 
 // This is the same thing as KordMember, however an Interaction guild member does not have a deaf or mute flag
 class KordInteractionMember(

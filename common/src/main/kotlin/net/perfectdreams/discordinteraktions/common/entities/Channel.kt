@@ -1,4 +1,4 @@
-package net.perfectdreams.discordinteraktions.api.entities
+package net.perfectdreams.discordinteraktions.common.entities
 
 import dev.kord.common.entity.ChannelType
 import dev.kord.common.entity.Snowflake

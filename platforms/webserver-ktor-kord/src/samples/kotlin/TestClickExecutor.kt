@@ -1,10 +1,10 @@
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import net.perfectdreams.discordinteraktions.api.entities.User
+import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.discordinteraktions.common.builder.message.allowedMentions
 import net.perfectdreams.discordinteraktions.common.components.ButtonClickExecutor
 import net.perfectdreams.discordinteraktions.common.components.ButtonClickExecutorDeclaration
-import net.perfectdreams.discordinteraktions.common.context.components.ComponentContext
+import net.perfectdreams.discordinteraktions.common.components.ComponentContext
 
 class TestClickExecutor : ButtonClickExecutor {
     companion object : ButtonClickExecutorDeclaration(TestClickExecutor::class, "test_click")

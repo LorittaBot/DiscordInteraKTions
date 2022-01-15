@@ -1,4 +1,4 @@
-package net.perfectdreams.discordinteraktions.common.context
+package net.perfectdreams.discordinteraktions.common.requests
 
 enum class InteractionRequestState {
     /**

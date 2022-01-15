@@ -1,4 +1,4 @@
-package net.perfectdreams.discordinteraktions.platforms.kord.context.manager
+package net.perfectdreams.discordinteraktions.common.requests.managers
 
 import dev.kord.common.annotation.KordPreview
 import dev.kord.common.entity.Choice
@@ -17,10 +17,9 @@ import dev.kord.rest.service.RestClient
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.modify.InteractionOrFollowupMessageModifyBuilder
-import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
-import net.perfectdreams.discordinteraktions.common.context.RequestBridge
-import net.perfectdreams.discordinteraktions.common.context.manager.RequestManager
 import net.perfectdreams.discordinteraktions.common.entities.messages.EditableMessage
+import net.perfectdreams.discordinteraktions.common.requests.InteractionRequestState
+import net.perfectdreams.discordinteraktions.common.requests.RequestBridge
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordOriginalInteractionEphemeralMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordOriginalInteractionPublicMessage
 
@@ -78,7 +77,7 @@ class InitialHttpRequestManager(
                 InteractionResponseType.DeferredChannelMessageWithSource,
                 InteractionApplicationCommandCallbackData(
                     flags = MessageFlags {
-                        + MessageFlag.Ephemeral
+                        +MessageFlag.Ephemeral
                     }.optional()
                 ).optional()
             )

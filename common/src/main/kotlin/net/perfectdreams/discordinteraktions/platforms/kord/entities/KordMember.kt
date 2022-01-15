@@ -1,8 +1,8 @@
 package net.perfectdreams.discordinteraktions.platforms.kord.entities
 
 import dev.kord.common.entity.DiscordGuildMember
-import net.perfectdreams.discordinteraktions.api.entities.Member
-import net.perfectdreams.discordinteraktions.api.entities.User
+import net.perfectdreams.discordinteraktions.common.entities.Member
+import net.perfectdreams.discordinteraktions.common.entities.User
 
 class KordMember(
     val handle: DiscordGuildMember,

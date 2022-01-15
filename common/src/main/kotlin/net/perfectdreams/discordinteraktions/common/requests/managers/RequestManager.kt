@@ -1,10 +1,10 @@
-package net.perfectdreams.discordinteraktions.common.context.manager
+package net.perfectdreams.discordinteraktions.common.requests.managers
 
 import dev.kord.common.entity.Choice
 import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.modify.InteractionOrFollowupMessageModifyBuilder
-import net.perfectdreams.discordinteraktions.common.context.RequestBridge
 import net.perfectdreams.discordinteraktions.common.entities.messages.EditableMessage
+import net.perfectdreams.discordinteraktions.common.requests.RequestBridge
 
 abstract class RequestManager(val bridge: RequestBridge) {
     /**

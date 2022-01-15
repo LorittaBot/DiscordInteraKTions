@@ -12,10 +12,10 @@ import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclara
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor
 import net.perfectdreams.discordinteraktions.common.commands.UserCommandDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.UserCommandExecutor
-import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
-import net.perfectdreams.discordinteraktions.common.context.commands.GuildApplicationCommandContext
-import net.perfectdreams.discordinteraktions.common.context.commands.slash.SlashCommandArguments
-import net.perfectdreams.discordinteraktions.common.context.manager.RequestManager
+import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext
+import net.perfectdreams.discordinteraktions.common.commands.GuildApplicationCommandContext
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
+import net.perfectdreams.discordinteraktions.common.requests.managers.RequestManager
 import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 import net.perfectdreams.discordinteraktions.common.utils.InteraKTionsExceptions
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.CommandDeclarationUtils

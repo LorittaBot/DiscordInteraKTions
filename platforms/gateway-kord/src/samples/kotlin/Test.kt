@@ -11,8 +11,8 @@ import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
-import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
-import net.perfectdreams.discordinteraktions.common.context.commands.slash.SlashCommandArguments
+import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.slashCommand
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
@@ -101,15 +101,9 @@ class AutocompleteIntTestExecutor : IntegerAutocompleteExecutor {
 class TestACCommandExecutor : SlashCommandExecutor() {
     companion object : SlashCommandExecutorDeclaration(TestACCommandExecutor::class) {
         object Options : ApplicationCommandOptions() {
-            val x = integer("int", "an integer idk")
-                .autocomplete(AutocompleteIntTestExecutor)
-                .register()
-
-            val str = string("test", "an integer idk")
-                .autocomplete(AutocompleteTestExecutor)
-                .register()
-
-            val nullableChannel = optionalChannel("channel", "an str idk")
+            val x = string("autocompleted", "autocomplete")
+                .choice("a", "b")
+                .choice("c", "d")
                 .register()
         }
 
@@ -117,10 +111,10 @@ class TestACCommandExecutor : SlashCommandExecutor() {
     }
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-        val value = args[Options.nullableChannel]
+        /* val value = args[Options.nullableChannel]
         context.sendMessage {
             content = "${args[Options.str]} - ${args[Options.x]} - $value"
-        }
+        } */
     }
 }
 

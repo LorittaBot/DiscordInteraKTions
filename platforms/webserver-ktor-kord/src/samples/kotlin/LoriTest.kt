@@ -6,8 +6,8 @@ import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecuto
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.slashCommand
 import net.perfectdreams.discordinteraktions.common.components.selectMenu
-import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
-import net.perfectdreams.discordinteraktions.common.context.commands.slash.SlashCommandArguments
+import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
 import net.perfectdreams.discordinteraktions.webserver.InteractionsServer
 import java.io.File

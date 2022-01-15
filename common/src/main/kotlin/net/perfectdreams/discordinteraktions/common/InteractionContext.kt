@@ -1,8 +1,10 @@
-package net.perfectdreams.discordinteraktions.common.context
+package net.perfectdreams.discordinteraktions.common
 
 import dev.kord.common.entity.Snowflake
-import net.perfectdreams.discordinteraktions.api.entities.User
+import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
+import net.perfectdreams.discordinteraktions.common.requests.InteractionRequestState
+import net.perfectdreams.discordinteraktions.common.requests.RequestBridge
 import net.perfectdreams.discordinteraktions.common.entities.messages.EditableMessage
 import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 

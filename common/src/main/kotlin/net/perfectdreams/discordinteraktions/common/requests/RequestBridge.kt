@@ -1,6 +1,6 @@
-package net.perfectdreams.discordinteraktions.common.context
+package net.perfectdreams.discordinteraktions.common.requests
 
-import net.perfectdreams.discordinteraktions.common.context.manager.RequestManager
+import net.perfectdreams.discordinteraktions.common.requests.managers.RequestManager
 import net.perfectdreams.discordinteraktions.common.utils.Observable
 
 /**
