@@ -1,4 +1,4 @@
-package net.perfectdreams.discordinteraktions.webserver.context.manager
+package net.perfectdreams.discordinteraktions.webserver.requests.managers
 
 import dev.kord.common.entity.Choice
 import dev.kord.common.entity.DiscordAutoComplete
@@ -27,11 +27,11 @@ import kotlinx.serialization.json.putJsonObject
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.modify.InteractionOrFollowupMessageModifyBuilder
+import net.perfectdreams.discordinteraktions.common.entities.messages.EditableMessage
 import net.perfectdreams.discordinteraktions.common.requests.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.requests.RequestBridge
-import net.perfectdreams.discordinteraktions.common.requests.managers.RequestManager
-import net.perfectdreams.discordinteraktions.common.entities.messages.EditableMessage
 import net.perfectdreams.discordinteraktions.common.requests.managers.HttpRequestManager
+import net.perfectdreams.discordinteraktions.common.requests.managers.RequestManager
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordOriginalInteractionEphemeralMessage
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordOriginalInteractionPublicMessage
 
@@ -50,7 +50,6 @@ class WebServerRequestManager(
     val rest: RestClient,
     val applicationId: Snowflake,
     val interactionToken: String,
-    val request: DiscordInteraction,
     val call: ApplicationCall
 ) : RequestManager(bridge) {
     companion object {
@@ -75,8 +74,7 @@ class WebServerRequestManager(
             bridge,
             rest,
             applicationId,
-            interactionToken,
-            request
+            interactionToken
         )
     }
 
@@ -98,8 +96,7 @@ class WebServerRequestManager(
             bridge,
             rest,
             applicationId,
-            interactionToken,
-            request
+            interactionToken
         )
     }
 
@@ -129,8 +126,7 @@ class WebServerRequestManager(
             bridge,
             rest,
             applicationId,
-            interactionToken,
-            request
+            interactionToken
         )
 
         return KordOriginalInteractionPublicMessage(
@@ -153,7 +149,7 @@ class WebServerRequestManager(
                             allowedMentions = Optional(message.allowedMentions).coerceToMissing().map { it.build() },
                             components = message.components?.map { it.build() }.optional().coerceToMissing(),
                             flags = MessageFlags {
-                                + MessageFlag.Ephemeral
+                                +MessageFlag.Ephemeral
                             }.optional()
                         )
                     )
@@ -168,8 +164,7 @@ class WebServerRequestManager(
             bridge,
             rest,
             applicationId,
-            interactionToken,
-            request
+            interactionToken
         )
 
         return KordOriginalInteractionEphemeralMessage(
@@ -193,8 +188,7 @@ class WebServerRequestManager(
             bridge,
             rest,
             applicationId,
-            interactionToken,
-            request
+            interactionToken
         )
     }
 
@@ -223,8 +217,7 @@ class WebServerRequestManager(
             bridge,
             rest,
             applicationId,
-            interactionToken,
-            request
+            interactionToken
         )
 
         return KordOriginalInteractionPublicMessage(

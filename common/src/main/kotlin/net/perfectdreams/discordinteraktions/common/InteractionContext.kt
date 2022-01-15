@@ -2,15 +2,18 @@ package net.perfectdreams.discordinteraktions.common
 
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Snowflake
+import dev.kord.rest.service.RestClient
+import io.ktor.client.request.*
 import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.requests.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.requests.RequestBridge
 import net.perfectdreams.discordinteraktions.common.entities.messages.EditableMessage
 import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
+import net.perfectdreams.discordinteraktions.common.requests.managers.HttpRequestManager
 
-abstract class InteractionContext(
-    var bridge: RequestBridge,
+open class InteractionContext(
+    bridge: RequestBridge,
     val sender: User,
     val channelId: Snowflake,
     val data: InteractionData,
@@ -19,66 +22,4 @@ abstract class InteractionContext(
      * The interaction data object from Discord, useful if you need to use data that is not exposed directly via Discord InteraKTions
      */
     val discordInteraction: DiscordInteraction
-) {
-    val isDeferred
-        get() = bridge.state.value != InteractionRequestState.NOT_REPLIED_YET
-    var wasInitiallyDeferredEphemerally = false
-
-    /**
-     * Defers the application command request message with a public message
-     */
-    suspend fun deferChannelMessage() {
-        if (isDeferred)
-            error("Trying to defer something that was already deferred!")
-
-        bridge.manager.deferChannelMessage()
-        wasInitiallyDeferredEphemerally = false
-    }
-
-    /**
-     * Defers the application command request message with a ephemeral message
-     */
-    suspend fun deferChannelMessageEphemerally() {
-        if (isDeferred)
-            error("Trying to defer something that was already deferred!")
-
-        bridge.manager.deferChannelMessageEphemerally()
-        wasInitiallyDeferredEphemerally = true
-    }
-
-    suspend fun sendMessage(block: InteractionOrFollowupMessageCreateBuilder.() -> (Unit))
-            = sendPublicMessage(InteractionOrFollowupMessageCreateBuilder(false).apply(block))
-
-    suspend fun sendEphemeralMessage(block: InteractionOrFollowupMessageCreateBuilder.() -> (Unit))
-            = sendEphemeralMessage(InteractionOrFollowupMessageCreateBuilder(true).apply(block))
-
-    private suspend fun sendPublicMessage(message: InteractionOrFollowupMessageCreateBuilder): EditableMessage {
-        // Check if state matches what we expect
-        if (bridge.state.value == InteractionRequestState.DEFERRED_CHANNEL_MESSAGE)
-            if (wasInitiallyDeferredEphemerally)
-                error("Trying to send a public message but the message was originally deferred ephemerally! Change the \"deferMessage(...)\" call to be public")
-
-        if (message.files?.isNotEmpty() == true && !isDeferred) {
-            // If the message has files and our current bridge state is "NOT_REPLIED_YET", then it means that we need to defer before sending the file!
-            // (Because currently you can only send files by editing the original interaction message or with a follow up message
-            deferChannelMessage()
-        }
-
-        return bridge.manager.sendPublicMessage(message)
-    }
-
-    private suspend fun sendEphemeralMessage(message: InteractionOrFollowupMessageCreateBuilder): EditableMessage {
-        // Check if state matches what we expect
-        if (bridge.state.value == InteractionRequestState.DEFERRED_CHANNEL_MESSAGE)
-            if (!wasInitiallyDeferredEphemerally)
-                error("Trying to send a ephemeral message but the message was originally deferred as public! Change the \"deferMessage(...)\" call to be ephemeral")
-
-        if (message.files?.isNotEmpty() == true && !isDeferred) {
-            // If the message has files and our current bridge state is "NOT_REPLIED_YET", then it means that we need to defer before sending the file!
-            // (Because currently you can only send files by editing the original interaction message or with a follow up message
-            deferChannelMessage()
-        }
-
-        return bridge.manager.sendEphemeralMessage(message)
-    }
-}
+) : BarebonesInteractionContext(bridge)

@@ -34,8 +34,8 @@ fun Gateway.installDiscordInteraKTions(
             bridge,
             rest,
             applicationId,
-            request.token,
-            request
+            request.id,
+            request.token
         )
 
         bridge.manager = requestManager

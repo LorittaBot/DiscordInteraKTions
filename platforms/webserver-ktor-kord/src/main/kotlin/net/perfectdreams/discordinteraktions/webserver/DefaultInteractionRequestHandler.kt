@@ -19,7 +19,7 @@ import net.perfectdreams.discordinteraktions.common.utils.Observable
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordAutocompleteChecker
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordCommandChecker
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordComponentChecker
-import net.perfectdreams.discordinteraktions.webserver.context.manager.WebServerRequestManager
+import net.perfectdreams.discordinteraktions.webserver.requests.managers.WebServerRequestManager
 
 /**
  * This is the default implementation of [InteractionRequestHandler],
@@ -80,7 +80,6 @@ class DefaultInteractionRequestHandler(
             rest,
             applicationId,
             request.token,
-            request,
             call
         )
 
@@ -114,7 +113,6 @@ class DefaultInteractionRequestHandler(
             rest,
             applicationId,
             request.token,
-            request,
             call
         )
 
@@ -148,7 +146,6 @@ class DefaultInteractionRequestHandler(
             rest,
             applicationId,
             request.token,
-            request,
             call
         )
 

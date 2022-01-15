@@ -32,13 +32,12 @@ import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.Ko
  * @param interactionToken The request's token
  * @param request The Discord Interaction request
  */
-@OptIn(KordPreview::class)
 class InitialHttpRequestManager(
     bridge: RequestBridge,
     val rest: RestClient,
     val applicationId: Snowflake,
-    val interactionToken: String,
-    val request: DiscordInteraction
+    val interactionId: Snowflake,
+    val interactionToken: String
 ) : RequestManager(bridge) {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -50,7 +49,7 @@ class InitialHttpRequestManager(
 
     override suspend fun deferChannelMessage() {
         rest.interaction.createInteractionResponse(
-            request.id,
+            interactionId,
             interactionToken,
             InteractionResponseCreateRequest(
                 InteractionResponseType.DeferredChannelMessageWithSource,
@@ -64,14 +63,13 @@ class InitialHttpRequestManager(
             bridge,
             rest,
             applicationId,
-            interactionToken,
-            request
+            interactionToken
         )
     }
 
     override suspend fun deferChannelMessageEphemerally() {
         rest.interaction.createInteractionResponse(
-            request.id,
+            interactionId,
             interactionToken,
             InteractionResponseCreateRequest(
                 InteractionResponseType.DeferredChannelMessageWithSource,
@@ -89,16 +87,15 @@ class InitialHttpRequestManager(
             bridge,
             rest,
             applicationId,
-            interactionToken,
-            request
+            interactionToken
         )
     }
 
     override suspend fun sendPublicMessage(message: InteractionOrFollowupMessageCreateBuilder): EditableMessage {
         // *Technically* we can respond to the initial interaction via HTTP too
         rest.interaction.createInteractionResponse(
-            request.id,
-            request.token,
+            interactionId,
+            interactionToken,
             message.toInteractionMessageResponseCreateBuilder().toRequest()
         )
 
@@ -108,8 +105,7 @@ class InitialHttpRequestManager(
             bridge,
             rest,
             applicationId,
-            interactionToken,
-            request
+            interactionToken
         )
 
         return KordOriginalInteractionPublicMessage(
@@ -122,8 +118,8 @@ class InitialHttpRequestManager(
     override suspend fun sendEphemeralMessage(message: InteractionOrFollowupMessageCreateBuilder): EditableMessage {
         // *Technically* we can respond to the initial interaction via HTTP too
         rest.interaction.createInteractionResponse(
-            request.id,
-            request.token,
+            interactionId,
+            interactionToken,
             message.toInteractionMessageResponseCreateBuilder().toRequest()
         )
 
@@ -133,8 +129,7 @@ class InitialHttpRequestManager(
             bridge,
             rest,
             applicationId,
-            interactionToken,
-            request
+            interactionToken
         )
 
         return KordOriginalInteractionEphemeralMessage(
@@ -146,7 +141,7 @@ class InitialHttpRequestManager(
 
     override suspend fun deferUpdateMessage() {
         rest.interaction.createInteractionResponse(
-            request.id,
+            interactionId,
             interactionToken,
             InteractionResponseCreateRequest(
                 InteractionResponseType.DeferredUpdateMessage,
@@ -160,14 +155,13 @@ class InitialHttpRequestManager(
             bridge,
             rest,
             applicationId,
-            interactionToken,
-            request
+            interactionToken
         )
     }
 
     override suspend fun updateMessage(message: InteractionOrFollowupMessageModifyBuilder): EditableMessage {
         rest.interaction.createInteractionResponse(
-            request.id,
+            interactionId,
             interactionToken,
             InteractionResponseCreateRequest(
                 type = InteractionResponseType.UpdateMessage,
@@ -189,8 +183,7 @@ class InitialHttpRequestManager(
             bridge,
             rest,
             applicationId,
-            interactionToken,
-            request
+            interactionToken
         )
 
         return KordOriginalInteractionPublicMessage(
@@ -202,7 +195,7 @@ class InitialHttpRequestManager(
 
     override suspend fun sendStringAutocomplete(list: List<Choice<String>>) {
         rest.interaction.createAutoCompleteInteractionResponse(
-            request.id,
+            interactionId,
             interactionToken,
             DiscordAutoComplete(list)
         )
@@ -210,7 +203,7 @@ class InitialHttpRequestManager(
 
     override suspend fun sendIntegerAutocomplete(list: List<Choice<Long>>) {
         rest.interaction.createAutoCompleteInteractionResponse(
-            request.id,
+            interactionId,
             interactionToken,
             DiscordAutoComplete(list)
         )
@@ -218,7 +211,7 @@ class InitialHttpRequestManager(
 
     override suspend fun sendNumberAutocomplete(list: List<Choice<Double>>) {
         rest.interaction.createAutoCompleteInteractionResponse(
-            request.id,
+            interactionId,
             interactionToken,
             DiscordAutoComplete(list)
         )

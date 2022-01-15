@@ -22,15 +22,12 @@ import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.Ko
  * @param rest The application rest client
  * @param applicationId The bot's application id
  * @param interactionToken The request's token
- * @param request The interaction (wrapped by the [InteractionRequestHandler]
  */
-@OptIn(KordPreview::class)
 class HttpRequestManager(
     bridge: RequestBridge,
     val rest: RestClient,
     val applicationId: Snowflake,
-    val interactionToken: String,
-    val request: DiscordInteraction
+    val interactionToken: String
 ) : RequestManager(bridge) {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -48,7 +45,7 @@ class HttpRequestManager(
         // *Technically* we can respond to the initial interaction via HTTP too
         val kordMessage = rest.interaction.createFollowupMessage(
             applicationId,
-            request.token,
+            interactionToken,
             message.toFollowupMessageCreateBuilder().toRequest()
         )
 
@@ -66,7 +63,7 @@ class HttpRequestManager(
         // *Technically* we can respond to the initial interaction via HTTP too
         val kordMessage = rest.interaction.createFollowupMessage(
             applicationId,
-            request.token,
+            interactionToken,
             message.toFollowupMessageCreateBuilder().toRequest()
         )
 
@@ -92,14 +89,6 @@ class HttpRequestManager(
         val newMessage = interactionMessage.editMessage(message)
 
         bridge.state.value = InteractionRequestState.ALREADY_REPLIED
-
-        bridge.manager = HttpRequestManager(
-            bridge,
-            rest,
-            applicationId,
-            interactionToken,
-            request
-        )
 
         return newMessage
     }
