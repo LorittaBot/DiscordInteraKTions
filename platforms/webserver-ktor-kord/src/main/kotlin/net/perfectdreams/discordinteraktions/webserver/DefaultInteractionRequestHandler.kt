@@ -1,7 +1,6 @@
 package net.perfectdreams.discordinteraktions.webserver
 
 import dev.kord.common.annotation.KordPreview
-import dev.kord.common.entity.ComponentType
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.InteractionResponseType
 import dev.kord.common.entity.Snowflake
@@ -10,29 +9,16 @@ import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
-import net.perfectdreams.discordinteraktions.common.components.buttons.ButtonClickWithDataExecutor
-import net.perfectdreams.discordinteraktions.common.components.buttons.ButtonClickWithNoDataExecutor
-import net.perfectdreams.discordinteraktions.common.components.selects.SelectMenuWithDataExecutor
-import net.perfectdreams.discordinteraktions.common.components.selects.SelectMenuWithNoDataExecutor
 import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.context.RequestBridge
-import net.perfectdreams.discordinteraktions.common.context.components.ComponentContext
-import net.perfectdreams.discordinteraktions.common.context.components.GuildComponentContext
-import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 import net.perfectdreams.discordinteraktions.common.utils.Observable
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordInteractionMember
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordPublicMessage
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordAutocompleteChecker
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordCommandChecker
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordComponentChecker
-import net.perfectdreams.discordinteraktions.platforms.kord.utils.toDiscordInteraKTionsResolvedObjects
 import net.perfectdreams.discordinteraktions.webserver.context.manager.WebServerRequestManager
 
 /**

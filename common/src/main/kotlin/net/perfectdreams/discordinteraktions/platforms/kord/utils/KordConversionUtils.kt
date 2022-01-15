@@ -5,7 +5,6 @@ import dev.kord.common.entity.optional.Optional
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordMember
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordMessage
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordPublicMessage
 
 /**
  * Converts Kord's Resolved Objects to Discord InteraKTions's Resolved Objects

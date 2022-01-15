@@ -4,7 +4,6 @@ import dev.kord.common.annotation.KordPreview
 import dev.kord.common.entity.Choice
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Snowflake
-import dev.kord.rest.builder.message.create.FollowupMessageCreateBuilder
 import dev.kord.rest.service.RestClient
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder

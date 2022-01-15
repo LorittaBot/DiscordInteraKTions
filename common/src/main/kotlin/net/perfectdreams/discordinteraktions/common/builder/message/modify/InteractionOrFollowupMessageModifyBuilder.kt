@@ -8,7 +8,6 @@ import dev.kord.rest.builder.message.AllowedMentionsBuilder
 import dev.kord.rest.builder.message.EmbedBuilder
 import dev.kord.rest.builder.message.modify.FollowupMessageModifyBuilder
 import dev.kord.rest.builder.message.modify.InteractionResponseModifyBuilder
-import net.perfectdreams.discordinteraktions.common.builder.message.create.MessageCreateBuilder
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.runIfNotMissing
 
 // From Kord, however this is a interaction OR followup modify builder

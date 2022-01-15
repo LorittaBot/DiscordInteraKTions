@@ -8,7 +8,6 @@ import net.perfectdreams.discordinteraktions.common.components.buttons.ButtonCli
 import net.perfectdreams.discordinteraktions.common.components.selects.SelectMenuExecutor
 import net.perfectdreams.discordinteraktions.common.components.selects.SelectMenuExecutorDeclaration
 import net.perfectdreams.discordinteraktions.declarations.commands.InteractionCommandDeclaration
-import net.perfectdreams.discordinteraktions.declarations.commands.SlashCommandDeclaration
 import net.perfectdreams.discordinteraktions.declarations.commands.wrappers.InteractionCommandDeclarationWrapper
 
 open class CommandManager {

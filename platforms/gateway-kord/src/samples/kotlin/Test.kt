@@ -2,8 +2,6 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.DefaultGateway
 import dev.kord.gateway.start
 import dev.kord.rest.service.RestClient
-import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteExecutor
-import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.autocomplete.FocusedCommandOption
 import net.perfectdreams.discordinteraktions.common.autocomplete.IntegerAutocompleteExecutor
 import net.perfectdreams.discordinteraktions.common.autocomplete.IntegerAutocompleteExecutorDeclaration

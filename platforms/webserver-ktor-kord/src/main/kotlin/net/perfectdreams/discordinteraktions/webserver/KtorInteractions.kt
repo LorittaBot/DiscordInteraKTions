@@ -1,7 +1,6 @@
 package net.perfectdreams.discordinteraktions.webserver
 
 import dev.kord.common.entity.DiscordInteraction
-import dev.kord.common.entity.DiscordMessageInteraction
 import dev.kord.common.entity.InteractionType
 import io.ktor.application.*
 import io.ktor.http.*

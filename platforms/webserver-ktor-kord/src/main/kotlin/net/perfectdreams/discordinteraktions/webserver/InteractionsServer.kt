@@ -3,12 +3,11 @@ package net.perfectdreams.discordinteraktions.webserver
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.service.RestClient
 import io.ktor.application.*
-import io.ktor.client.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 
