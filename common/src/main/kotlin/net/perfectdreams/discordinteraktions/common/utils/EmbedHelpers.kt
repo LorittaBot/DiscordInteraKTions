@@ -4,7 +4,7 @@ package net.perfectdreams.discordinteraktions.common.utils
 fun dev.kord.rest.builder.message.EmbedBuilder.author(name: String, url: String? = null, iconUrl: String? = null) {
     author {
         this.name = name
-        this.url = this.url
+        this.url = url
         this.icon = iconUrl
     }
 }

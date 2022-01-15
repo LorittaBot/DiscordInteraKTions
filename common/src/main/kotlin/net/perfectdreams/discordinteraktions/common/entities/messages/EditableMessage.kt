@@ -1,9 +1,9 @@
 package net.perfectdreams.discordinteraktions.common.entities.messages
 
-import dev.kord.common.entity.optional.Optional
 import dev.kord.rest.builder.message.modify.FollowupMessageModifyBuilder
 import dev.kord.rest.builder.message.modify.InteractionResponseModifyBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.modify.InteractionOrFollowupMessageModifyBuilder
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.runIfNotMissing
 
 interface EditableMessage {
     suspend fun editMessage(block: InteractionOrFollowupMessageModifyBuilder.() -> (Unit)): EditableMessage
@@ -25,10 +25,5 @@ interface EditableMessage {
         runIfNotMissing(message.state.embeds) { this.embeds = it }
         runIfNotMissing(message.state.attachments) { this.attachments = it }
         runIfNotMissing(message.state.files) { this.files = it }
-    }
-
-    fun <T> runIfNotMissing(optional: Optional<T>, callback: (T?) -> (Unit)) {
-        if (optional !is Optional.Missing)
-            callback.invoke(optional.value)
     }
 }
