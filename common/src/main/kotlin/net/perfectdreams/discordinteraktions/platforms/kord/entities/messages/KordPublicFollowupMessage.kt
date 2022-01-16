@@ -15,8 +15,6 @@ class KordPublicFollowupMessage(
     override val id = handle.id
     override val content by handle::content
 
-    override suspend fun editMessage(block: InteractionOrFollowupMessageModifyBuilder.() -> Unit): EditableMessage = editMessage(InteractionOrFollowupMessageModifyBuilder().apply(block))
-
     override suspend fun editMessage(message: InteractionOrFollowupMessageModifyBuilder): EditableMessage {
         val newMessage = rest.interaction.modifyFollowupMessage(
             applicationId,

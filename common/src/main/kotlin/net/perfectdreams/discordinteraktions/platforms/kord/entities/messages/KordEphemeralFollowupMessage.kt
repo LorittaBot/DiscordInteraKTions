@@ -12,8 +12,6 @@ open class KordEphemeralFollowupMessage(
     private val interactionToken: String,
     data: DiscordMessage
 ) : KordEphemeralMessage(data), EditableMessage {
-    override suspend fun editMessage(block: InteractionOrFollowupMessageModifyBuilder.() -> Unit): EditableMessage = editMessage(InteractionOrFollowupMessageModifyBuilder().apply(block))
-
     override suspend fun editMessage(message: InteractionOrFollowupMessageModifyBuilder): EditableMessage {
         val newMessage = rest.interaction.modifyFollowupMessage(
             applicationId,

@@ -11,8 +11,6 @@ class KordOriginalInteractionEphemeralMessage(
     private val applicationId: Snowflake,
     private val interactionToken: String
 ) : EphemeralMessage, EditableMessage, OriginalInteractionMessage() {
-    override suspend fun editMessage(block: InteractionOrFollowupMessageModifyBuilder.() -> Unit): EditableMessage = editMessage(InteractionOrFollowupMessageModifyBuilder().apply(block))
-
     override suspend fun editMessage(message: InteractionOrFollowupMessageModifyBuilder): EditableMessage {
         val newMessage = rest.interaction.modifyInteractionResponse(
             applicationId,
