@@ -9,6 +9,7 @@ import net.perfectdreams.discordinteraktions.common.requests.RequestBridge
 import net.perfectdreams.discordinteraktions.common.entities.messages.EditableMessage
 import net.perfectdreams.discordinteraktions.common.entities.messages.Message
 import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
+import net.perfectdreams.discordinteraktions.common.utils.suspendableApply
 
 open class ComponentContext(
     bridge: RequestBridge,
@@ -24,8 +25,8 @@ open class ComponentContext(
         }
     }
 
-    suspend fun updateMessage(block: InteractionOrFollowupMessageModifyBuilder.() -> (Unit))
-            = updateMessage(InteractionOrFollowupMessageModifyBuilder().apply(block))
+    suspend fun updateMessage(block: suspend InteractionOrFollowupMessageModifyBuilder.() -> (Unit))
+            = updateMessage(InteractionOrFollowupMessageModifyBuilder().suspendableApply(block))
 
     private suspend fun updateMessage(message: InteractionOrFollowupMessageModifyBuilder): EditableMessage {
         // Check if state matches what we expect

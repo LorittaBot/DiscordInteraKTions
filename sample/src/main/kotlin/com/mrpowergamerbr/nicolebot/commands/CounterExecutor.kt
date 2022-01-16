@@ -12,8 +12,7 @@ import net.perfectdreams.discordinteraktions.common.components.interactiveButton
 
 class CounterExecutor(private val counter: Counter) : SlashCommandExecutor() {
     companion object : SlashCommandExecutorDeclaration(CounterExecutor::class) {
-
-        fun createCounterMessage(currentCount: Int): MessageBuilder.() -> (Unit) = {
+        suspend fun createCounterMessage(currentCount: Int): suspend MessageBuilder.() -> (Unit) = {
             content = """Current count: $currentCount
                 |
                 |Click the button to increase the counter!

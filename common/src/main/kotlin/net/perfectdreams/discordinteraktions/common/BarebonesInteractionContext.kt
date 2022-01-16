@@ -8,6 +8,7 @@ import net.perfectdreams.discordinteraktions.common.requests.InteractionRequestS
 import net.perfectdreams.discordinteraktions.common.requests.RequestBridge
 import net.perfectdreams.discordinteraktions.common.requests.managers.HttpRequestManager
 import net.perfectdreams.discordinteraktions.common.utils.Observable
+import net.perfectdreams.discordinteraktions.common.utils.suspendableApply
 
 /**
  * This is a "barebones" implementation of a [InteractionContext], where only the essential constructor parameters are present.
@@ -43,11 +44,11 @@ open class BarebonesInteractionContext(
         wasInitiallyDeferredEphemerally = true
     }
 
-    suspend fun sendMessage(block: InteractionOrFollowupMessageCreateBuilder.() -> (Unit))
-            = sendPublicMessage(InteractionOrFollowupMessageCreateBuilder(false).apply(block))
+    suspend fun sendMessage(block: suspend InteractionOrFollowupMessageCreateBuilder.() -> (Unit))
+            = sendPublicMessage(InteractionOrFollowupMessageCreateBuilder(false).suspendableApply(block))
 
-    suspend fun sendEphemeralMessage(block: InteractionOrFollowupMessageCreateBuilder.() -> (Unit))
-            = sendEphemeralMessage(InteractionOrFollowupMessageCreateBuilder(true).apply(block))
+    suspend fun sendEphemeralMessage(block: suspend InteractionOrFollowupMessageCreateBuilder.() -> (Unit))
+            = sendEphemeralMessage(InteractionOrFollowupMessageCreateBuilder(true).suspendableApply(block))
 
     private suspend fun sendPublicMessage(message: InteractionOrFollowupMessageCreateBuilder): EditableMessage {
         // Check if state matches what we expect
