@@ -1,7 +1,7 @@
 package net.perfectdreams.discordinteraktions.common.autocomplete
 
 sealed interface AutocompleteExecutor<T> {
-    suspend fun onAutocomplete(focusedOption: FocusedCommandOption): Map<String, T>
+    suspend fun onAutocomplete(context: AutocompleteContext, focusedOption: FocusedCommandOption): Map<String, T>
 
     /**
      * Used by the [net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandExecutorDeclaration] to match declarations to executors.

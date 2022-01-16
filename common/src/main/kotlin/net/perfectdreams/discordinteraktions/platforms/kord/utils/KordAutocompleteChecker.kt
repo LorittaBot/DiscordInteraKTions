@@ -9,9 +9,13 @@ import dev.kord.rest.builder.interaction.StringChoiceBuilder
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
+import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteContext
 import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteExecutor
 import net.perfectdreams.discordinteraktions.common.autocomplete.FocusedCommandOption
+import net.perfectdreams.discordinteraktions.common.autocomplete.GuildAutocompleteContext
+import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
+import net.perfectdreams.discordinteraktions.common.commands.GuildApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.options.ChoiceableCommandOption
 import net.perfectdreams.discordinteraktions.common.requests.managers.RequestManager
@@ -22,7 +26,10 @@ import net.perfectdreams.discordinteraktions.common.commands.options.NullableNum
 import net.perfectdreams.discordinteraktions.common.commands.options.NullableStringCommandOption
 import net.perfectdreams.discordinteraktions.common.commands.options.NumberCommandOption
 import net.perfectdreams.discordinteraktions.common.commands.options.StringCommandOption
+import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.CommandDeclarationUtils
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordInteractionMember
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
 
 /**
  * Checks, matches and executes commands, this is a class because we share code between the `gateway-kord` and `webserver-ktor-kord` modules
@@ -41,6 +48,38 @@ class KordAutocompleteChecker(val commandManager: CommandManager) {
         val commandLabels = CommandDeclarationUtils.findAllSubcommandDeclarationNames(request)
         val relativeOptions = CommandDeclarationUtils.getNestedOptions(request.data.options.value)
             ?: error("Relative Options are null on the request, this shouldn't happen on a autocomplete request! Bug?")
+
+        val kordUser = KordUser(request.member.value?.user?.value ?: request.user.value ?: error("oh no"))
+        val guildId = request.guildId.value
+
+        val interactionData = InteractionData(request.data.resolved.value?.toDiscordInteraKTionsResolvedObjects())
+
+        // If the guild ID is not null, then it means that the interaction happened in a guild!
+        val autocompleteContext = if (guildId != null) {
+            val member = request.member.value!! // Should NEVER be null!
+            val kordMember = KordInteractionMember(
+                member,
+                KordUser(member.user.value!!) // Also should NEVER be null!
+            )
+
+            GuildAutocompleteContext(
+                kordUser,
+                request.channelId,
+                interactionData,
+                request,
+                guildId,
+                kordMember
+            )
+        } else {
+            AutocompleteContext(
+                KordUser(
+                    request.member.value?.user?.value ?: request.user.value ?: error("oh no")
+                ),
+                request.channelId,
+                interactionData,
+                request
+            )
+        }
 
         val command = CommandDeclarationUtils.getApplicationCommandDeclarationFromLabel<SlashCommandDeclaration>(commandManager, commandLabels)
             ?: InteraKTionsExceptions.missingDeclaration("slash command")
@@ -71,7 +110,7 @@ class KordAutocompleteChecker(val commandManager: CommandManager) {
             when (option) {
                 is StringCommandOption, is NullableStringCommandOption -> {
                     autocompleteExecutor as AutocompleteExecutor<String>
-                    val autocompleteResult = autocompleteExecutor.onAutocomplete(focusedCommandOption)
+                    val autocompleteResult = autocompleteExecutor.onAutocomplete(autocompleteContext, focusedCommandOption)
                     bridge.manager.sendStringAutocomplete(
                         (StringChoiceBuilder("<auto-complete>", "")
                             .apply {
@@ -84,7 +123,7 @@ class KordAutocompleteChecker(val commandManager: CommandManager) {
 
                 is IntegerCommandOption, is NullableIntegerCommandOption -> {
                     autocompleteExecutor as AutocompleteExecutor<Long>
-                    val autocompleteResult = autocompleteExecutor.onAutocomplete(focusedCommandOption)
+                    val autocompleteResult = autocompleteExecutor.onAutocomplete(autocompleteContext, focusedCommandOption)
                     bridge.manager.sendIntegerAutocomplete(
                         (IntChoiceBuilder("<auto-complete>", "")
                             .apply {
@@ -97,7 +136,7 @@ class KordAutocompleteChecker(val commandManager: CommandManager) {
 
                 is NumberCommandOption, is NullableNumberCommandOption -> {
                     autocompleteExecutor as AutocompleteExecutor<Double>
-                    val autocompleteResult = autocompleteExecutor.onAutocomplete(focusedCommandOption)
+                    val autocompleteResult = autocompleteExecutor.onAutocomplete(autocompleteContext, focusedCommandOption)
                     bridge.manager.sendNumberAutocomplete(
                         NumberChoiceBuilder("<auto-complete>", "")
                             .apply {
