@@ -24,10 +24,10 @@ open class ComponentContext(
         }
     }
 
-    suspend fun updateMessage(block: InteractionOrFollowupMessageModifyBuilder.() -> (Unit))
+    suspend inline fun updateMessage(block: InteractionOrFollowupMessageModifyBuilder.() -> (Unit))
             = updateMessage(InteractionOrFollowupMessageModifyBuilder().apply(block))
 
-    private suspend fun updateMessage(message: InteractionOrFollowupMessageModifyBuilder): EditableMessage {
+    suspend fun updateMessage(message: InteractionOrFollowupMessageModifyBuilder): EditableMessage {
         // Check if state matches what we expect
         if (message.files?.isNotEmpty() == true && !isDeferred) {
             // If the message has files and our current bridge state is "NOT_REPLIED_YET", then it means that we need to defer before sending the file!

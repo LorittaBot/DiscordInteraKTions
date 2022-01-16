@@ -43,13 +43,13 @@ open class BarebonesInteractionContext(
         wasInitiallyDeferredEphemerally = true
     }
 
-    suspend fun sendMessage(block: InteractionOrFollowupMessageCreateBuilder.() -> (Unit))
+    suspend inline fun sendMessage(block: InteractionOrFollowupMessageCreateBuilder.() -> (Unit))
             = sendPublicMessage(InteractionOrFollowupMessageCreateBuilder(false).apply(block))
 
-    suspend fun sendEphemeralMessage(block: InteractionOrFollowupMessageCreateBuilder.() -> (Unit))
+    suspend inline fun sendEphemeralMessage(block: InteractionOrFollowupMessageCreateBuilder.() -> (Unit))
             = sendEphemeralMessage(InteractionOrFollowupMessageCreateBuilder(true).apply(block))
 
-    private suspend fun sendPublicMessage(message: InteractionOrFollowupMessageCreateBuilder): EditableMessage {
+    suspend fun sendPublicMessage(message: InteractionOrFollowupMessageCreateBuilder): EditableMessage {
         // Check if state matches what we expect
         if (bridge.state.value == InteractionRequestState.DEFERRED_CHANNEL_MESSAGE)
             if (wasInitiallyDeferredEphemerally)
@@ -64,7 +64,7 @@ open class BarebonesInteractionContext(
         return bridge.manager.sendPublicMessage(message)
     }
 
-    private suspend fun sendEphemeralMessage(message: InteractionOrFollowupMessageCreateBuilder): EditableMessage {
+    suspend fun sendEphemeralMessage(message: InteractionOrFollowupMessageCreateBuilder): EditableMessage {
         // Check if state matches what we expect
         if (bridge.state.value == InteractionRequestState.DEFERRED_CHANNEL_MESSAGE)
             if (!wasInitiallyDeferredEphemerally)
