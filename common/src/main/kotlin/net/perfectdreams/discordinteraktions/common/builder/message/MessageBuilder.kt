@@ -7,7 +7,6 @@ import dev.kord.rest.builder.message.AllowedMentionsBuilder
 import dev.kord.rest.builder.message.EmbedBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import net.perfectdreams.discordinteraktions.common.utils.suspendableApply
 import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.Path
@@ -63,12 +62,12 @@ interface MessageBuilder {
 }
 
 @OptIn(ExperimentalContracts::class)
-suspend inline fun MessageBuilder.embed(crossinline block: suspend EmbedBuilder.() -> Unit) {
+inline fun MessageBuilder.embed(block: EmbedBuilder.() -> Unit) {
     contract {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)
     }
     embeds = (embeds ?: mutableListOf()).also {
-        it.add(EmbedBuilder().suspendableApply(block))
+        it.add(EmbedBuilder().apply(block))
     }
 }
 
@@ -87,11 +86,11 @@ inline fun MessageBuilder.allowedMentions(block: AllowedMentionsBuilder.() -> Un
 
 
 @OptIn(ExperimentalContracts::class)
-suspend inline fun MessageBuilder.actionRow(crossinline builder: suspend ActionRowBuilder.() -> Unit) {
+inline fun MessageBuilder.actionRow(builder: ActionRowBuilder.() -> Unit) {
     contract {
         callsInPlace(builder, InvocationKind.EXACTLY_ONCE)
     }
     components = (components ?: mutableListOf()).also {
-        it.add(ActionRowBuilder().suspendableApply(builder))
+        it.add(ActionRowBuilder().apply(builder))
     }
 }
