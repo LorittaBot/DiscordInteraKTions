@@ -2,6 +2,7 @@ package net.perfectdreams.discordinteraktions.platforms.kord.utils
 
 import dev.kord.common.entity.ResolvedObjects
 import dev.kord.common.entity.optional.Optional
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordInteractionMember
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordMember
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordMessage
@@ -16,7 +17,7 @@ fun ResolvedObjects.toDiscordInteraKTionsResolvedObjects(): net.perfectdreams.di
 
     val members = this.members.value?.map {
         // In this case, the user map contains the user object, so we need to get it from there
-        it.key to KordMember(
+        it.key to KordInteractionMember(
             it.value,
             users?.get(it.key)!! // Should NEVER be null!
         )
