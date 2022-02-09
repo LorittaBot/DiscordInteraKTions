@@ -77,6 +77,16 @@ open class ApplicationCommandOptions {
         description
     )
 
+    fun attachment(name: String, description: String) = AttachmentCommandOptionBuilder(
+        name,
+        description
+    )
+
+    fun optionalAttachment(name: String, description: String) = NullableAttachmentCommandOptionBuilder(
+        name,
+        description
+    )
+
     fun <T, ChoiceableType> CommandOptionBuilder<T, ChoiceableType>.register(): CommandOption<T> {
         if (arguments.any { it.name == this.name })
             throw IllegalArgumentException("Duplicate argument \"${this.name}\"!")

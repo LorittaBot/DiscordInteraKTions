@@ -11,8 +11,10 @@ import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandD
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.discordinteraktions.common.commands.options.AttachmentCommandOption
 import net.perfectdreams.discordinteraktions.common.commands.options.ChannelCommandOption
 import net.perfectdreams.discordinteraktions.common.commands.options.CommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.NullableAttachmentCommandOption
 import net.perfectdreams.discordinteraktions.common.commands.options.NullableChannelCommandOption
 import net.perfectdreams.discordinteraktions.common.commands.options.NullableRoleCommandOption
 import net.perfectdreams.discordinteraktions.common.commands.options.NullableUserCommandOption
@@ -238,6 +240,15 @@ object CommandDeclarationUtils {
 
                 // Now we need to wrap the kord user in our own implementation!
                 return KordRole(kordInstance)
+            }
+            is AttachmentCommandOption, is NullableAttachmentCommandOption -> {
+                val attachmentId = argument.value as Snowflake
+
+                val resolved = request.data.resolved.value ?: return null
+                val resolvedMap = resolved.attachments.value ?: return null
+                val kordInstance = resolvedMap[attachmentId] ?: return null
+
+                return kordInstance
             }
             else -> { argument.value }
         }

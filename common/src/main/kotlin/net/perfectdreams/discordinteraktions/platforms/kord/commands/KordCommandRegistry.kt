@@ -8,6 +8,7 @@ import dev.kord.rest.builder.interaction.GroupCommandBuilder
 import dev.kord.rest.builder.interaction.MessageCommandCreateBuilder
 import dev.kord.rest.builder.interaction.SubCommandBuilder
 import dev.kord.rest.builder.interaction.UserCommandCreateBuilder
+import dev.kord.rest.builder.interaction.attachment
 import dev.kord.rest.builder.interaction.boolean
 import dev.kord.rest.builder.interaction.channel
 import dev.kord.rest.builder.interaction.int
@@ -23,11 +24,13 @@ import net.perfectdreams.discordinteraktions.common.commands.MessageCommandDecla
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandGroupDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.UserCommandDeclaration
+import net.perfectdreams.discordinteraktions.common.commands.options.AttachmentCommandOption
 import net.perfectdreams.discordinteraktions.common.commands.options.BooleanCommandOption
 import net.perfectdreams.discordinteraktions.common.commands.options.ChannelCommandOption
 import net.perfectdreams.discordinteraktions.common.commands.options.ChoiceableCommandOption
 import net.perfectdreams.discordinteraktions.common.commands.options.CommandOption
 import net.perfectdreams.discordinteraktions.common.commands.options.IntegerCommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.NullableAttachmentCommandOption
 import net.perfectdreams.discordinteraktions.common.commands.options.NullableBooleanCommandOption
 import net.perfectdreams.discordinteraktions.common.commands.options.NullableChannelCommandOption
 import net.perfectdreams.discordinteraktions.common.commands.options.NullableCommandOption
@@ -222,6 +225,10 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
                 }
             is RoleCommandOption, is NullableRoleCommandOption ->
                 builder.role(cmdOption.name, cmdOption.description) {
+                    this.required = cmdOption !is NullableCommandOption
+                }
+            is AttachmentCommandOption, is NullableAttachmentCommandOption ->
+                builder.attachment(cmdOption.name, cmdOption.description) {
                     this.required = cmdOption !is NullableCommandOption
                 }
             else -> error("Unsupported type ${cmdOption::class}")

@@ -1,5 +1,6 @@
 package net.perfectdreams.discordinteraktions.common.commands.options
 
+import dev.kord.common.entity.DiscordAttachment
 import net.perfectdreams.discordinteraktions.common.entities.Channel
 import net.perfectdreams.discordinteraktions.common.entities.Role
 import net.perfectdreams.discordinteraktions.common.entities.User
@@ -143,4 +144,13 @@ class RoleCommandOptionBuilder(name: String, description: String) : CommandOptio
 
 class NullableRoleCommandOptionBuilder(name: String, description: String) : CommandOptionBuilder<Role?, Role>(name, description) {
     override fun build() = NullableRoleCommandOption(name, description)
+}
+
+// ===[ ATTACHMENT ]===
+class AttachmentCommandOptionBuilder(name: String, description: String) : CommandOptionBuilder<DiscordAttachment, DiscordAttachment>(name, description) {
+    override fun build() = AttachmentCommandOption(name, description)
+}
+
+class NullableAttachmentCommandOptionBuilder(name: String, description: String) : CommandOptionBuilder<DiscordAttachment?, DiscordAttachment>(name, description) {
+    override fun build() = NullableAttachmentCommandOption(name, description)
 }
