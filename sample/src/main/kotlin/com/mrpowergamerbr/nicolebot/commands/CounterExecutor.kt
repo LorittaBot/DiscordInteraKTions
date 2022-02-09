@@ -41,29 +41,5 @@ class CounterExecutor(private val counter: Counter) : SlashCommandExecutor() {
         context.sendMessage {
             apply(createCounterMessage(currentCount))
         }
-
-        val rest = RestClient("a")
-
-        rest.channel.createMessage(Snowflake(1L)) {
-            kordTest()
-        }
-
-        val test = context.sendMessage {
-            owo()
-        }
-
-        test.editMessage {
-            owo()
-        }
-    }
-
-    suspend fun MessageBuilder.owo() {
-        content = contentFromSuspendable()
-    }
-
-    suspend fun contentFromSuspendable() = "Hello world!"
-
-    suspend fun UserMessageCreateBuilder.kordTest() {
-        content = contentFromSuspendable()
     }
 }
