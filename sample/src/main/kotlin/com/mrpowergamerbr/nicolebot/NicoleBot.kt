@@ -4,10 +4,14 @@ import com.mrpowergamerbr.nicolebot.commands.ButtonsExecutor
 import com.mrpowergamerbr.nicolebot.commands.CounterButtonClickExecutor
 import com.mrpowergamerbr.nicolebot.commands.CounterExecutor
 import com.mrpowergamerbr.nicolebot.commands.FancyButtonClickExecutor
+import com.mrpowergamerbr.nicolebot.commands.SendModalExecutor
 import com.mrpowergamerbr.nicolebot.commands.HelloWorldExecutor
+import com.mrpowergamerbr.nicolebot.commands.ModalSubmitYayExecutor
+import com.mrpowergamerbr.nicolebot.commands.SendYourAttachmentExecutor
 import com.mrpowergamerbr.nicolebot.commands.declarations.CounterCommand
 import com.mrpowergamerbr.nicolebot.commands.declarations.HelloWorldCommand
 import com.mrpowergamerbr.nicolebot.commands.declarations.InteractivityCommand
+import com.mrpowergamerbr.nicolebot.commands.declarations.SendYourAttachmentCommand
 import com.mrpowergamerbr.nicolebot.utils.Counter
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.service.RestClient
@@ -36,12 +40,18 @@ class NicoleBot(
         // ===[ /interactivity ]===
         commandManager.register(
             InteractivityCommand,
-            ButtonsExecutor()
+            ButtonsExecutor(),
+            SendModalExecutor()
         )
 
         commandManager.register(
             FancyButtonClickExecutor,
             FancyButtonClickExecutor()
+        )
+
+        commandManager.register(
+            ModalSubmitYayExecutor,
+            ModalSubmitYayExecutor()
         )
 
         // ===[ /counter ]===
@@ -55,13 +65,19 @@ class NicoleBot(
             CounterButtonClickExecutor(counter)
         )
 
+        // ===[ /sendyourattachment ]===
+        commandManager.register(
+            SendYourAttachmentCommand,
+            SendYourAttachmentExecutor()
+        )
+
         val registry = KordCommandRegistry(
             APPLICATION_ID,
             rest,
             commandManager
         )
 
-        registry.updateAllCommandsInGuild(GUILD_ID, true)
+        registry.updateAllCommandsInGuild(GUILD_ID, false)
         // registry.updateAllGlobalCommands(true)
     }
 }

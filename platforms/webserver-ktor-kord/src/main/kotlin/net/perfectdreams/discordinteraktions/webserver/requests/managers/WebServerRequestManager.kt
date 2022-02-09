@@ -12,6 +12,7 @@ import dev.kord.common.entity.optional.coerceToMissing
 import dev.kord.common.entity.optional.map
 import dev.kord.common.entity.optional.optional
 import dev.kord.common.entity.optional.toPrimitive
+import dev.kord.rest.builder.interaction.ModalBuilder
 import dev.kord.rest.json.request.AutoCompleteResponseCreateRequest
 import dev.kord.rest.json.request.InteractionApplicationCommandCallbackData
 import dev.kord.rest.json.request.InteractionResponseCreateRequest
@@ -267,5 +268,9 @@ class WebServerRequestManager(
         )
 
         bridge.state.value = InteractionRequestState.ALREADY_REPLIED
+    }
+
+    override suspend fun sendForm(title: String, customId: String, builder: ModalBuilder.() -> Unit) {
+        TODO("Not yet implemented")
     }
 }

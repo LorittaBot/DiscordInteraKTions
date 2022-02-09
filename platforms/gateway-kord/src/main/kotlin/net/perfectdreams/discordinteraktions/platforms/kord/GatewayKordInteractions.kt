@@ -14,6 +14,7 @@ import net.perfectdreams.discordinteraktions.common.requests.managers.InitialHtt
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordAutocompleteChecker
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordCommandChecker
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordComponentChecker
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordModalSubmitChecker
 
 fun Gateway.installDiscordInteraKTions(
     applicationId: Snowflake,
@@ -23,6 +24,7 @@ fun Gateway.installDiscordInteraKTions(
     val kordCommandChecker = KordCommandChecker(commandManager)
     val kordComponentChecker = KordComponentChecker(commandManager)
     val kordAutocompleteChecker = KordAutocompleteChecker(commandManager)
+    val kordModalSubmitChecker = KordModalSubmitChecker(commandManager)
 
     on<InteractionCreate> {
         val request = this.interaction
@@ -52,6 +54,11 @@ fun Gateway.installDiscordInteraKTions(
             )
         else if (request.type == InteractionType.AutoComplete)
             kordAutocompleteChecker.checkAndExecute(
+                request,
+                requestManager
+            )
+        else if (request.type == InteractionType.ModalSubmit)
+            kordModalSubmitChecker.checkAndExecute(
                 request,
                 requestManager
             )
