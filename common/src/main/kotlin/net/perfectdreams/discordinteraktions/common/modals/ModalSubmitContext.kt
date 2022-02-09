@@ -1,49 +1,25 @@
-package net.perfectdreams.discordinteraktions.common
+package net.perfectdreams.discordinteraktions.common.modals
 
+import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Snowflake
-import dev.kord.rest.builder.interaction.ModalBuilder
-import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
+import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.discordinteraktions.common.entities.messages.EditableMessage
-import net.perfectdreams.discordinteraktions.common.modals.ModalSubmitExecutorDeclaration
+import net.perfectdreams.discordinteraktions.common.entities.messages.Message
+import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 import net.perfectdreams.discordinteraktions.common.requests.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.requests.RequestBridge
-import net.perfectdreams.discordinteraktions.common.requests.managers.HttpRequestManager
-import net.perfectdreams.discordinteraktions.common.utils.Observable
 
-/**
- * This is a "barebones" implementation of a [InteractionContext], where only the essential constructor parameters are present.
- *
- * This is useful if you are trying to reply to an interaction where you only have its essential information (like the interaction token).
- */
-open class BarebonesInteractionContext(
-    var bridge: RequestBridge
+open class ModalSubmitContext(
+    var bridge: RequestBridge,
+    val sender: User,
+    val channelId: Snowflake,
+    val data: InteractionData,
+    val discordInteractionData: DiscordInteraction
 ) {
     val isDeferred
         get() = bridge.state.value != InteractionRequestState.NOT_REPLIED_YET
     var wasInitiallyDeferredEphemerally = false
-
-    /**
-     * Defers the application command request message with a public message
-     */
-    suspend fun deferChannelMessage() {
-        if (isDeferred)
-            error("Trying to defer something that was already deferred!")
-
-        bridge.manager.deferChannelMessage()
-        wasInitiallyDeferredEphemerally = false
-    }
-
-    /**
-     * Defers the application command request message with a ephemeral message
-     */
-    suspend fun deferChannelMessageEphemerally() {
-        if (isDeferred)
-            error("Trying to defer something that was already deferred!")
-
-        bridge.manager.deferChannelMessageEphemerally()
-        wasInitiallyDeferredEphemerally = true
-    }
 
     suspend inline fun sendMessage(block: InteractionOrFollowupMessageCreateBuilder.() -> (Unit))
             = sendPublicMessage(InteractionOrFollowupMessageCreateBuilder(false).apply(block))
@@ -60,7 +36,7 @@ open class BarebonesInteractionContext(
         if (message.files?.isNotEmpty() == true && !isDeferred) {
             // If the message has files and our current bridge state is "NOT_REPLIED_YET", then it means that we need to defer before sending the file!
             // (Because currently you can only send files by editing the original interaction message or with a follow up message
-            deferChannelMessage()
+            error("Deferring modal submits is not supported!")
         }
 
         return bridge.manager.sendPublicMessage(message)
@@ -75,36 +51,9 @@ open class BarebonesInteractionContext(
         if (message.files?.isNotEmpty() == true && !isDeferred) {
             // If the message has files and our current bridge state is "NOT_REPLIED_YET", then it means that we need to defer before sending the file!
             // (Because currently you can only send files by editing the original interaction message or with a follow up message
-            deferChannelMessage()
+            error("Deferring modal submits is not supported!")
         }
 
         return bridge.manager.sendEphemeralMessage(message)
     }
-
-    suspend fun sendModal(declaration: ModalSubmitExecutorDeclaration, title: String, builder: ModalBuilder.() -> (Unit)) {
-        return bridge.manager.sendForm(title, declaration.id, builder)
-    }
-}
-
-/**
- * Creates a [BarebonesInteractionContext] with the [rest], [applicationId], [interactionToken] and [requestState].
- *
- * This is useful if you are trying to reply to an interaction where you only have its essential information (like the interaction token).
- */
-fun BarebonesInteractionContext(
-    rest: RestClient,
-    applicationId: Snowflake,
-    interactionToken: String,
-    requestState: InteractionRequestState = InteractionRequestState.ALREADY_REPLIED
-): BarebonesInteractionContext {
-    val bridge = RequestBridge(Observable(requestState))
-
-    bridge.manager = HttpRequestManager(
-        bridge,
-        rest,
-        applicationId,
-        interactionToken
-    )
-
-    return BarebonesInteractionContext(bridge)
 }

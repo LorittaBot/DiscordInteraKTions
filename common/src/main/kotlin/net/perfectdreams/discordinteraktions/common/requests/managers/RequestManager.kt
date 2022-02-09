@@ -1,6 +1,7 @@
 package net.perfectdreams.discordinteraktions.common.requests.managers
 
 import dev.kord.common.entity.Choice
+import dev.kord.rest.builder.interaction.ModalBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.modify.InteractionOrFollowupMessageModifyBuilder
 import net.perfectdreams.discordinteraktions.common.entities.messages.EditableMessage
@@ -51,4 +52,6 @@ abstract class RequestManager(val bridge: RequestBridge) {
     abstract suspend fun sendIntegerAutocomplete(list: List<Choice<Long>>)
 
     abstract suspend fun sendNumberAutocomplete(list: List<Choice<Double>>)
+
+    abstract suspend fun sendForm(title: String, customId: String, builder: ModalBuilder.() -> Unit)
 }
