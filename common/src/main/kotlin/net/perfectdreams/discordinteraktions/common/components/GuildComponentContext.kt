@@ -2,7 +2,7 @@ package net.perfectdreams.discordinteraktions.common.components
 
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Snowflake
-import net.perfectdreams.discordinteraktions.common.entities.Member
+import net.perfectdreams.discordinteraktions.common.entities.InteractionMember
 import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.discordinteraktions.common.requests.RequestBridge
 import net.perfectdreams.discordinteraktions.common.entities.messages.Message
@@ -16,5 +16,5 @@ open class GuildComponentContext(
     data: InteractionData,
     discordInteractionData: DiscordInteraction,
     val guildId: Snowflake,
-    val member: Member
+    val member: InteractionMember
 ) : ComponentContext(bridge, sender, channelId, message, data, discordInteractionData)
