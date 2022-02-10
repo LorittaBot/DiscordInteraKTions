@@ -1,19 +1,17 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version Versions.KOTLIN
+    kotlin("jvm") version "1.6.10" apply false
+    kotlin("plugin.serialization") version "1.6.10" apply false
     `maven-publish`
 }
 
+val discordInteraKTionsVersion = libs.versions.discordinteraktions.get()
 group = "net.perfectdreams.discordinteraktions"
-version = Versions.DISCORD_INTERAKTIONS
+version = discordInteraKTionsVersion
 
 repositories {
     mavenCentral()
-}
-
-tasks.test {
-    useJUnitPlatform()
 }
 
 allprojects {
@@ -30,7 +28,7 @@ allprojects {
 
 subprojects {
     apply<MavenPublishPlugin>()
-    version = Versions.DISCORD_INTERAKTIONS
+    version = discordInteraKTionsVersion
 
     publishing {
         repositories {

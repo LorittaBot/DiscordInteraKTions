@@ -1,6 +1,6 @@
 plugins {
     kotlin("jvm")
-    kotlin("plugin.serialization") version Versions.KOTLIN
+    kotlin("plugin.serialization")
     `maven-publish`
 }
 
@@ -9,7 +9,7 @@ group = "net.perfectdreams.discordinteraktions"
 dependencies {
     implementation(kotlin("stdlib"))
 
-    api("dev.kord:kord-rest:${Versions.KORD}")
+    api(libs.kord.rest)
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")

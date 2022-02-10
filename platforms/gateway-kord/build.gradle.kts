@@ -8,8 +8,8 @@ group = "net.perfectdreams.discordinteraktions"
 dependencies {
     implementation(kotlin("stdlib"))
     api(project(":common"))
-    implementation("dev.kord:kord-rest:${Versions.KORD}")
-    implementation("dev.kord:kord-gateway:${Versions.KORD}")
+    implementation(libs.kord.rest)
+    implementation(libs.kord.gateway)
 }
 
 tasks.test {

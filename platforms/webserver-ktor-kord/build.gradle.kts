@@ -9,8 +9,8 @@ dependencies {
     implementation(kotlin("stdlib"))
     api(project(":requests-verifier"))
     api(project(":common"))
-    implementation("dev.kord:kord-rest:${Versions.KORD}")
-    implementation("io.ktor:ktor-server-netty:${Versions.KTOR}")
+    implementation(libs.kord.rest)
+    implementation(libs.ktor.server.netty)
 }
 
 tasks.test {
