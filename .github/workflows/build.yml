@@ -29,7 +29,6 @@ jobs:
       uses: gradle/gradle-build-action@v2
       with:
         arguments: build
-        cache-enabled: false
 
     - name: Publish to PerfectDreams' repository
       if: github.ref == 'refs/heads/main'
