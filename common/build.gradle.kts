@@ -9,6 +9,7 @@ group = "net.perfectdreams.discordinteraktions"
 dependencies {
     implementation(kotlin("stdlib"))
 
+    api(libs.kord.common)
     api(libs.kord.rest)
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1")
