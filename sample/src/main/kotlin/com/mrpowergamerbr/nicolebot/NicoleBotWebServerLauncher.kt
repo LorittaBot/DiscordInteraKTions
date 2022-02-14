@@ -21,6 +21,8 @@ object NicoleBotWebServerLauncher {
             )
 
             nicoleBot.registerCommands()
+
+            interactionsServer.start()
         }
     }
 }
