@@ -46,4 +46,13 @@ abstract class InteractionRequestHandler {
      * @param request The interaction data.
      */
     open suspend fun onAutocomplete(call: ApplicationCall, request: DiscordInteraction) {}
+
+    /**
+     * Method called when we receive an interaction of the
+     * ModalSubmit type.
+     *
+     * @param call The Ktor call containing the request details.
+     * @param request The interaction data.
+     */
+    open suspend fun onModalSubmit(call: ApplicationCall, request: DiscordInteraction) {}
 }

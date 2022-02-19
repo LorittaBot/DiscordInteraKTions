@@ -40,7 +40,7 @@ class HttpRequestManager(
 
     override suspend fun deferChannelMessage() = error("Can't defer a interaction that was already deferred!")
 
-    override suspend fun deferChannelMessageEphemerally() =  error("Can't defer a interaction that was already deferred!")
+    override suspend fun deferChannelMessageEphemerally() = error("Can't defer a interaction that was already deferred!")
 
     override suspend fun sendPublicMessage(message: InteractionOrFollowupMessageCreateBuilder): EditableMessage {
         // *Technically* we can respond to the initial interaction via HTTP too
@@ -100,7 +100,5 @@ class HttpRequestManager(
 
     override suspend fun sendNumberAutocomplete(list: List<Choice<Double>>) = error("Can't send a autocomplete request via the HttpRequestManager!")
 
-    override suspend fun sendForm(title: String, customId: String, builder: ModalBuilder.() -> Unit) {
-        TODO("Not yet implemented")
-    }
+    override suspend fun sendForm(title: String, customId: String, builder: ModalBuilder.() -> Unit) = error("Can't send a form to a interaction that was already deferred!")
 }

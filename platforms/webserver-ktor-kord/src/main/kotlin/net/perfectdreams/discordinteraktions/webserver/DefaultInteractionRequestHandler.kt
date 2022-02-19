@@ -19,6 +19,7 @@ import net.perfectdreams.discordinteraktions.common.utils.Observable
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordAutocompleteChecker
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordCommandChecker
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordComponentChecker
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordModalSubmitChecker
 import net.perfectdreams.discordinteraktions.webserver.requests.managers.WebServerRequestManager
 
 /**
@@ -40,17 +41,8 @@ class DefaultInteractionRequestHandler(
     private val kordCommandChecker = KordCommandChecker(commandManager)
     private val kordComponentChecker = KordComponentChecker(commandManager)
     private val kordAutocompleteChecker = KordAutocompleteChecker(commandManager)
+    private val kordModalChecker = KordModalSubmitChecker(commandManager)
 
-    /**
-     * Method called when we receive an interaction of the
-     * [PingInteraction] type.
-     *
-     * We'll basically handle this by logging the event
-     * and answering with a "Pong!" response.
-     *
-     * @param call The Ktor call containing the request details.
-     * @param request The interaction data.
-     */
     override suspend fun onPing(call: ApplicationCall) {
         logger.info { "Ping Request Received!" }
         call.respondText(
@@ -61,16 +53,6 @@ class DefaultInteractionRequestHandler(
         )
     }
 
-    /**
-     * Method called when we receive an interaction of the
-     * ApplicationCommand type.
-     *
-     * We'll basically handle this by logging the event
-     * and executing the requested command.
-     *
-     * @param call The Ktor call containing the request details.
-     * @param request The interaction data.
-     */
     override suspend fun onCommand(call: ApplicationCall, request: DiscordInteraction) {
         val observableState = Observable(InteractionRequestState.NOT_REPLIED_YET)
         val bridge = RequestBridge(observableState)
@@ -94,16 +76,6 @@ class DefaultInteractionRequestHandler(
         logger.info { "State was changed to ${observableState.value}, so this means we already replied via the Web Server! Leaving request scope..." }
     }
 
-    /**
-     * Method called when we receive an interaction of the
-     * Component type.
-     *
-     * We'll basically handle this by logging the event
-     * and executing the requested command.
-     *
-     * @param call The Ktor call containing the request details.
-     * @param request The interaction data.
-     */
     override suspend fun onComponent(call: ApplicationCall, request: DiscordInteraction) {
         val observableState = Observable(InteractionRequestState.NOT_REPLIED_YET)
         val bridge = RequestBridge(observableState)
@@ -127,16 +99,6 @@ class DefaultInteractionRequestHandler(
         logger.info { "State was changed to ${observableState.value}, so this means we already replied via the Web Server! Leaving request scope..." }
     }
 
-    /**
-     * Method called when we receive an interaction of the
-     * Autocomplete type.
-     *
-     * We'll basically handle this by logging the event
-     * and executing the requested command.
-     *
-     * @param call The Ktor call containing the request details.
-     * @param request The interaction data.
-     */
     override suspend fun onAutocomplete(call: ApplicationCall, request: DiscordInteraction) {
         val observableState = Observable(InteractionRequestState.NOT_REPLIED_YET)
         val bridge = RequestBridge(observableState)
@@ -152,6 +114,29 @@ class DefaultInteractionRequestHandler(
         bridge.manager = requestManager
 
         kordAutocompleteChecker.checkAndExecute(
+            request,
+            requestManager
+        )
+
+        observableState.awaitChange()
+        logger.info { "State was changed to ${observableState.value}, so this means we already replied via the Web Server! Leaving request scope..." }
+    }
+
+    override suspend fun onModalSubmit(call: ApplicationCall, request: DiscordInteraction) {
+        val observableState = Observable(InteractionRequestState.NOT_REPLIED_YET)
+        val bridge = RequestBridge(observableState)
+
+        val requestManager = WebServerRequestManager(
+            bridge,
+            rest,
+            applicationId,
+            request.token,
+            call
+        )
+
+        bridge.manager = requestManager
+
+        kordModalChecker.checkAndExecute(
             request,
             requestManager
         )

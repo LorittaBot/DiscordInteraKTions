@@ -3,6 +3,7 @@ package net.perfectdreams.discordinteraktions.webserver.requests.managers
 import dev.kord.common.entity.Choice
 import dev.kord.common.entity.DiscordAutoComplete
 import dev.kord.common.entity.DiscordInteraction
+import dev.kord.common.entity.DiscordModal
 import dev.kord.common.entity.InteractionResponseType
 import dev.kord.common.entity.MessageFlag
 import dev.kord.common.entity.MessageFlags
@@ -16,6 +17,7 @@ import dev.kord.rest.builder.interaction.ModalBuilder
 import dev.kord.rest.json.request.AutoCompleteResponseCreateRequest
 import dev.kord.rest.json.request.InteractionApplicationCommandCallbackData
 import dev.kord.rest.json.request.InteractionResponseCreateRequest
+import dev.kord.rest.json.request.ModalResponseCreateRequest
 import dev.kord.rest.service.RestClient
 import io.ktor.application.*
 import io.ktor.http.*
@@ -271,6 +273,16 @@ class WebServerRequestManager(
     }
 
     override suspend fun sendForm(title: String, customId: String, builder: ModalBuilder.() -> Unit) {
-        TODO("Not yet implemented")
+        call.respondText(
+            Json.encodeToString(
+                ModalResponseCreateRequest(
+                    InteractionResponseType.Modal,
+                    ModalBuilder(title, customId).apply(builder).toRequest()
+                )
+            ),
+            ContentType.Application.Json
+        )
+
+        bridge.state.value = InteractionRequestState.ALREADY_REPLIED
     }
 }
