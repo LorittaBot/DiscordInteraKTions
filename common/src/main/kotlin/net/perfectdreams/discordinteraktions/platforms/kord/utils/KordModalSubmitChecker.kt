@@ -11,6 +11,8 @@ import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 import net.perfectdreams.discordinteraktions.common.modals.GuildModalSubmitContext
 import net.perfectdreams.discordinteraktions.common.modals.ModalSubmitContext
+import net.perfectdreams.discordinteraktions.common.modals.ModalSubmitExecutor
+import net.perfectdreams.discordinteraktions.common.modals.ModalSubmitWithDataExecutor
 import net.perfectdreams.discordinteraktions.common.modals.components.ModalArguments
 import net.perfectdreams.discordinteraktions.common.requests.managers.RequestManager
 import net.perfectdreams.discordinteraktions.common.utils.InteraKTionsExceptions
@@ -88,10 +90,21 @@ class KordModalSubmitChecker(val commandManager: CommandManager) {
         }
 
         GlobalScope.launch {
-            modalSubmitExecutor.onModalSubmit(
-                modalSubmitContext,
-                ModalArguments(map)
-            )
+            when (modalSubmitExecutor) {
+                is ModalSubmitExecutor -> {
+                    modalSubmitExecutor.onModalSubmit(
+                        modalSubmitContext,
+                        ModalArguments(map)
+                    )
+                }
+                is ModalSubmitWithDataExecutor -> {
+                    modalSubmitExecutor.onModalSubmit(
+                        modalSubmitContext,
+                        ModalArguments(map),
+                        data
+                    )
+                }
+            }
         }
     }
 

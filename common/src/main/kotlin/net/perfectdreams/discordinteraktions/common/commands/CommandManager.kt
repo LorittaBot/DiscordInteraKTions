@@ -8,6 +8,7 @@ import net.perfectdreams.discordinteraktions.common.components.ButtonClickExecut
 import net.perfectdreams.discordinteraktions.common.components.SelectMenuBaseExecutor
 import net.perfectdreams.discordinteraktions.common.components.SelectMenuExecutor
 import net.perfectdreams.discordinteraktions.common.components.SelectMenuExecutorDeclaration
+import net.perfectdreams.discordinteraktions.common.modals.ModalSubmitBaseExecutor
 import net.perfectdreams.discordinteraktions.common.modals.ModalSubmitExecutor
 import net.perfectdreams.discordinteraktions.common.modals.ModalSubmitExecutorDeclaration
 
@@ -25,7 +26,7 @@ open class CommandManager {
     val autocompleteExecutors = mutableListOf<AutocompleteExecutor<*>>()
 
     val modalSubmitDeclarations = mutableListOf<ModalSubmitExecutorDeclaration>()
-    val modalSubmitExecutors = mutableListOf<ModalSubmitExecutor>()
+    val modalSubmitExecutors = mutableListOf<ModalSubmitBaseExecutor>()
 
     val componentDeclarations: List<String>
         get() = buttonDeclarations.map { it.id } + selectMenusDeclarations.map { it.id }
@@ -62,7 +63,7 @@ open class CommandManager {
         autocompleteExecutors.add(executor)
     }
 
-    fun register(declaration: ModalSubmitExecutorDeclaration, executor: ModalSubmitExecutor) {
+    fun register(declaration: ModalSubmitExecutorDeclaration, executor: ModalSubmitBaseExecutor) {
         modalSubmitDeclarations.add(declaration)
         modalSubmitExecutors.add(executor)
     }

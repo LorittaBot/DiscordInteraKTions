@@ -2,9 +2,7 @@ package net.perfectdreams.discordinteraktions.common.modals
 
 import net.perfectdreams.discordinteraktions.common.modals.components.ModalArguments
 
-interface ModalSubmitExecutor {
-    suspend fun onModalSubmit(context: ModalSubmitContext, modalArguments: ModalArguments)
-
+sealed interface ModalSubmitBaseExecutor {
     /**
      * Used by the [net.perfectdreams.discordinteraktions.common.modals.ModalSubmitExecutorDeclaration] to match declarations to executors.
      *
@@ -13,4 +11,12 @@ interface ModalSubmitExecutor {
      * To avoid this issue, you can replace the signature with another unique identifier
      */
     open fun signature(): Any = this::class
+}
+
+interface ModalSubmitExecutor : ModalSubmitBaseExecutor {
+    suspend fun onModalSubmit(context: ModalSubmitContext, args: ModalArguments)
+}
+
+interface ModalSubmitWithDataExecutor : ModalSubmitBaseExecutor {
+    suspend fun onModalSubmit(context: ModalSubmitContext, args: ModalArguments, data: String)
 }

@@ -22,14 +22,14 @@ class ModalSubmitYayExecutor : ModalSubmitExecutor {
 
     override suspend fun onModalSubmit(
         context: ModalSubmitContext,
-        modalArguments: ModalArguments
+        args: ModalArguments
     ) {
         context.sendEphemeralMessage {
-            content = "Done! You typed: ${modalArguments[Options.something]}"
+            content = "Done! You typed: ${args[Options.something]}"
 
             embed {
                 title = "How's your day?"
-                description = modalArguments[Options.somethingEvenBigger]
+                description = args[Options.somethingEvenBigger]
             }
         }
     }
