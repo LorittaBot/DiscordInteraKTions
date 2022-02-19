@@ -219,7 +219,7 @@ class InitialHttpRequestManager(
         )
     }
 
-    override suspend fun sendForm(title: String, customId: String, builder: ModalBuilder.() -> Unit) {
+    override suspend fun sendModal(title: String, customId: String, builder: ModalBuilder.() -> Unit) {
         rest.interaction.createModalInteractionResponse(
             interactionId,
             interactionToken,

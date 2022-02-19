@@ -272,7 +272,7 @@ class WebServerRequestManager(
         bridge.state.value = InteractionRequestState.ALREADY_REPLIED
     }
 
-    override suspend fun sendForm(title: String, customId: String, builder: ModalBuilder.() -> Unit) {
+    override suspend fun sendModal(title: String, customId: String, builder: ModalBuilder.() -> Unit) {
         call.respondText(
             Json.encodeToString(
                 ModalResponseCreateRequest(

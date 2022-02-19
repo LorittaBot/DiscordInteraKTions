@@ -28,9 +28,14 @@ class KordModalSubmitChecker(val commandManager: CommandManager) {
     fun checkAndExecute(request: DiscordInteraction, requestManager: RequestManager) {
         val bridge = requestManager.bridge
 
-        logger.debug { request.data.name }
+        // If the component doesn't have a custom ID, we won't process it
+        val componentCustomId = request.data.customId.value ?: return
 
-        println(request)
+        val executorId = componentCustomId.substringBefore(":")
+        // While we don't share the modal data to the user, it is used to avoid Discord reusing the same form for multiple users
+        val data = componentCustomId.substringAfter(":")
+
+        logger.debug { request.data.name }
 
         val kordUser = KordUser(request.member.value?.user?.value ?: request.user.value ?: error("oh no"))
 
@@ -65,19 +70,13 @@ class KordModalSubmitChecker(val commandManager: CommandManager) {
             )
         }
 
-        val modalSubmitDeclaration = commandManager.modalSubmitDeclarations.firstOrNull { it.id == request.data.customId.value } ?: InteraKTionsExceptions.missingDeclaration("modal submit")
+        val modalSubmitDeclaration = commandManager.modalSubmitDeclarations.firstOrNull { it.id == executorId } ?: InteraKTionsExceptions.missingDeclaration("modal submit")
         val modalSubmitExecutor = commandManager.modalSubmitExecutors.firstOrNull { it.signature() == modalSubmitDeclaration.parent } ?: InteraKTionsExceptions.missingExecutor("modal submit")
         val allComponentsInRequest = request.data.components.value ?: error("Missing component list for the modal submit request!")
         val componentsFlatMap = mutableListOf<DiscordComponent>()
         allComponentsInRequest.forEach {
             recursiveComponentFlatMap(it, componentsFlatMap)
         }
-
-        println("List:")
-        componentsFlatMap.forEach {
-            println(it)
-        }
-        println("Done!")
 
         val textInputComponents = componentsFlatMap.filter { it.type == ComponentType.TextInput }
             .filterIsInstance<DiscordModalComponent>()

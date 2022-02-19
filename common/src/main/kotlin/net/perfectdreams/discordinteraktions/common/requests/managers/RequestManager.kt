@@ -53,5 +53,5 @@ abstract class RequestManager(val bridge: RequestBridge) {
 
     abstract suspend fun sendNumberAutocomplete(list: List<Choice<Double>>)
 
-    abstract suspend fun sendForm(title: String, customId: String, builder: ModalBuilder.() -> Unit)
+    abstract suspend fun sendModal(title: String, customId: String, builder: ModalBuilder.() -> Unit)
 }
