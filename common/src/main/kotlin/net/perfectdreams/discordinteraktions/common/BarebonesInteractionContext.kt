@@ -83,7 +83,7 @@ open class BarebonesInteractionContext(
 
     suspend fun sendModal(declaration: ModalSubmitExecutorDeclaration, title: String, builder: ModalBuilder.() -> (Unit)) = sendModal(declaration.id, title, builder)
     suspend fun sendModal(declaration: ModalSubmitExecutorDeclaration, data: String, title: String, builder: ModalBuilder.() -> (Unit)) = sendModal(declaration.id, data, title, builder)
-    suspend fun sendModal(id: String, data: String, title: String, builder: ModalBuilder.() -> (Unit)) = bridge.manager.sendModal("$id:$data", title, builder)
+    suspend fun sendModal(id: String, data: String, title: String, builder: ModalBuilder.() -> (Unit)) = sendModal("$id:$data", title, builder)
     suspend fun sendModal(idWithData: String, title: String, builder: ModalBuilder.() -> (Unit)) {
         return bridge.manager.sendModal(title, idWithData, builder)
     }
