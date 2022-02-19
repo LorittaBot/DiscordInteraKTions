@@ -84,9 +84,9 @@ class KordModalSubmitChecker(val commandManager: CommandManager) {
             .filterIsInstance<DiscordModalComponent>()
 
         val map = textInputComponents.associate {
-            modalSubmitDeclaration.options.arguments.first { arg ->
+            (modalSubmitDeclaration.options.arguments.firstOrNull { arg ->
                 arg.name == it.customId.value
-            } to it.value.value
+            } ?: error("I couldn't find a matching ModalComponent named ${it.customId.value} in the modal executor declaration!")) to it.value.value
         }
 
         GlobalScope.launch {
