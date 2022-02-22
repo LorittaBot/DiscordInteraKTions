@@ -2,11 +2,11 @@ package net.perfectdreams.discordinteraktions.webserver
 
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.InteractionType
-import io.ktor.application.*
 import io.ktor.http.*
-import io.ktor.request.*
-import io.ktor.response.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
@@ -30,7 +30,7 @@ import net.perfectdreams.discordinteraktions.verifier.InteractionRequestVerifier
 fun Routing.installDiscordInteractions(
     publicKey: String,
     path: String,
-    handler: InteractionRequestHandler
+    handler: InteractionRequestHandler,
 ) {
     val keyVerifier = InteractionRequestVerifier(publicKey)
     val logger = KotlinLogging.logger {}

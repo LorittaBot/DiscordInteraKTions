@@ -5,9 +5,9 @@ import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.InteractionResponseType
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.service.RestClient
-import io.ktor.application.*
 import io.ktor.http.*
-import io.ktor.response.*
+import io.ktor.server.application.*
+import io.ktor.server.response.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -32,7 +32,7 @@ import net.perfectdreams.discordinteraktions.webserver.requests.managers.WebServ
 class DefaultInteractionRequestHandler(
     val applicationId: Snowflake,
     val commandManager: CommandManager,
-    val rest: RestClient
+    val rest: RestClient,
 ) : InteractionRequestHandler() {
     companion object {
         private val logger = KotlinLogging.logger {}
