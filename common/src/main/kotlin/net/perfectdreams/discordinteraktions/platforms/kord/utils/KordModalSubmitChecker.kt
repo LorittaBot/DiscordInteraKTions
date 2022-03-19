@@ -3,7 +3,6 @@ package net.perfectdreams.discordinteraktions.platforms.kord.utils
 import dev.kord.common.entity.ComponentType
 import dev.kord.common.entity.DiscordComponent
 import dev.kord.common.entity.DiscordInteraction
-import dev.kord.common.entity.DiscordModalComponent
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
@@ -81,7 +80,7 @@ class KordModalSubmitChecker(val commandManager: CommandManager) {
         }
 
         val textInputComponents = componentsFlatMap.filter { it.type == ComponentType.TextInput }
-            .filterIsInstance<DiscordModalComponent>()
+            .filterIsInstance<DiscordComponent>()
 
         val map = textInputComponents.associate {
             (modalSubmitDeclaration.options.arguments.firstOrNull { arg ->
