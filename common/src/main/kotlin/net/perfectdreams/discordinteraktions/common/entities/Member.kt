@@ -10,6 +10,6 @@ interface Member {
     val joinedAt: Instant
     val premiumSince: Instant?
     val pending: Boolean
-    val avatar: UserAvatar?
+    val avatar: Icon?
     val communicationDisabledUntil: Instant?
 }

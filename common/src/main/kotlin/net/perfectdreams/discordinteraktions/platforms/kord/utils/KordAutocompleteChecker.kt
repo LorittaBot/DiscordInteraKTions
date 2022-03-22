@@ -52,12 +52,13 @@ class KordAutocompleteChecker(val commandManager: CommandManager) {
         val kordUser = KordUser(request.member.value?.user?.value ?: request.user.value ?: error("oh no"))
         val guildId = request.guildId.value
 
-        val interactionData = InteractionData(request.data.resolved.value?.toDiscordInteraKTionsResolvedObjects())
+        val interactionData = InteractionData(request.data.resolved.value?.toDiscordInteraKTionsResolvedObjects(guildId))
 
         // If the guild ID is not null, then it means that the interaction happened in a guild!
         val autocompleteContext = if (guildId != null) {
             val member = request.member.value!! // Should NEVER be null!
             val kordMember = KordInteractionMember(
+                guildId,
                 member,
                 KordUser(member.user.value!!) // Also should NEVER be null!
             )

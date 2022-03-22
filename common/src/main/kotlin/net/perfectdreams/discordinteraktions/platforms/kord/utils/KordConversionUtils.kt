@@ -1,6 +1,7 @@
 package net.perfectdreams.discordinteraktions.platforms.kord.utils
 
 import dev.kord.common.entity.ResolvedObjects
+import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.optional.Optional
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordInteractionMember
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordMember
@@ -10,7 +11,7 @@ import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.Ko
 /**
  * Converts Kord's Resolved Objects to Discord InteraKTions's Resolved Objects
  */
-fun ResolvedObjects.toDiscordInteraKTionsResolvedObjects(): net.perfectdreams.discordinteraktions.common.interactions.ResolvedObjects {
+fun ResolvedObjects.toDiscordInteraKTionsResolvedObjects(guildId: Snowflake?): net.perfectdreams.discordinteraktions.common.interactions.ResolvedObjects {
     val users = this.users.value?.map {
         it.key to KordUser(it.value)
     }?.toMap()
@@ -18,6 +19,7 @@ fun ResolvedObjects.toDiscordInteraKTionsResolvedObjects(): net.perfectdreams.di
     val members = this.members.value?.map {
         // In this case, the user map contains the user object, so we need to get it from there
         it.key to KordInteractionMember(
+            guildId ?: error("Guild ID is null, however there are members present in the resolved objects list! Bug?"),
             it.value,
             users?.get(it.key)!! // Should NEVER be null!
         )

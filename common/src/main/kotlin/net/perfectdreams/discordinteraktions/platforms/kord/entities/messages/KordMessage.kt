@@ -17,7 +17,10 @@ open class KordMessage(val data: DiscordMessage) : Message {
     override val author: User
         get() = KordUser(data.author)
     override val member: Member?
-        get() = data.member.value?.let { KordMember(it, author) }
+        get() = data.member.value?.let {
+            // I don't think the guildId is null if the member object is present
+            KordMember(guildId!!, it, author)
+        }
     override val content by data::content
     override val timestamp: Instant
         get() = Instant.parse(data.timestamp)

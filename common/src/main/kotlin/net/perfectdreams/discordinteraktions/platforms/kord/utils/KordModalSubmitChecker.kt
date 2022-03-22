@@ -42,12 +42,13 @@ class KordModalSubmitChecker(val commandManager: CommandManager) {
 
         val guildId = request.guildId.value
 
-        val interactionData = InteractionData(request.data.resolved.value?.toDiscordInteraKTionsResolvedObjects())
+        val interactionData = InteractionData(request.data.resolved.value?.toDiscordInteraKTionsResolvedObjects(guildId))
 
         // If the guild ID is not null, then it means that the interaction happened in a guild!
         val modalSubmitContext = if (guildId != null) {
             val member = request.member.value!! // Should NEVER be null!
             val kordMember = KordInteractionMember(
+                guildId,
                 member,
                 KordUser(member.user.value!!) // Also should NEVER be null!
             )
