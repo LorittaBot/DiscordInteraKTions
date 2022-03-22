@@ -3,7 +3,6 @@ package net.perfectdreams.discordinteraktions.platforms.kord.entities
 import dev.kord.common.entity.DiscordUser
 import net.perfectdreams.discordinteraktions.common.entities.Icon
 import net.perfectdreams.discordinteraktions.common.entities.User
-import net.perfectdreams.discordinteraktions.common.entities.UserAvatar
 
 class KordUser(val handle: DiscordUser) : User {
     override val id = handle.id
