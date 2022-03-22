@@ -22,7 +22,8 @@ class KordInteractionMember(
     override val permissions by handle::permissions
     override val pending: Boolean
         get() = handle.pending.discordBoolean
-    override val avatar = handle.avatar.value?.let {
+    override val avatarHash = handle.avatar.value
+    override val avatar = avatarHash?.let {
         Icon.MemberAvatar(guildId, user.id, it)
     }
     override val communicationDisabledUntil: Instant?

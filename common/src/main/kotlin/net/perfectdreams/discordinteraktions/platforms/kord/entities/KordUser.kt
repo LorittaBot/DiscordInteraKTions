@@ -9,7 +9,8 @@ class KordUser(val handle: DiscordUser) : User {
     override val id = handle.id
     override val name by handle::username
     override val discriminator by handle::discriminator
-    override val avatar = handle.avatar?.let {
+    override val avatarHash = handle.avatar
+    override val avatar = avatarHash?.let {
         Icon.UserAvatar(id, it)
     } ?: Icon.DefaultUserAvatar(discriminator.toInt())
     override val bot: Boolean

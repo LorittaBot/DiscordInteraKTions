@@ -6,6 +6,7 @@ interface User {
     val id: Snowflake
     val name: String
     val discriminator: String
+    val avatarHash: String?
     val avatar: Icon
     val bot: Boolean
 }
