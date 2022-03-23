@@ -9,7 +9,7 @@ import com.mrpowergamerbr.nicolebot.commands.SendModalExecutor
 import com.mrpowergamerbr.nicolebot.commands.HelloWorldExecutor
 import com.mrpowergamerbr.nicolebot.commands.ModalSubmitYayExecutor
 import com.mrpowergamerbr.nicolebot.commands.SendYourAttachmentExecutor
-import com.mrpowergamerbr.nicolebot.commands.declarations.AutocompleteFunAutocompleteExecutor
+import com.mrpowergamerbr.nicolebot.commands.AutocompleteFunAutocompleteExecutor
 import com.mrpowergamerbr.nicolebot.commands.declarations.AutocompleteFunCommand
 import com.mrpowergamerbr.nicolebot.commands.declarations.CounterCommand
 import com.mrpowergamerbr.nicolebot.commands.declarations.HelloWorldCommand

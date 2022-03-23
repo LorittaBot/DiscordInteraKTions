@@ -1,8 +1,5 @@
 package com.mrpowergamerbr.nicolebot.commands
 
-import com.mrpowergamerbr.nicolebot.commands.SendYourAttachmentExecutor.Companion.Options.register
-import com.mrpowergamerbr.nicolebot.commands.SendYourAttachmentExecutor.Companion.Options.string
-import com.mrpowergamerbr.nicolebot.commands.declarations.AutocompleteFunAutocompleteExecutor
 import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
