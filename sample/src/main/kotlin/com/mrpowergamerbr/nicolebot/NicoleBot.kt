@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.nicolebot
 
+import com.mrpowergamerbr.nicolebot.commands.AutocompleteFunExecutor
 import com.mrpowergamerbr.nicolebot.commands.ButtonsExecutor
 import com.mrpowergamerbr.nicolebot.commands.CounterButtonClickExecutor
 import com.mrpowergamerbr.nicolebot.commands.CounterExecutor
@@ -8,6 +9,8 @@ import com.mrpowergamerbr.nicolebot.commands.SendModalExecutor
 import com.mrpowergamerbr.nicolebot.commands.HelloWorldExecutor
 import com.mrpowergamerbr.nicolebot.commands.ModalSubmitYayExecutor
 import com.mrpowergamerbr.nicolebot.commands.SendYourAttachmentExecutor
+import com.mrpowergamerbr.nicolebot.commands.declarations.AutocompleteFunAutocompleteExecutor
+import com.mrpowergamerbr.nicolebot.commands.declarations.AutocompleteFunCommand
 import com.mrpowergamerbr.nicolebot.commands.declarations.CounterCommand
 import com.mrpowergamerbr.nicolebot.commands.declarations.HelloWorldCommand
 import com.mrpowergamerbr.nicolebot.commands.declarations.InteractivityCommand
@@ -69,6 +72,17 @@ class NicoleBot(
         commandManager.register(
             SendYourAttachmentCommand,
             SendYourAttachmentExecutor()
+        )
+
+        // ===[ /autocompletefun ]===
+        commandManager.register(
+            AutocompleteFunCommand,
+            AutocompleteFunExecutor()
+        )
+
+        commandManager.register(
+            AutocompleteFunAutocompleteExecutor,
+            AutocompleteFunAutocompleteExecutor()
         )
 
         val registry = KordCommandRegistry(

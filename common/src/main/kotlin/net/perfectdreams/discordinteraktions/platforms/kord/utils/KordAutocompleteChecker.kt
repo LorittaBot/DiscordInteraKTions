@@ -67,6 +67,7 @@ class KordAutocompleteChecker(val commandManager: CommandManager) {
                 kordUser,
                 request.channelId,
                 interactionData,
+                relativeOptions.filterIsInstance<CommandArgument<*>>(),
                 request,
                 guildId,
                 kordMember
@@ -78,6 +79,7 @@ class KordAutocompleteChecker(val commandManager: CommandManager) {
                 ),
                 request.channelId,
                 interactionData,
+                relativeOptions.filterIsInstance<CommandArgument<*>>(),
                 request
             )
         }
