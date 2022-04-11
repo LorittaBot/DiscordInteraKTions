@@ -18,6 +18,7 @@ class SendModalExecutor : SlashCommandExecutor() {
 
             actionRow {
                 textInput(ModalSubmitYayExecutor.options.somethingEvenBigger, TextInputStyle.Paragraph, "How's your day?") {
+                    required = false
                     allowedLength = 50..200
                 }
             }

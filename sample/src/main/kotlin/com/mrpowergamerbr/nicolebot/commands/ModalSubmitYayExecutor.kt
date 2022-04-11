@@ -27,9 +27,14 @@ class ModalSubmitYayExecutor : ModalSubmitExecutor {
         context.sendEphemeralMessage {
             content = "Done! You typed: ${args[Options.something]}"
 
-            embed {
-                title = "How's your day?"
-                description = args[Options.somethingEvenBigger]
+            val somethingEvenBigger = args[Options.somethingEvenBigger]
+
+            // In Discord's API: Optional TextInputs are empty if the user hasn't filled it
+            if (somethingEvenBigger.isNotEmpty()) {
+                embed {
+                    title = "How's your day?"
+                    description = args[Options.somethingEvenBigger]
+                }
             }
         }
     }
