@@ -1,7 +1,7 @@
 package net.perfectdreams.discordinteraktions.webserver
 
 import dev.kord.common.entity.DiscordInteraction
-import io.ktor.application.*
+import io.ktor.server.application.*
 
 /**
  * Abstract class that can be inherited to change
