@@ -14,12 +14,14 @@ sealed class CommandOptionBuilder<T, ChoiceableType>(
     var nameLocalizations: Map<Locale, String>? = null
     var descriptionLocalizations: Map<Locale, String>? = null
 
-    fun nameLocalizations(map: Map<Locale, String>) {
+    fun nameLocalizations(map: Map<Locale, String>): CommandOptionBuilder<T, ChoiceableType> {
         this.nameLocalizations = map
+        return this
     }
 
-    fun descriptionLocalizations(map: Map<Locale, String>) {
+    fun descriptionLocalizations(map: Map<Locale, String>): CommandOptionBuilder<T, ChoiceableType> {
         this.descriptionLocalizations = map
+        return this
     }
 
     abstract fun build(): CommandOption<T>
