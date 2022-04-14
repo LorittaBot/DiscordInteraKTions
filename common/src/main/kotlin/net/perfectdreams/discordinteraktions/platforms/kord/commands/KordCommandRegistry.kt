@@ -1,48 +1,11 @@
 package net.perfectdreams.discordinteraktions.platforms.kord.commands
 
 import dev.kord.common.entity.Snowflake
-import dev.kord.rest.builder.interaction.ApplicationCommandCreateBuilder
-import dev.kord.rest.builder.interaction.BaseInputChatBuilder
-import dev.kord.rest.builder.interaction.ChatInputCreateBuilder
-import dev.kord.rest.builder.interaction.GroupCommandBuilder
-import dev.kord.rest.builder.interaction.MessageCommandCreateBuilder
-import dev.kord.rest.builder.interaction.SubCommandBuilder
-import dev.kord.rest.builder.interaction.UserCommandCreateBuilder
-import dev.kord.rest.builder.interaction.attachment
-import dev.kord.rest.builder.interaction.boolean
-import dev.kord.rest.builder.interaction.channel
-import dev.kord.rest.builder.interaction.int
-import dev.kord.rest.builder.interaction.number
-import dev.kord.rest.builder.interaction.role
-import dev.kord.rest.builder.interaction.string
-import dev.kord.rest.builder.interaction.user
+import dev.kord.common.entity.optional.optional
+import dev.kord.rest.builder.interaction.*
 import dev.kord.rest.service.RestClient
-import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandDeclaration
-import net.perfectdreams.discordinteraktions.common.commands.CommandManager
-import net.perfectdreams.discordinteraktions.common.commands.CommandRegistry
-import net.perfectdreams.discordinteraktions.common.commands.MessageCommandDeclaration
-import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclaration
-import net.perfectdreams.discordinteraktions.common.commands.SlashCommandGroupDeclaration
-import net.perfectdreams.discordinteraktions.common.commands.UserCommandDeclaration
-import net.perfectdreams.discordinteraktions.common.commands.options.AttachmentCommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.BooleanCommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.ChannelCommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.ChoiceableCommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.CommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.IntegerCommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.NullableAttachmentCommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.NullableBooleanCommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.NullableChannelCommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.NullableCommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.NullableIntegerCommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.NullableNumberCommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.NullableRoleCommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.NullableStringCommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.NullableUserCommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.NumberCommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.RoleCommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.StringCommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.UserCommandOption
+import net.perfectdreams.discordinteraktions.common.commands.*
+import net.perfectdreams.discordinteraktions.common.commands.options.*
 
 class KordCommandRegistry(private val applicationId: Snowflake, private val rest: RestClient, private val manager: CommandManager) : CommandRegistry {
     override suspend fun updateAllCommandsInGuild(guildId: Snowflake, deleteUnknownCommands: Boolean) {
@@ -105,16 +68,23 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
     private fun convertCommandDeclarationToKord(declaration: ApplicationCommandDeclaration): ApplicationCommandCreateBuilder {
         when (declaration) {
             is UserCommandDeclaration -> {
-                return UserCommandCreateBuilder(declaration.name)
+                return UserCommandCreateBuilder(declaration.name).apply {
+                    nameLocalizations = declaration.nameLocalizations?.toMutableMap()
+                }
             }
 
             is MessageCommandDeclaration -> {
-                return MessageCommandCreateBuilder(declaration.name)
+                return MessageCommandCreateBuilder(declaration.name).apply {
+                    nameLocalizations = declaration.nameLocalizations?.toMutableMap()
+                }
             }
 
             is SlashCommandDeclaration -> {
-                val commandData = ChatInputCreateBuilder(declaration.name, declaration.description)
-                commandData.options = mutableListOf() // Initialize a empty list so we can use it
+                val commandData = ChatInputCreateBuilder(declaration.name, declaration.description).apply {
+                    nameLocalizations = declaration.nameLocalizations?.toMutableMap()
+                    descriptionLocalizations = declaration.descriptionLocalizations?.toMutableMap()
+                    options = mutableListOf() // Initialize a empty list so we can use it
+                }
 
                 // We can only have (subcommands OR subcommand groups) OR arguments
                 if (declaration.subcommands.isNotEmpty() || declaration.subcommandGroups.isNotEmpty()) {
@@ -137,21 +107,16 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
 
                 return commandData
             }
-            is SlashCommandGroupDeclaration -> {
-                val commandData = ChatInputCreateBuilder(declaration.name, declaration.description)
-                commandData.options = mutableListOf() // Initialize a empty list so we can use it
-
-                declaration.subcommands.forEach {
-                    commandData.options?.add(convertSubcommandDeclarationToKord(it))
-                }
-
-                return commandData
-            }
+            is SlashCommandGroupDeclaration -> error("This should never be called because the convertCommandDeclarationToKord method is only called on a root!")
         }
     }
 
     private fun convertSubcommandDeclarationToKord(declaration: SlashCommandDeclaration): SubCommandBuilder {
-        val commandData = SubCommandBuilder(declaration.name, declaration.description)
+        val commandData = SubCommandBuilder(declaration.name, declaration.description).apply {
+            nameLocalizations = declaration.nameLocalizations?.toMutableMap()
+            descriptionLocalizations = declaration.descriptionLocalizations?.toMutableMap()
+            options = mutableListOf() // Initialize a empty list so we can use it
+        }
 
         // This is a subcommand, so we only have a executor anyway
         val executor = declaration.executor ?: error("Subcommand without a executor!")
@@ -165,7 +130,11 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
     }
 
     private fun convertSubcommandGroupDeclarationToKord(declaration: SlashCommandGroupDeclaration): GroupCommandBuilder {
-        val commandData = GroupCommandBuilder(declaration.name, declaration.description)
+        val commandData = GroupCommandBuilder(declaration.name, declaration.description).apply {
+            nameLocalizations = declaration.nameLocalizations?.toMutableMap()
+            descriptionLocalizations = declaration.descriptionLocalizations?.toMutableMap()
+            options = mutableListOf() // Initialize a empty list so we can use it
+        }
         commandData.options = mutableListOf() // Initialize a empty list so we can use it
 
         declaration.subcommands.forEach {
@@ -181,54 +150,70 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
             is IntegerCommandOption, is NullableIntegerCommandOption ->
                 if (cmdOption is ChoiceableCommandOption<*, *>) {
                     builder.int(cmdOption.name, cmdOption.description) {
+                        this.nameLocalizations = nameLocalizations
+                        this.descriptionLocalizations = descriptionLocalizations
                         this.required = cmdOption !is NullableCommandOption
                         this.autocomplete = cmdOption.autoCompleteExecutorDeclaration != null
 
                         for (choice in cmdOption.choices) {
-                            choice(choice.name, choice.value as Long)
+                            choice(choice.name, choice.value as Long, choice.nameLocalizations.optional())
                         }
                     }
                 } else error("The $cmdOption should be choiceable, but it isn't! Bug?")
             is NumberCommandOption, is NullableNumberCommandOption ->
                 if (cmdOption is ChoiceableCommandOption<*, *>) {
                     builder.number(cmdOption.name, cmdOption.description) {
+                        this.nameLocalizations = nameLocalizations
+                        this.descriptionLocalizations = descriptionLocalizations
                         this.required = cmdOption !is NullableCommandOption
                         this.autocomplete = cmdOption.autoCompleteExecutorDeclaration != null
 
                         for (choice in cmdOption.choices) {
-                            choice(choice.name, choice.value as Double)
+                            choice(choice.name, choice.value as Double, choice.nameLocalizations.optional())
                         }
                     }
                 } else error("The $cmdOption should be choiceable, but it isn't! Bug?")
             is StringCommandOption, is NullableStringCommandOption ->
                 if (cmdOption is ChoiceableCommandOption<*, *>) {
                     builder.string(cmdOption.name, cmdOption.description) {
+                        this.nameLocalizations = nameLocalizations
+                        this.descriptionLocalizations = descriptionLocalizations
                         this.required = cmdOption !is NullableCommandOption
                         this.autocomplete = cmdOption.autoCompleteExecutorDeclaration != null
 
                         for (choice in cmdOption.choices) {
-                            choice(choice.name, choice.value as String)
+                            choice(choice.name, choice.value as String, choice.nameLocalizations.optional())
                         }
                     }
                 } else error("The $cmdOption should be choiceable, but it isn't! Bug?")
             is BooleanCommandOption, is NullableBooleanCommandOption ->
                 builder.boolean(cmdOption.name, cmdOption.description) {
+                    this.nameLocalizations = nameLocalizations
+                    this.descriptionLocalizations = descriptionLocalizations
                     this.required = cmdOption !is NullableCommandOption
                 }
             is UserCommandOption, is NullableUserCommandOption ->
                 builder.user(cmdOption.name, cmdOption.description) {
+                    this.nameLocalizations = nameLocalizations
+                    this.descriptionLocalizations = descriptionLocalizations
                     this.required = cmdOption !is NullableCommandOption
                 }
             is ChannelCommandOption, is NullableChannelCommandOption ->
                 builder.channel(cmdOption.name, cmdOption.description) {
+                    this.nameLocalizations = nameLocalizations
+                    this.descriptionLocalizations = descriptionLocalizations
                     this.required = cmdOption !is NullableCommandOption
                 }
             is RoleCommandOption, is NullableRoleCommandOption ->
                 builder.role(cmdOption.name, cmdOption.description) {
+                    this.nameLocalizations = nameLocalizations
+                    this.descriptionLocalizations = descriptionLocalizations
                     this.required = cmdOption !is NullableCommandOption
                 }
             is AttachmentCommandOption, is NullableAttachmentCommandOption ->
                 builder.attachment(cmdOption.name, cmdOption.description) {
+                    this.nameLocalizations = nameLocalizations
+                    this.descriptionLocalizations = descriptionLocalizations
                     this.required = cmdOption !is NullableCommandOption
                 }
             else -> error("Unsupported type ${cmdOption::class}")

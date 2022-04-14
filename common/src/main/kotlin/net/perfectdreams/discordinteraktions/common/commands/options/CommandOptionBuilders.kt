@@ -1,5 +1,6 @@
 package net.perfectdreams.discordinteraktions.common.commands.options
 
+import dev.kord.common.Locale
 import dev.kord.common.entity.DiscordAttachment
 import net.perfectdreams.discordinteraktions.common.entities.Channel
 import net.perfectdreams.discordinteraktions.common.entities.Role
@@ -10,21 +11,32 @@ sealed class CommandOptionBuilder<T, ChoiceableType>(
     val name: String,
     val description: String,
 ) {
+    var nameLocalizations: Map<Locale, String>? = null
+    var descriptionLocalizations: Map<Locale, String>? = null
+
+    fun nameLocalizations(map: Map<Locale, String>) {
+        this.nameLocalizations = map
+    }
+
+    fun descriptionLocalizations(map: Map<Locale, String>) {
+        this.descriptionLocalizations = map
+    }
+
     abstract fun build(): CommandOption<T>
 }
 
 sealed class ChoiceableCommandOptionBuilder<T, ChoiceableType>(
     name: String,
-    description: String
+    description: String,
 ) : CommandOptionBuilder<T, ChoiceableType>(name, description) {
     val choices: MutableList<CommandChoice<ChoiceableType>> = mutableListOf()
     var autocompleteExecutorDeclaration: AutocompleteExecutorDeclaration<ChoiceableType>? = null
 
-    fun choice(value: ChoiceableType, name: String): ChoiceableCommandOptionBuilder<T, ChoiceableType> {
+    fun choice(value: ChoiceableType, name: String, nameLocalizations: Map<Locale, String>? = null): ChoiceableCommandOptionBuilder<T, ChoiceableType> {
         if (this.autocompleteExecutorDeclaration != null)
             error("You can't use pre-defined choices with an autocomplete executor set!")
 
-        choices.add(buildCommandChoice(value, name))
+        choices.add(buildCommandChoice(value, name, nameLocalizations))
 
         return this
     }
@@ -38,12 +50,12 @@ sealed class ChoiceableCommandOptionBuilder<T, ChoiceableType>(
         return this
     }
 
-    abstract fun buildCommandChoice(value: ChoiceableType, name: String): CommandChoice<ChoiceableType>
+    abstract fun buildCommandChoice(value: ChoiceableType, name: String, map: Map<Locale, String>? = null): CommandChoice<ChoiceableType>
 }
 
 // ===[ STRING ]===
 class StringCommandOptionBuilder(name: String, description: String) : ChoiceableCommandOptionBuilder<String, String>(name, description) {
-    override fun buildCommandChoice(value: String, name: String) = StringCommandChoice(name, value)
+    override fun buildCommandChoice(value: String, name: String, map: Map<Locale, String>?) = StringCommandChoice(name, value, map)
 
     override fun build() = StringCommandOption(
         name,
@@ -54,7 +66,7 @@ class StringCommandOptionBuilder(name: String, description: String) : Choiceable
 }
 
 class NullableStringCommandOptionBuilder(name: String, description: String) : ChoiceableCommandOptionBuilder<String?, String>(name, description) {
-    override fun buildCommandChoice(value: String, name: String) = StringCommandChoice(name, value)
+    override fun buildCommandChoice(value: String, name: String, map: Map<Locale, String>?) = StringCommandChoice(name, value, map)
 
     override fun build() = NullableStringCommandOption(
         name,
@@ -66,7 +78,7 @@ class NullableStringCommandOptionBuilder(name: String, description: String) : Ch
 
 // ===[ INTEGER ]===
 class IntegerCommandOptionBuilder(name: String, description: String) : ChoiceableCommandOptionBuilder<Long, Long>(name, description) {
-    override fun buildCommandChoice(value: Long, name: String) = IntegerCommandChoice(name, value)
+    override fun buildCommandChoice(value: Long, name: String, map: Map<Locale, String>?) = IntegerCommandChoice(name, value, map)
 
     override fun build() = IntegerCommandOption(
         name,
@@ -77,7 +89,7 @@ class IntegerCommandOptionBuilder(name: String, description: String) : Choiceabl
 }
 
 class NullableIntegerCommandOptionBuilder(name: String, description: String) : ChoiceableCommandOptionBuilder<Long?, Long>(name, description) {
-    override fun buildCommandChoice(value: Long, name: String) = IntegerCommandChoice(name, value)
+    override fun buildCommandChoice(value: Long, name: String, map: Map<Locale, String>?) = IntegerCommandChoice(name, value, map)
 
     override fun build() = NullableIntegerCommandOption(
         name,
@@ -89,7 +101,7 @@ class NullableIntegerCommandOptionBuilder(name: String, description: String) : C
 
 // ===[ NUMBER ]===
 class NumberCommandOptionBuilder(name: String, description: String) : ChoiceableCommandOptionBuilder<Double, Double>(name, description) {
-    override fun buildCommandChoice(value: Double, name: String) = NumberCommandChoice(name, value)
+    override fun buildCommandChoice(value: Double, name: String, map: Map<Locale, String>?) = NumberCommandChoice(name, value, map)
 
     override fun build() = NumberCommandOption(
         name,
@@ -100,7 +112,7 @@ class NumberCommandOptionBuilder(name: String, description: String) : Choiceable
 }
 
 class NullableNumberCommandOptionBuilder(name: String, description: String) : ChoiceableCommandOptionBuilder<Double?, Double>(name, description) {
-    override fun buildCommandChoice(value: Double, name: String) = NumberCommandChoice(name, value)
+    override fun buildCommandChoice(value: Double, name: String, map: Map<Locale, String>?) = NumberCommandChoice(name, value, map)
 
     override fun build() = NullableNumberCommandOption(
         name,
