@@ -12,7 +12,7 @@ include(":sample")
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
-            version("discordinteraktions", "0.0.12")
+            version("discordinteraktions", "0.0.13-SNAPSHOT")
             version("kotlin", "1.6.10")
             version("kord", "0.8.x-20220315.083129-149")
             alias("kord-common").to("dev.kord", "kord-common").versionRef("kord")
