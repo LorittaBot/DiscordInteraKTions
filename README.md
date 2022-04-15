@@ -307,7 +307,7 @@ suspend fun main() {
     // So we need to create the command registry with our command manager!
     val registry = KordCommandRegistry(
         Snowflake(12345L), // Your application ID, get it from the Discord Developers' dashboard!
-        interactionsServer.rest,
+        client.rest,
         commandManager
     )
 
@@ -322,7 +322,7 @@ suspend fun main() {
     client.gateway.gateways.forEach {
         it.value.installDiscordInteraKTions( // We will install the Discord InteraKTions listener on every gateway
             Snowflake(12345L), // Your application ID, get it from the Discord Developers' dashboard!
-            interactionsServer.rest,
+            client.rest,
             commandManager
         )
     }
