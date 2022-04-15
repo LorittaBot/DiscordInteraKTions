@@ -91,7 +91,7 @@ class NicoleBot(
             commandManager
         )
 
-        registry.updateAllCommandsInGuild(GUILD_ID, false)
-        // registry.updateAllGlobalCommands(true)
+        registry.updateAllCommandsInGuild(GUILD_ID)
+        // registry.updateAllGlobalCommands()
     }
 }

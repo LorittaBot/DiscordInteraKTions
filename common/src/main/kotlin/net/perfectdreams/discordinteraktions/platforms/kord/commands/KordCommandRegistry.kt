@@ -8,27 +8,7 @@ import net.perfectdreams.discordinteraktions.common.commands.*
 import net.perfectdreams.discordinteraktions.common.commands.options.*
 
 class KordCommandRegistry(private val applicationId: Snowflake, private val rest: RestClient, private val manager: CommandManager) : CommandRegistry {
-    override suspend fun updateAllCommandsInGuild(guildId: Snowflake, deleteUnknownCommands: Boolean) {
-        if (deleteUnknownCommands) {
-            // Check commands that are already registered and remove the ones that aren't present in our command manager
-            val alreadyRegisteredCommands = rest.interaction.getGuildApplicationCommands(
-                applicationId,
-                guildId
-            )
-
-            val alreadyRegisteredCommandLabels = manager.declarations.map { it.name }
-
-            val commandsToBeRemoved = alreadyRegisteredCommands.filter { it.name !in alreadyRegisteredCommandLabels }
-
-            commandsToBeRemoved.forEach {
-                rest.interaction.deleteGuildApplicationCommand(
-                    applicationId,
-                    guildId,
-                    it.id
-                )
-            }
-        }
-
+    override suspend fun updateAllCommandsInGuild(guildId: Snowflake) {
         rest.interaction.createGuildApplicationCommands(
             applicationId,
             guildId,
@@ -38,24 +18,8 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
         )
     }
 
-    override suspend fun updateAllGlobalCommands(deleteUnknownCommands: Boolean) {
+    override suspend fun updateAllGlobalCommands() {
         val kordApplicationId = applicationId
-
-        if (deleteUnknownCommands) {
-            // Check commands that are already registered and remove the ones that aren't present in our command manager
-            val alreadyRegisteredCommands = rest.interaction.getGlobalApplicationCommands(kordApplicationId)
-
-            val alreadyRegisteredCommandLabels = manager.declarations.map { it.name }
-
-            val commandsToBeRemoved = alreadyRegisteredCommands.filter { it.name !in alreadyRegisteredCommandLabels }
-
-            commandsToBeRemoved.forEach {
-                rest.interaction.deleteGlobalApplicationCommand(
-                    kordApplicationId,
-                    it.id
-                )
-            }
-        }
 
         rest.interaction.createGlobalApplicationCommands(
             kordApplicationId,
