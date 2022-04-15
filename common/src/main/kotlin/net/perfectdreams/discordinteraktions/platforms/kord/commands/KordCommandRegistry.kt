@@ -150,8 +150,8 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
             is IntegerCommandOption, is NullableIntegerCommandOption ->
                 if (cmdOption is ChoiceableCommandOption<*, *>) {
                     builder.int(cmdOption.name, cmdOption.description) {
-                        this.nameLocalizations = nameLocalizations
-                        this.descriptionLocalizations = descriptionLocalizations
+                        this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
+                        this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
                         this.required = cmdOption !is NullableCommandOption
                         this.autocomplete = cmdOption.autoCompleteExecutorDeclaration != null
 
@@ -163,8 +163,8 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
             is NumberCommandOption, is NullableNumberCommandOption ->
                 if (cmdOption is ChoiceableCommandOption<*, *>) {
                     builder.number(cmdOption.name, cmdOption.description) {
-                        this.nameLocalizations = nameLocalizations
-                        this.descriptionLocalizations = descriptionLocalizations
+                        this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
+                        this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
                         this.required = cmdOption !is NullableCommandOption
                         this.autocomplete = cmdOption.autoCompleteExecutorDeclaration != null
 
@@ -176,8 +176,8 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
             is StringCommandOption, is NullableStringCommandOption ->
                 if (cmdOption is ChoiceableCommandOption<*, *>) {
                     builder.string(cmdOption.name, cmdOption.description) {
-                        this.nameLocalizations = nameLocalizations
-                        this.descriptionLocalizations = descriptionLocalizations
+                        this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
+                        this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
                         this.required = cmdOption !is NullableCommandOption
                         this.autocomplete = cmdOption.autoCompleteExecutorDeclaration != null
 
@@ -188,32 +188,32 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
                 } else error("The $cmdOption should be choiceable, but it isn't! Bug?")
             is BooleanCommandOption, is NullableBooleanCommandOption ->
                 builder.boolean(cmdOption.name, cmdOption.description) {
-                    this.nameLocalizations = nameLocalizations
-                    this.descriptionLocalizations = descriptionLocalizations
+                    this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
+                    this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
                     this.required = cmdOption !is NullableCommandOption
                 }
             is UserCommandOption, is NullableUserCommandOption ->
                 builder.user(cmdOption.name, cmdOption.description) {
-                    this.nameLocalizations = nameLocalizations
-                    this.descriptionLocalizations = descriptionLocalizations
+                    this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
+                    this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
                     this.required = cmdOption !is NullableCommandOption
                 }
             is ChannelCommandOption, is NullableChannelCommandOption ->
                 builder.channel(cmdOption.name, cmdOption.description) {
-                    this.nameLocalizations = nameLocalizations
-                    this.descriptionLocalizations = descriptionLocalizations
+                    this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
+                    this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
                     this.required = cmdOption !is NullableCommandOption
                 }
             is RoleCommandOption, is NullableRoleCommandOption ->
                 builder.role(cmdOption.name, cmdOption.description) {
-                    this.nameLocalizations = nameLocalizations
-                    this.descriptionLocalizations = descriptionLocalizations
+                    this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
+                    this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
                     this.required = cmdOption !is NullableCommandOption
                 }
             is AttachmentCommandOption, is NullableAttachmentCommandOption ->
                 builder.attachment(cmdOption.name, cmdOption.description) {
-                    this.nameLocalizations = nameLocalizations
-                    this.descriptionLocalizations = descriptionLocalizations
+                    this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
+                    this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
                     this.required = cmdOption !is NullableCommandOption
                 }
             else -> error("Unsupported type ${cmdOption::class}")

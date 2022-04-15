@@ -61,7 +61,9 @@ class StringCommandOptionBuilder(name: String, description: String) : Choiceable
 
     override fun build() = StringCommandOption(
         name,
+        nameLocalizations,
         description,
+        descriptionLocalizations,
         choices,
         autocompleteExecutorDeclaration
     )
@@ -72,7 +74,9 @@ class NullableStringCommandOptionBuilder(name: String, description: String) : Ch
 
     override fun build() = NullableStringCommandOption(
         name,
+        nameLocalizations,
         description,
+        descriptionLocalizations,
         choices,
         autocompleteExecutorDeclaration
     )
@@ -84,7 +88,9 @@ class IntegerCommandOptionBuilder(name: String, description: String) : Choiceabl
 
     override fun build() = IntegerCommandOption(
         name,
+        nameLocalizations,
         description,
+        descriptionLocalizations,
         choices,
         autocompleteExecutorDeclaration
     )
@@ -95,7 +101,9 @@ class NullableIntegerCommandOptionBuilder(name: String, description: String) : C
 
     override fun build() = NullableIntegerCommandOption(
         name,
+        nameLocalizations,
         description,
+        descriptionLocalizations,
         choices,
         autocompleteExecutorDeclaration
     )
@@ -107,7 +115,9 @@ class NumberCommandOptionBuilder(name: String, description: String) : Choiceable
 
     override fun build() = NumberCommandOption(
         name,
+        nameLocalizations,
         description,
+        descriptionLocalizations,
         choices,
         autocompleteExecutorDeclaration
     )
@@ -118,7 +128,9 @@ class NullableNumberCommandOptionBuilder(name: String, description: String) : Ch
 
     override fun build() = NullableNumberCommandOption(
         name,
+        nameLocalizations,
         description,
+        descriptionLocalizations,
         choices,
         autocompleteExecutorDeclaration
     )
@@ -126,45 +138,45 @@ class NullableNumberCommandOptionBuilder(name: String, description: String) : Ch
 
 // ===[ BOOLEAN ]===
 class BooleanCommandOptionBuilder(name: String, description: String) : CommandOptionBuilder<Boolean, Boolean>(name, description) {
-    override fun build() = BooleanCommandOption(name, description)
+    override fun build() = BooleanCommandOption(name, nameLocalizations, description, descriptionLocalizations)
 }
 
 class NullableBooleanCommandOptionBuilder(name: String, description: String) : CommandOptionBuilder<Boolean?, Boolean>(name, description) {
-    override fun build() = NullableBooleanCommandOption(name, description)
+    override fun build() = NullableBooleanCommandOption(name, nameLocalizations, description, descriptionLocalizations)
 }
 
 // ===[ USER ]===
 class UserCommandOptionBuilder(name: String, description: String) : CommandOptionBuilder<User, User>(name, description) {
-    override fun build() = UserCommandOption(name, description)
+    override fun build() = UserCommandOption(name, nameLocalizations, description, descriptionLocalizations)
 }
 
 class NullableUserCommandOptionBuilder(name: String, description: String) : CommandOptionBuilder<User?, User>(name, description) {
-    override fun build() = NullableUserCommandOption(name, description)
+    override fun build() = NullableUserCommandOption(name, nameLocalizations, description, descriptionLocalizations)
 }
 
 // ===[ CHANNEL ]===
 class ChannelCommandOptionBuilder(name: String, description: String) : CommandOptionBuilder<Channel, Channel>(name, description) {
-    override fun build() = ChannelCommandOption(name, description)
+    override fun build() = ChannelCommandOption(name, nameLocalizations, description, descriptionLocalizations)
 }
 
 class NullableChannelCommandOptionBuilder(name: String, description: String) : CommandOptionBuilder<Channel?, Channel>(name, description) {
-    override fun build() = NullableChannelCommandOption(name, description)
+    override fun build() = NullableChannelCommandOption(name, nameLocalizations, description, descriptionLocalizations)
 }
 
 // ===[ ROLE ]===
 class RoleCommandOptionBuilder(name: String, description: String) : CommandOptionBuilder<Role, Role>(name, description) {
-    override fun build() = RoleCommandOption(name, description)
+    override fun build() = RoleCommandOption(name, nameLocalizations, description, descriptionLocalizations)
 }
 
 class NullableRoleCommandOptionBuilder(name: String, description: String) : CommandOptionBuilder<Role?, Role>(name, description) {
-    override fun build() = NullableRoleCommandOption(name, description)
+    override fun build() = NullableRoleCommandOption(name, nameLocalizations, description, descriptionLocalizations)
 }
 
 // ===[ ATTACHMENT ]===
 class AttachmentCommandOptionBuilder(name: String, description: String) : CommandOptionBuilder<DiscordAttachment, DiscordAttachment>(name, description) {
-    override fun build() = AttachmentCommandOption(name, description)
+    override fun build() = AttachmentCommandOption(name, nameLocalizations, description, descriptionLocalizations)
 }
 
 class NullableAttachmentCommandOptionBuilder(name: String, description: String) : CommandOptionBuilder<DiscordAttachment?, DiscordAttachment>(name, description) {
-    override fun build() = NullableAttachmentCommandOption(name, description)
+    override fun build() = NullableAttachmentCommandOption(name, nameLocalizations, description, descriptionLocalizations)
 }
