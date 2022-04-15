@@ -227,7 +227,7 @@ Add the Kord Web Server via Ktor Support module to your project
 ```kotlin
 dependencies {
     ...
-    implementation("net.perfectdreams.discordinteraktions:webserver-ktor-kord:0.0.12-SNAPSHOT") // Check latest version in https://github.com/LorittaBot/DiscordInteraKTions/blob/main/buildSrc/src/main/kotlin/Versions.kt
+    implementation("net.perfectdreams.discordinteraktions:webserver-ktor-kord:0.0.13-SNAPSHOT") // Check latest version in https://github.com/LorittaBot/DiscordInteraKTions/blob/main/buildSrc/src/main/kotlin/Versions.kt
     ...
 }
 ```
@@ -282,7 +282,7 @@ Add the Kord Gateway Support module to your project
 ```kotlin
 dependencies {
     ...
-    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.12-SNAPSHOT") // Check latest version in https://github.com/LorittaBot/DiscordInteraKTions/blob/main/buildSrc/src/main/kotlin/Versions.kt
+    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.13-SNAPSHOT") // Check latest version in https://github.com/LorittaBot/DiscordInteraKTions/blob/main/buildSrc/src/main/kotlin/Versions.kt
     ...
 }
 ```
@@ -292,10 +292,7 @@ suspend fun main() {
     val applicationId = Snowflake(12345L) // Change the Application ID to your Bot's Application ID
     val client = Kord("bot_token_here")
 
-    val commandManager = CommandManager(
-        client.rest,
-        applicationId
-    )
+    val commandManager = CommandManager()
 
     // Register the command...
     // Keep in mind that you need to register all the executors used in the declarations!
@@ -311,7 +308,7 @@ suspend fun main() {
     val registry = KordCommandRegistry(
         Snowflake(12345L), // Your application ID, get it from the Discord Developers' dashboard!
         interactionsServer.rest,
-        interactionsServer.commandManager
+        commandManager
     )
 
     // And now update all commands registered in our command manager!
@@ -324,6 +321,8 @@ suspend fun main() {
 
     client.gateway.gateways.forEach {
         it.value.installDiscordInteraKTions( // We will install the Discord InteraKTions listener on every gateway
+            Snowflake(12345L), // Your application ID, get it from the Discord Developers' dashboard!
+            interactionsServer.rest,
             commandManager
         )
     }
