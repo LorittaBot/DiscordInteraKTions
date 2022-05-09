@@ -8,7 +8,7 @@ import net.perfectdreams.discordinteraktions.common.entities.User
 
 class CounterButtonClickExecutor(private val counter: Counter) : ButtonClickExecutor {
     // All buttons must have unique IDs!
-    companion object : ButtonClickExecutorDeclaration(CounterButtonClickExecutor::class, "counter")
+    companion object : ButtonClickExecutorDeclaration("counter")
 
     override suspend fun onClick(user: User, context: ComponentContext) {
         val newCount = counter.addAndGet()

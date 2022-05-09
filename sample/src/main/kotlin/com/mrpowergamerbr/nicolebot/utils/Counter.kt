@@ -18,6 +18,6 @@ class Counter(
     }
 
     suspend fun addAndGet() = mutex.withLock {
-        count++
+        ++count
     }
 }

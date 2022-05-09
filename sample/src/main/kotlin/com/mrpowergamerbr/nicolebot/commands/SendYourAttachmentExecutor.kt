@@ -10,7 +10,7 @@ import net.perfectdreams.discordinteraktions.common.commands.options.SlashComman
 import net.perfectdreams.discordinteraktions.common.components.interactiveButton
 
 class SendYourAttachmentExecutor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(SendYourAttachmentExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val attachment = attachment("attachment", "Your attachment")
                 .register()

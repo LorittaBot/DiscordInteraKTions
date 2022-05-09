@@ -8,7 +8,7 @@ import net.perfectdreams.discordinteraktions.common.modals.components.ModalArgum
 import net.perfectdreams.discordinteraktions.common.modals.components.ModalComponents
 
 class ModalSubmitYayExecutor : ModalSubmitExecutor {
-    companion object : ModalSubmitExecutorDeclaration(ModalSubmitYayExecutor::class, "modal_submit_example") {
+    companion object : ModalSubmitExecutorDeclaration("modal_submit_example") {
         object Options : ModalComponents() {
             val something = textInput("something")
                 .register()
