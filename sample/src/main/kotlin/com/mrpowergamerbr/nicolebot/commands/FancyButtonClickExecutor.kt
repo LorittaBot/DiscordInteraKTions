@@ -7,7 +7,7 @@ import net.perfectdreams.discordinteraktions.common.entities.User
 
 class FancyButtonClickExecutor : ButtonClickWithDataExecutor {
     // All buttons must have unique IDs!
-    companion object : ButtonClickExecutorDeclaration(FancyButtonClickExecutor::class, "fancy_button")
+    companion object : ButtonClickExecutorDeclaration("fancy_button")
 
     override suspend fun onClick(user: User, context: ComponentContext, data: String) {
         context.sendEphemeralMessage {

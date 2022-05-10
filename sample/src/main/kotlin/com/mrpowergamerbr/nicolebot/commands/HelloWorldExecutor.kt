@@ -6,7 +6,7 @@ import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecuto
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 
 class HelloWorldExecutor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(HelloWorldExecutor::class)
+    companion object : SlashCommandExecutorDeclaration()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.sendMessage {

@@ -3,18 +3,15 @@ package net.perfectdreams.discordinteraktions.common.commands
 import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteExecutor
 import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.components.ButtonClickBaseExecutor
-import net.perfectdreams.discordinteraktions.common.components.ButtonClickExecutor
 import net.perfectdreams.discordinteraktions.common.components.ButtonClickExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.components.SelectMenuBaseExecutor
-import net.perfectdreams.discordinteraktions.common.components.SelectMenuExecutor
 import net.perfectdreams.discordinteraktions.common.components.SelectMenuExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.modals.ModalSubmitBaseExecutor
-import net.perfectdreams.discordinteraktions.common.modals.ModalSubmitExecutor
 import net.perfectdreams.discordinteraktions.common.modals.ModalSubmitExecutorDeclaration
 
 open class CommandManager {
-    val declarations = mutableListOf<ApplicationCommandDeclaration>()
-    val executors = mutableListOf<ApplicationCommandExecutor>()
+    val applicationCommandsDeclarations = mutableListOf<ApplicationCommandDeclaration>()
+    val applicationCommandsExecutors = mutableListOf<ApplicationCommandExecutor>()
 
     val buttonDeclarations = mutableListOf<ButtonClickExecutorDeclaration>()
     val buttonExecutors = mutableListOf<ButtonClickBaseExecutor>()
@@ -31,15 +28,16 @@ open class CommandManager {
     val componentDeclarations: List<String>
         get() = buttonDeclarations.map { it.id } + selectMenusDeclarations.map { it.id }
 
-    fun register(declarationWrapper: ApplicationCommandDeclarationWrapper, vararg executors: ApplicationCommandExecutor) {
-        // TODO: Validate if all executors of the command are present
-        val declaration = declarationWrapper.declaration()
+    fun register(declarationWrapper: ApplicationCommandDeclarationWrapper, vararg executors: ApplicationCommandExecutor) =
+        register(declarationWrapper.declaration(), *executors)
 
-        if (declarations.any { it.name == declaration.name })
+    fun register(declaration: ApplicationCommandDeclaration, vararg executors: ApplicationCommandExecutor) {
+        // TODO: Validate if all executors of the command are present
+        if (applicationCommandsDeclarations.any { it.name == declaration.name })
             error("There's already an root command registered with the label ${declaration.name}!")
 
-        declarations.add(declaration)
-        this.executors.addAll(executors)
+        applicationCommandsDeclarations.add(declaration)
+        this.applicationCommandsExecutors.addAll(executors)
     }
 
     fun register(declaration: ButtonClickExecutorDeclaration, executor: ButtonClickBaseExecutor) {

@@ -12,7 +12,7 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
         rest.interaction.createGuildApplicationCommands(
             applicationId,
             guildId,
-            manager.declarations.map {
+            manager.applicationCommandsDeclarations.map {
                 convertCommandDeclarationToKord(it).toRequest()
             }
         )
@@ -23,7 +23,7 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
 
         rest.interaction.createGlobalApplicationCommands(
             kordApplicationId,
-            manager.declarations.map {
+            manager.applicationCommandsDeclarations.map {
                 convertCommandDeclarationToKord(it).toRequest()
             }
         )

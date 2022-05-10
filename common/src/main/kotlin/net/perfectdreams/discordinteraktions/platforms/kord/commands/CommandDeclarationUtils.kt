@@ -23,9 +23,28 @@ import net.perfectdreams.discordinteraktions.common.commands.options.UserCommand
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordChannel
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordRole
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
+import kotlin.reflect.KClass
 
 object CommandDeclarationUtils {
     private val logger = KotlinLogging.logger {}
+
+    fun getParentClass(thiz: Any): KClass<out Any> {
+        val clazz = thiz::class
+        val javaClazz = clazz.java
+        val fullClassName = javaClazz.name
+        if (!fullClassName.endsWith("\$Companion"))
+            error("The class $fullClassName isn't a companion object, so we aren't able to find the parent class!")
+
+        val parentClassName = fullClassName.removeSuffix("\$Companion")
+
+        try {
+            val parentClazz = javaClazz.classLoader.loadClass(parentClassName)
+            return parentClazz.kotlin
+        } catch (e: Exception) {
+            logger.error(e) { "Couldn't load class $parentClassName! Are you using an anonymous class? If yes, then please set the $this's parent value manually!" }
+            throw e
+        }
+    }
 
     /**
      * Finds all command declaration names in the [request]
@@ -171,7 +190,7 @@ object CommandDeclarationUtils {
      * @param commandLabels  the command labels
      * @return the matched declaration
      */
-    inline fun <reified T : ApplicationCommandDeclaration> getApplicationCommandDeclarationFromLabel(commandManager: CommandManager, commandLabels: List<CommandLabel>): T? = commandManager.declarations
+    inline fun <reified T : ApplicationCommandDeclaration> getApplicationCommandDeclarationFromLabel(commandManager: CommandManager, commandLabels: List<CommandLabel>): T? = commandManager.applicationCommandsDeclarations
         .asSequence()
         .filterIsInstance<T>()
         .mapNotNull {

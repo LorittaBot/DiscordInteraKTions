@@ -7,7 +7,7 @@ import net.perfectdreams.discordinteraktions.common.commands.options.Application
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 
 class AutocompleteFunExecutor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(AutocompleteFunExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val text = string("text", "Text")
                 .register()

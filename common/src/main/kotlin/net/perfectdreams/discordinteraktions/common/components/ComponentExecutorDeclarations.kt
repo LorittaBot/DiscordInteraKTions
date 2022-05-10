@@ -1,12 +1,16 @@
 package net.perfectdreams.discordinteraktions.common.components
 
+import net.perfectdreams.discordinteraktions.platforms.kord.commands.CommandDeclarationUtils
+
 sealed class ComponentExecutorDeclaration(
     /**
-     * The "parent" is Any to avoid issues with anonymous classes
+     * The [parent] is Any? to avoid issues with anonymous classes
      *
      * When using anonymous classes, you can use another type to match declarations
+     *
+     * If [parent] is null when the class is initialized, the declaration will try to find the parent by using Reflection!
      */
-    val parent: Any,
+    var parent: Any? = null,
 
     /**
      * The executor's ID, this is stored in the button, to be able to figure out what executor should be used
@@ -24,21 +28,30 @@ sealed class ComponentExecutorDeclaration(
      */
     idRegex: Regex = ID_REGEX
 ) {
+    constructor(id: String, idRegex: Regex = ID_REGEX) : this(null, id, idRegex)
+
     companion object {
         val ID_REGEX = Regex("[A-z0-9]+")
     }
 
     init {
         require(idRegex.matches(id)) { "ID must respect the $ID_REGEX regular expression!" }
+
+        if (parent == null)
+            parent = CommandDeclarationUtils.getParentClass(this)
     }
 }
 
 open class ButtonClickExecutorDeclaration(
-    parent: Any,
+    parent: Any? = null,
     id: String
-) : ComponentExecutorDeclaration(parent, id)
+) : ComponentExecutorDeclaration(parent, id) {
+    constructor(id: String) : this(null, id)
+}
 
 open class SelectMenuExecutorDeclaration(
-    parent: Any,
+    parent: Any? = null,
     id: String
-) : ComponentExecutorDeclaration(parent, id)
+) : ComponentExecutorDeclaration(parent, id) {
+    constructor(id: String) : this(null, id)
+}
