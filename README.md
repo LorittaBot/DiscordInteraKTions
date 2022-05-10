@@ -96,7 +96,7 @@ object CharacterCommand : SlashCommandDeclarationWrapper {
 }
 
 class CharacterExecutor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(CharacterExecutor::class) { // This needs to be a class reference to the executor class!
+    companion object : SlashCommandExecutorDeclaration() { // This needs to be a class reference to the executor class!
         // By default, if you don't override the options, no options will be set
         override val options = Option
 
@@ -227,7 +227,7 @@ Add the Kord Web Server via Ktor Support module to your project
 ```kotlin
 dependencies {
     ...
-    implementation("net.perfectdreams.discordinteraktions:webserver-ktor-kord:0.0.13-SNAPSHOT") // Check latest version in https://github.com/LorittaBot/DiscordInteraKTions/blob/main/buildSrc/src/main/kotlin/Versions.kt
+    implementation("net.perfectdreams.discordinteraktions:webserver-ktor-kord:0.0.14-SNAPSHOT") // Check latest version in https://github.com/LorittaBot/DiscordInteraKTions/blob/main/settings.gradle.kts#L15
     ...
 }
 ```
@@ -282,7 +282,7 @@ Add the Kord Gateway Support module to your project
 ```kotlin
 dependencies {
     ...
-    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.13-SNAPSHOT") // Check latest version in https://github.com/LorittaBot/DiscordInteraKTions/blob/main/buildSrc/src/main/kotlin/Versions.kt
+    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.14-SNAPSHOT") // Check latest version in https://github.com/LorittaBot/DiscordInteraKTions/blob/main/settings.gradle.kts#L15
     ...
 }
 ```
