@@ -1,6 +1,7 @@
 package net.perfectdreams.discordinteraktions.common.entities
 
 import dev.kord.common.entity.Snowflake
+import dev.kord.common.entity.UserFlag
 
 interface User {
     val id: Snowflake
@@ -9,4 +10,5 @@ interface User {
     val avatarHash: String?
     val avatar: Icon
     val bot: Boolean
+    val publicFlags: List<UserFlag>
 }
