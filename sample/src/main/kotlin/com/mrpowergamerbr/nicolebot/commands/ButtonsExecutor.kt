@@ -9,7 +9,7 @@ import net.perfectdreams.discordinteraktions.common.commands.options.SlashComman
 import net.perfectdreams.discordinteraktions.common.components.interactiveButton
 
 class ButtonsExecutor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(ButtonsExecutor::class)
+    companion object : SlashCommandExecutorDeclaration()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.sendMessage {

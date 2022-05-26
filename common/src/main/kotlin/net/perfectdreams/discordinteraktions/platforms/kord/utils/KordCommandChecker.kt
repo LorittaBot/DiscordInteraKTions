@@ -87,7 +87,7 @@ class KordCommandChecker(val commandManager: CommandManager) {
                     ?: InteraKTionsExceptions.missingDeclaration("slash command")
 
                 val executorDeclaration = command.executor ?: return
-                val executor = commandManager.executors.firstOrNull {
+                val executor = commandManager.applicationCommandsExecutors.firstOrNull {
                     it.signature() == executorDeclaration.parent
                 } as SlashCommandExecutor? ?: InteraKTionsExceptions.missingExecutor("slash command")
 
@@ -114,7 +114,7 @@ class KordCommandChecker(val commandManager: CommandManager) {
                     ?: InteraKTionsExceptions.missingDeclaration("user command")
 
                 val executorDeclaration = command.executor
-                val executor = commandManager.executors.firstOrNull {
+                val executor = commandManager.applicationCommandsExecutors.firstOrNull {
                     it.signature() == executorDeclaration.parent
                 } as UserCommandExecutor? ?: InteraKTionsExceptions.missingExecutor("user command")
 
@@ -133,7 +133,7 @@ class KordCommandChecker(val commandManager: CommandManager) {
                     ?: InteraKTionsExceptions.missingDeclaration("message command")
 
                 val executorDeclaration = command.executor
-                val executor = commandManager.executors.firstOrNull {
+                val executor = commandManager.applicationCommandsExecutors.firstOrNull {
                     it.signature() == executorDeclaration.parent
                 } as MessageCommandExecutor? ?: InteraKTionsExceptions.missingExecutor("message command")
 

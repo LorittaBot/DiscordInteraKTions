@@ -16,8 +16,7 @@ import net.perfectdreams.discordinteraktions.common.components.interactiveButton
 import net.perfectdreams.discordinteraktions.common.entities.messages.editMessage
 
 class CounterExecutor(private val counter: Counter) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(CounterExecutor::class) {
-
+    companion object : SlashCommandExecutorDeclaration() {
         fun createCounterMessage(currentCount: Int): MessageBuilder.() -> (Unit) = {
             content = """Current count: $currentCount
                 |

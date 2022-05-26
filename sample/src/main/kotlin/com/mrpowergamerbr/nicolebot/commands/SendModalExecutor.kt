@@ -8,7 +8,7 @@ import net.perfectdreams.discordinteraktions.common.commands.options.SlashComman
 import net.perfectdreams.discordinteraktions.common.modals.components.textInput
 
 class SendModalExecutor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(SendModalExecutor::class)
+    companion object : SlashCommandExecutorDeclaration()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.sendModal(ModalSubmitYayExecutor, "Hello World!!") {

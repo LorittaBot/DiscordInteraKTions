@@ -6,7 +6,7 @@ import net.perfectdreams.discordinteraktions.common.autocomplete.StringAutocompl
 import net.perfectdreams.discordinteraktions.common.autocomplete.StringAutocompleteExecutorDeclaration
 
 class AutocompleteFunAutocompleteExecutor : StringAutocompleteExecutor {
-    companion object : StringAutocompleteExecutorDeclaration(AutocompleteFunAutocompleteExecutor::class)
+    companion object : StringAutocompleteExecutorDeclaration()
 
     override suspend fun onAutocomplete(
         context: AutocompleteContext,
