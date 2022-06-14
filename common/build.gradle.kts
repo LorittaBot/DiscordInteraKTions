@@ -12,9 +12,9 @@ dependencies {
     api(libs.kord.common)
     api(libs.kord.rest)
 
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
-    implementation("io.github.microutils:kotlin-logging:2.1.21")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
+    implementation("io.github.microutils:kotlin-logging:2.1.23")
 }
 
 tasks {
