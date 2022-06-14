@@ -11,65 +11,66 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
     override suspend fun updateAllCommandsInGuild(guildId: Snowflake) {
         rest.interaction.createGuildApplicationCommands(
             applicationId,
-            guildId,
-            manager.applicationCommandsDeclarations.map {
-                convertCommandDeclarationToKord(it).toRequest()
+            guildId
+        ) {
+            manager.applicationCommandsDeclarations.forEach {
+                convertCommandDeclarationToKord(this, it)
             }
-        )
+        }
     }
 
     override suspend fun updateAllGlobalCommands() {
         val kordApplicationId = applicationId
 
         rest.interaction.createGlobalApplicationCommands(
-            kordApplicationId,
-            manager.applicationCommandsDeclarations.map {
-                convertCommandDeclarationToKord(it).toRequest()
+            kordApplicationId
+        ) {
+            manager.applicationCommandsDeclarations.forEach {
+                convertCommandDeclarationToKord(this, it)
             }
-        )
+        }
     }
 
-    private fun convertCommandDeclarationToKord(declaration: ApplicationCommandDeclaration): ApplicationCommandCreateBuilder {
+    private fun convertCommandDeclarationToKord(builder: MultiApplicationCommandBuilder, declaration: ApplicationCommandDeclaration) {
+        // Workaround because Kord's CommandCreateBuilder builders are internal now
         when (declaration) {
             is UserCommandDeclaration -> {
-                return UserCommandCreateBuilder(declaration.name).apply {
+                return builder.user(declaration.name) {
                     nameLocalizations = declaration.nameLocalizations?.toMutableMap()
                 }
             }
 
             is MessageCommandDeclaration -> {
-                return MessageCommandCreateBuilder(declaration.name).apply {
+                return builder.message(declaration.name) {
                     nameLocalizations = declaration.nameLocalizations?.toMutableMap()
                 }
             }
 
             is SlashCommandDeclaration -> {
-                val commandData = ChatInputCreateBuilder(declaration.name, declaration.description).apply {
+                builder.input(declaration.name, declaration.description) {
                     nameLocalizations = declaration.nameLocalizations?.toMutableMap()
                     descriptionLocalizations = declaration.descriptionLocalizations?.toMutableMap()
                     options = mutableListOf() // Initialize a empty list so we can use it
+
+                    // We can only have (subcommands OR subcommand groups) OR arguments
+                    if (declaration.subcommands.isNotEmpty() || declaration.subcommandGroups.isNotEmpty()) {
+                        declaration.subcommands.forEach {
+                            options?.add(convertSubcommandDeclarationToKord(it))
+                        }
+
+                        declaration.subcommandGroups.forEach {
+                            options?.add(convertSubcommandGroupDeclarationToKord(it))
+                        }
+                    } else {
+                        val executor = declaration.executor ?: error("Root command without a executor!")
+
+                        val options = executor.options
+
+                        options.arguments.forEach {
+                            convertCommandOptionToKord(it, this)
+                        }
+                    }
                 }
-
-                // We can only have (subcommands OR subcommand groups) OR arguments
-                if (declaration.subcommands.isNotEmpty() || declaration.subcommandGroups.isNotEmpty()) {
-                    declaration.subcommands.forEach {
-                        commandData.options?.add(convertSubcommandDeclarationToKord(it))
-                    }
-
-                    declaration.subcommandGroups.forEach {
-                        commandData.options?.add(convertSubcommandGroupDeclarationToKord(it))
-                    }
-                } else {
-                    val executor = declaration.executor ?: error("Root command without a executor!")
-
-                    val options = executor.options
-
-                    options.arguments.forEach {
-                        convertCommandOptionToKord(it, commandData)
-                    }
-                }
-
-                return commandData
             }
             is SlashCommandGroupDeclaration -> error("This should never be called because the convertCommandDeclarationToKord method is only called on a root!")
         }

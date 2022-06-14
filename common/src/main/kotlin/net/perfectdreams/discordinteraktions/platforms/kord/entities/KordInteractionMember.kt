@@ -16,8 +16,8 @@ class KordInteractionMember(
     override val nick: String?
         get() = handle.nick.value
     override val roles by handle::roles
-    override val joinedAt = Instant.parse(handle.joinedAt)
-    override val premiumSince = handle.premiumSince.value?.let { Instant.parse(it) }
+    override val joinedAt = handle.joinedAt
+    override val premiumSince = handle.premiumSince.value
     override val permissions by handle::permissions
     override val pending: Boolean
         get() = handle.pending.discordBoolean

@@ -22,9 +22,7 @@ open class KordMessage(val data: DiscordMessage) : Message {
             KordMember(guildId!!, it, author)
         }
     override val content by data::content
-    override val timestamp: Instant
-        get() = Instant.parse(data.timestamp)
-    override val editedTimestamp: Instant?
-        get() = data.editedTimestamp?.let { Instant.parse(it) }
+    override val timestamp by data::timestamp
+    override val editedTimestamp by data::editedTimestamp
     override val attachments by data::attachments
 }

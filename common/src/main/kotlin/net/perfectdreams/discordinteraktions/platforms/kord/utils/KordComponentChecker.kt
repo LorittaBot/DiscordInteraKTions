@@ -128,6 +128,7 @@ class KordComponentChecker(val commandManager: CommandManager) {
                     }
                 }
             }
+            ComponentType.TextInput -> TODO() // As far as I know this should NEVER happen here!
         }
     }
 }
