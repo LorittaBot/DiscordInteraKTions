@@ -11,7 +11,7 @@ abstract class CommandOption<T>(
     override var name: String,
     override var description: String,
     val required: Boolean
-) : OptionBuilder {
+) : CommandOptionBuilder {
     override var nameLocalizations: Map<Locale, String>? = null
     override var descriptionLocalizations: Map<Locale, String>? = null
     override var default: Boolean? = null
@@ -19,20 +19,20 @@ abstract class CommandOption<T>(
     abstract fun parse(args: List<CommandArgument<*>>?, interaction: DiscordInteraction): T
 }
 
-abstract class ChoiceableOption<T, S : Any>(name: String, description: String, required: Boolean) :
-    CommandOption<T>(name, description, required), ChoiceableOptionBuilder<S> {
+abstract class ChoiceableCommandOption<T, S : Any>(name: String, description: String, required: Boolean) :
+    CommandOption<T>(name, description, required), ChoiceableCommandOptionBuilder<S> {
     override var choices: MutableList<CommandChoice<S>>? = null
     override var autocomplete: AutocompleteExecutorDeclaration<S>? = null
 }
 
-abstract class NumericOption<T, S : Any>(name: String, description: String, required: Boolean) :
-    ChoiceableOption<T, S>(name, description, required), NumericOptionBuilder<S> {
+abstract class NumericCommandOption<T, S : Any>(name: String, description: String, required: Boolean) :
+    ChoiceableCommandOption<T, S>(name, description, required), NumericCommandOptionBuilder<S> {
     override var minValue: S? = null
     override var maxValue: S? = null
 }
 
-class StringOption<T : String?>(name: String, description: String, required: Boolean) :
-    ChoiceableOption<T, String>(name, description, required), StringOptionBuilder {
+class StringCommandOption<T : String?>(name: String, description: String, required: Boolean) :
+    ChoiceableCommandOption<T, String>(name, description, required), StringCommandOptionBuilder {
     override var minLength: Int? = null
     override var maxLength: Int? = null
 
@@ -41,29 +41,29 @@ class StringOption<T : String?>(name: String, description: String, required: Boo
     }
 }
 
-class LongOption<T : Long?>(name: String, description: String, required: Boolean) :
-    NumericOption<T, Long>(name, description, required), LongOptionBuilder {
+class IntegerCommandOption<T : Long?>(name: String, description: String, required: Boolean) :
+    NumericCommandOption<T, Long>(name, description, required), IntegerCommandOptionBuilder {
     override fun parse(args: List<CommandArgument<*>>?, interaction: DiscordInteraction): T {
         return args?.firstOrNull { it.name == name }?.value as T
     }
 }
 
-class DoubleOption<T : Double?>(name: String, description: String, required: Boolean) :
-    NumericOption<T, Double>(name, description, required), DoubleOptionBuilder {
+class NumberCommandOption<T : Double?>(name: String, description: String, required: Boolean) :
+    NumericCommandOption<T, Double>(name, description, required), NumberCommandOptionBuilder {
     override fun parse(args: List<CommandArgument<*>>?, interaction: DiscordInteraction): T {
         return args?.firstOrNull { it.name == name }?.value as T
     }
 }
 
-class BooleanOption<T : Boolean?>(name: String, description: String, required: Boolean) :
-    CommandOption<T>(name, description, required), BooleanOptionBuilder {
+class BooleanCommandOption<T : Boolean?>(name: String, description: String, required: Boolean) :
+    CommandOption<T>(name, description, required), BooleanCommandOptionBuilder {
     override fun parse(args: List<CommandArgument<*>>?, interaction: DiscordInteraction): T {
         return args?.firstOrNull { it.name == name }?.value as T
     }
 }
 
-class UserOption<T : KordUser?>(name: String, description: String, required: Boolean) :
-    CommandOption<T>(name, description, required), UserOptionBuilder {
+class UserCommandOption<T : KordUser?>(name: String, description: String, required: Boolean) :
+    CommandOption<T>(name, description, required), UserCommandOptionBuilder {
     override fun parse(args: List<CommandArgument<*>>?, interaction: DiscordInteraction): T {
         val userId = args?.firstOrNull { it.name == name }?.value as Snowflake?
         val resolved = interaction.data.resolved.value?.users?.value
@@ -72,8 +72,8 @@ class UserOption<T : KordUser?>(name: String, description: String, required: Boo
     }
 }
 
-class RoleOption<T : KordRole?>(name: String, description: String, required: Boolean) :
-    CommandOption<T>(name, description, required), RoleOptionBuilder {
+class RoleCommandOption<T : KordRole?>(name: String, description: String, required: Boolean) :
+    CommandOption<T>(name, description, required), RoleCommandOptionBuilder {
     override fun parse(args: List<CommandArgument<*>>?, interaction: DiscordInteraction): T {
         val roleId = args?.firstOrNull { it.name == name }?.value as Snowflake?
         val resolved = interaction.data.resolved.value?.roles?.value
@@ -82,8 +82,8 @@ class RoleOption<T : KordRole?>(name: String, description: String, required: Boo
     }
 }
 
-class ChannelOption<T : KordChannel?>(name: String, description: String, required: Boolean) :
-    CommandOption<T>(name, description, required), ChannelOptionBuilder {
+class ChannelCommandOption<T : KordChannel?>(name: String, description: String, required: Boolean) :
+    CommandOption<T>(name, description, required), ChannelCommandOptionBuilder {
     override var channelTypes: List<ChannelType>? = null
 
     override fun parse(args: List<CommandArgument<*>>?, interaction: DiscordInteraction): T {
@@ -94,21 +94,21 @@ class ChannelOption<T : KordChannel?>(name: String, description: String, require
     }
 }
 
-class MentionableOption<T : CommandArgument.MentionableArgument?>(
+class MentionableCommandOption<T : CommandArgument.MentionableArgument?>(
     name: String,
     description: String,
     required: Boolean
-) : CommandOption<T>(name, description, required), MentionableOptionBuilder {
+) : CommandOption<T>(name, description, required), MentionableCommandOptionBuilder {
     override fun parse(args: List<CommandArgument<*>>?, interaction: DiscordInteraction): T {
         return args?.firstOrNull { it.name == name }?.value as T
     }
 }
 
-class AttachmentOption<T : DiscordAttachment?>(
+class AttachmentCommandOption<T : DiscordAttachment?>(
     name: String,
     description: String,
     required: Boolean
-) : CommandOption<T>(name, description, required), AttachmentOptionBuilder {
+) : CommandOption<T>(name, description, required), AttachmentCommandOptionBuilder {
     override fun parse(args: List<CommandArgument<*>>?, interaction: DiscordInteraction): T {
         val attachmentId = args?.firstOrNull { it.name == name }?.value as Snowflake?
         val attachment = interaction.data.resolved.value?.attachments?.value?.get(attachmentId)

@@ -15,151 +15,151 @@ open class ApplicationCommandOptions {
     fun string(
         name: String,
         description: String,
-        builder: StringOptionBuilder.() -> (Unit) = {}
-    ): StringOption<String> = StringOption<String>(name, description, true).apply(builder).also {
+        builder: StringCommandOptionBuilder.() -> (Unit) = {}
+    ): StringCommandOption<String> = StringCommandOption<String>(name, description, true).apply(builder).also {
         it.register()
     }
 
     fun optionalString(
         name: String,
         description: String,
-        builder: StringOptionBuilder.() -> (Unit) = {}
-    ): StringOption<String?> = StringOption<String?>(name, description, false).apply(builder).also {
+        builder: StringCommandOptionBuilder.() -> (Unit) = {}
+    ): StringCommandOption<String?> = StringCommandOption<String?>(name, description, false).apply(builder).also {
         it.register()
     }
 
-    fun long(
+    fun integer(
         name: String,
         description: String,
-        builder: LongOptionBuilder.() -> (Unit) = {}
-    ): LongOption<Long> = LongOption<Long>(name, description, true).apply(builder).also {
+        builder: IntegerCommandOptionBuilder.() -> (Unit) = {}
+    ): IntegerCommandOption<Long> = IntegerCommandOption<Long>(name, description, true).apply(builder).also {
         it.register()
     }
 
-    fun optionalLong(
+    fun optionalInteger(
         name: String,
         description: String,
-        builder: LongOptionBuilder.() -> (Unit) = {}
-    ): LongOption<Long?> = LongOption<Long?>(name, description, false).apply(builder).also {
+        builder: IntegerCommandOptionBuilder.() -> (Unit) = {}
+    ): IntegerCommandOption<Long?> = IntegerCommandOption<Long?>(name, description, false).apply(builder).also {
         it.register()
     }
 
-    fun double(
+    fun number(
         name: String,
         description: String,
-        builder: DoubleOptionBuilder.() -> (Unit) = {}
-    ): DoubleOption<Double> = DoubleOption<Double>(name, description, true).apply(builder).also {
+        builder: NumberCommandOptionBuilder.() -> (Unit) = {}
+    ): NumberCommandOption<Double> = NumberCommandOption<Double>(name, description, true).apply(builder).also {
         it.register()
     }
 
-    fun optionalDouble(
+    fun optionalNumber(
         name: String,
         description: String,
-        builder: DoubleOptionBuilder.() -> (Unit) = {}
-    ): DoubleOption<Double?> = DoubleOption<Double?>(name, description, false).apply(builder).also {
+        builder: NumberCommandOptionBuilder.() -> (Unit) = {}
+    ): NumberCommandOption<Double?> = NumberCommandOption<Double?>(name, description, false).apply(builder).also {
         it.register()
     }
 
     fun boolean(
         name: String,
         description: String,
-        builder: BooleanOptionBuilder.() -> (Unit) = {}
-    ): BooleanOption<Boolean> = BooleanOption<Boolean>(name, description, true).apply(builder).also {
+        builder: BooleanCommandOptionBuilder.() -> (Unit) = {}
+    ): BooleanCommandOption<Boolean> = BooleanCommandOption<Boolean>(name, description, true).apply(builder).also {
         it.register()
     }
 
     fun optionalBoolean(
         name: String,
         description: String,
-        builder: BooleanOptionBuilder.() -> (Unit) = {}
-    ): BooleanOption<Boolean?> = BooleanOption<Boolean?>(name, description, false).apply(builder).also {
+        builder: BooleanCommandOptionBuilder.() -> (Unit) = {}
+    ): BooleanCommandOption<Boolean?> = BooleanCommandOption<Boolean?>(name, description, false).apply(builder).also {
         it.register()
     }
 
     fun user(
         name: String,
         description: String,
-        builder: UserOptionBuilder.() -> (Unit) = {}
-    ): UserOption<KordUser> = UserOption<KordUser>(name, description, true).apply(builder).also {
+        builder: UserCommandOptionBuilder.() -> (Unit) = {}
+    ): UserCommandOption<KordUser> = UserCommandOption<KordUser>(name, description, true).apply(builder).also {
         it.register()
     }
 
     fun optionalUser(
         name: String,
         description: String,
-        builder: UserOptionBuilder.() -> (Unit) = {}
-    ): UserOption<KordUser?> =
-        UserOption<KordUser?>(name, description, false).apply(builder).also {
+        builder: UserCommandOptionBuilder.() -> (Unit) = {}
+    ): UserCommandOption<KordUser?> =
+        UserCommandOption<KordUser?>(name, description, false).apply(builder).also {
             it.register()
         }
 
     fun role(
         name: String,
         description: String,
-        builder: RoleOptionBuilder.() -> (Unit) = {}
-    ): RoleOption<KordRole> = RoleOption<KordRole>(name, description, true).apply(builder).also {
+        builder: RoleCommandOptionBuilder.() -> (Unit) = {}
+    ): RoleCommandOption<KordRole> = RoleCommandOption<KordRole>(name, description, true).apply(builder).also {
         it.register()
     }
 
     fun optionalRole(
         name: String,
         description: String,
-        builder: RoleOptionBuilder.() -> (Unit) = {}
-    ): RoleOption<KordRole?> = RoleOption<KordRole?>(name, description, false).apply(builder).also {
+        builder: RoleCommandOptionBuilder.() -> (Unit) = {}
+    ): RoleCommandOption<KordRole?> = RoleCommandOption<KordRole?>(name, description, false).apply(builder).also {
         it.register()
     }
 
     fun channel(
         name: String,
         description: String,
-        builder: ChannelOptionBuilder.() -> (Unit) = {}
-    ): ChannelOption<KordChannel> =
-        ChannelOption<KordChannel>(name, description, true).apply(builder).also {
+        builder: ChannelCommandOptionBuilder.() -> (Unit) = {}
+    ): ChannelCommandOption<KordChannel> =
+        ChannelCommandOption<KordChannel>(name, description, true).apply(builder).also {
             it.register()
         }
 
     fun optionalChannel(
         name: String,
         description: String,
-        builder: ChannelOptionBuilder.() -> (Unit) = {}
-    ): ChannelOption<KordChannel?> =
-        ChannelOption<KordChannel?>(name, description, false).apply(builder).also {
+        builder: ChannelCommandOptionBuilder.() -> (Unit) = {}
+    ): ChannelCommandOption<KordChannel?> =
+        ChannelCommandOption<KordChannel?>(name, description, false).apply(builder).also {
             it.register()
         }
 
     fun mentionable(
         name: String,
         description: String,
-        builder: MentionableOptionBuilder.() -> (Unit) = {}
-    ): MentionableOption<CommandArgument.MentionableArgument> =
-        MentionableOption<CommandArgument.MentionableArgument>(name, description, true).apply(builder).also {
+        builder: MentionableCommandOptionBuilder.() -> (Unit) = {}
+    ): MentionableCommandOption<CommandArgument.MentionableArgument> =
+        MentionableCommandOption<CommandArgument.MentionableArgument>(name, description, true).apply(builder).also {
             it.register()
         }
 
     fun optionalMentionable(
         name: String,
         description: String,
-        builder: MentionableOptionBuilder.() -> (Unit) = {}
-    ): MentionableOption<CommandArgument.MentionableArgument?> =
-        MentionableOption<CommandArgument.MentionableArgument?>(name, description, false).apply(builder).also {
+        builder: MentionableCommandOptionBuilder.() -> (Unit) = {}
+    ): MentionableCommandOption<CommandArgument.MentionableArgument?> =
+        MentionableCommandOption<CommandArgument.MentionableArgument?>(name, description, false).apply(builder).also {
             it.register()
         }
 
     fun attachment(
         name: String,
         description: String,
-        builder: AttachmentOptionBuilder.() -> (Unit) = {}
-    ): AttachmentOption<DiscordAttachment> =
-        AttachmentOption<DiscordAttachment>(name, description, true).apply(builder).also {
+        builder: AttachmentCommandOptionBuilder.() -> (Unit) = {}
+    ): AttachmentCommandOption<DiscordAttachment> =
+        AttachmentCommandOption<DiscordAttachment>(name, description, true).apply(builder).also {
             it.register()
         }
 
     fun optionalAttachment(
         name: String,
         description: String,
-        builder: AttachmentOptionBuilder.() -> (Unit) = {}
-    ): AttachmentOption<DiscordAttachment?> =
-        AttachmentOption<DiscordAttachment?>(name, description, false).apply(builder).also {
+        builder: AttachmentCommandOptionBuilder.() -> (Unit) = {}
+    ): AttachmentCommandOption<DiscordAttachment?> =
+        AttachmentCommandOption<DiscordAttachment?>(name, description, false).apply(builder).also {
             it.register()
         }
 

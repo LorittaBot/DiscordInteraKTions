@@ -15,7 +15,7 @@ class AutocompleteFunExecutor : SlashCommandExecutor() {
                 autocomplete(AutocompleteFunAutocompleteExecutor)
             }
 
-            val number = optionalLong("number", "A cool number") {
+            val number = optionalInteger("number", "A cool number") {
                 minValue = 100
                 maxValue = 1000
             }

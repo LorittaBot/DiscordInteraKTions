@@ -123,7 +123,7 @@ class KordCommandRegistry(
 
     private fun convertCommandOptionToKord(cmdOption: CommandOption<*>, builder: BaseInputChatBuilder) {
         when (cmdOption) {
-            is LongOption ->
+            is IntegerCommandOption ->
                 builder.int(cmdOption.name, cmdOption.description) {
                     this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
                     this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
@@ -136,7 +136,7 @@ class KordCommandRegistry(
                         choice(choice.name, choice.value, choice.nameLocalizations.optional())
                     }
                 }
-            is DoubleOption ->
+            is NumberCommandOption ->
                 builder.number(cmdOption.name, cmdOption.description) {
                     this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
                     this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
@@ -149,7 +149,7 @@ class KordCommandRegistry(
                         choice(choice.name, choice.value, choice.nameLocalizations.optional())
                     }
                 }
-            is StringOption ->
+            is StringCommandOption ->
                 builder.string(cmdOption.name, cmdOption.description) {
                     this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
                     this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
@@ -162,32 +162,32 @@ class KordCommandRegistry(
                         choice(choice.name, choice.value, choice.nameLocalizations.optional())
                     }
                 }
-            is BooleanOption ->
+            is BooleanCommandOption ->
                 builder.boolean(cmdOption.name, cmdOption.description) {
                     this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
                     this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
                     this.required = cmdOption.required
                 }
-            is UserOption ->
+            is UserCommandOption ->
                 builder.user(cmdOption.name, cmdOption.description) {
                     this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
                     this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
                     this.required = cmdOption.required
                 }
-            is ChannelOption ->
+            is ChannelCommandOption ->
                 builder.channel(cmdOption.name, cmdOption.description) {
                     this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
                     this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
                     this.required = cmdOption.required
                     this.channelTypes = cmdOption.channelTypes
                 }
-            is RoleOption ->
+            is RoleCommandOption ->
                 builder.role(cmdOption.name, cmdOption.description) {
                     this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
                     this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
                     this.required = cmdOption.required
                 }
-            is AttachmentOption ->
+            is AttachmentCommandOption ->
                 builder.attachment(cmdOption.name, cmdOption.description) {
                     this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
                     this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()

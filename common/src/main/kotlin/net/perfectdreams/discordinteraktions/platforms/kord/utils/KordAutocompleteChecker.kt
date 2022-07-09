@@ -90,7 +90,7 @@ class KordAutocompleteChecker(val commandManager: CommandManager) {
             it.name == focusedDiscordOption.name
         } ?: error("I couldn't find a matching option for ${focusedDiscordOption.name}! Did you update the application command body externally?")
 
-        require(option is ChoiceableOption<*, *>) { "Command option is not choiceable, so it can't be autocompleted! Bug?" }
+        require(option is ChoiceableCommandOption<*, *>) { "Command option is not choiceable, so it can't be autocompleted! Bug?" }
 
         val autocompleteDeclaration = option.autocomplete ?: error("Received autocomplete request for ${focusedDiscordOption.name}, but there isn't any autocomplete executor declaration set on the option! Did you update the application command body externally?")
         val autocompleteExecutor = commandManager.autocompleteExecutors
@@ -103,7 +103,7 @@ class KordAutocompleteChecker(val commandManager: CommandManager) {
             )
 
             when (option) {
-                is StringOption -> {
+                is StringCommandOption -> {
                     autocompleteExecutor as AutocompleteExecutor<String>
                     val autocompleteResult = autocompleteExecutor.onAutocomplete(autocompleteContext, focusedCommandOption)
                     bridge.manager.sendStringAutocomplete(
@@ -116,7 +116,7 @@ class KordAutocompleteChecker(val commandManager: CommandManager) {
                     )
                 }
 
-                is LongOption -> {
+                is IntegerCommandOption -> {
                     autocompleteExecutor as AutocompleteExecutor<Long>
                     val autocompleteResult = autocompleteExecutor.onAutocomplete(autocompleteContext, focusedCommandOption)
                     bridge.manager.sendIntegerAutocomplete(
@@ -129,7 +129,7 @@ class KordAutocompleteChecker(val commandManager: CommandManager) {
                     )
                 }
 
-                is DoubleOption -> {
+                is NumberCommandOption -> {
                     autocompleteExecutor as AutocompleteExecutor<Double>
                     val autocompleteResult = autocompleteExecutor.onAutocomplete(autocompleteContext, focusedCommandOption)
                     bridge.manager.sendNumberAutocomplete(

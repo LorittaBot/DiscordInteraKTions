@@ -2,21 +2,16 @@ package net.perfectdreams.discordinteraktions.common.commands.options
 
 import dev.kord.common.Locale
 import dev.kord.common.entity.ChannelType
-import dev.kord.common.entity.DiscordAttachment
-import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteExecutor
-import net.perfectdreams.discordinteraktions.common.entities.Channel
-import net.perfectdreams.discordinteraktions.common.entities.Role
-import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteExecutorDeclaration
 
-interface OptionBuilder {
+interface CommandOptionBuilder {
     var name: String
     var nameLocalizations: Map<Locale, String>?
     var description: String
     var descriptionLocalizations: Map<Locale, String>?
     var default: Boolean?
 }
-interface ChoiceableOptionBuilder<T> : OptionBuilder {
+interface ChoiceableCommandOptionBuilder<T> : CommandOptionBuilder {
     var choices: MutableList<CommandChoice<T>>?
     var autocomplete: AutocompleteExecutorDeclaration<T>?
 
@@ -36,34 +31,34 @@ interface ChoiceableOptionBuilder<T> : OptionBuilder {
     }
 }
 
-interface NumericOptionBuilder<T : Any> : ChoiceableOptionBuilder<T> {
+interface NumericCommandOptionBuilder<T : Any> : ChoiceableCommandOptionBuilder<T> {
     var minValue: T?
     var maxValue: T?
 }
 
-interface LongOptionBuilder : NumericOptionBuilder<Long>
+interface IntegerCommandOptionBuilder : NumericCommandOptionBuilder<Long>
 
-interface DoubleOptionBuilder : NumericOptionBuilder<Double>
+interface NumberCommandOptionBuilder : NumericCommandOptionBuilder<Double>
 
 class CommandChoiceBuilder {
     var nameLocalizations: Map<Locale, String>? = null
 }
 
-interface StringOptionBuilder : ChoiceableOptionBuilder<String> {
+interface StringCommandOptionBuilder : ChoiceableCommandOptionBuilder<String> {
     var minLength: Int?
     var maxLength: Int?
 }
 
-interface BooleanOptionBuilder : OptionBuilder
+interface BooleanCommandOptionBuilder : CommandOptionBuilder
 
-interface UserOptionBuilder : OptionBuilder
+interface UserCommandOptionBuilder : CommandOptionBuilder
 
-interface RoleOptionBuilder : OptionBuilder
+interface RoleCommandOptionBuilder : CommandOptionBuilder
 
-interface ChannelOptionBuilder : OptionBuilder {
+interface ChannelCommandOptionBuilder : CommandOptionBuilder {
     var channelTypes: List<ChannelType>?
 }
 
-interface MentionableOptionBuilder : OptionBuilder
+interface MentionableCommandOptionBuilder : CommandOptionBuilder
 
-interface AttachmentOptionBuilder : OptionBuilder
+interface AttachmentCommandOptionBuilder : CommandOptionBuilder
