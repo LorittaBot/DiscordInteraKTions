@@ -1,6 +1,7 @@
 package net.perfectdreams.discordinteraktions.common.commands
 
 import dev.kord.common.Locale
+import dev.kord.common.entity.Permissions
 
 // ===[ SLASH COMMANDS ]===
 fun slashCommand(name: String, description: String, block: SlashCommandDeclarationBuilder.() -> (Unit)): SlashCommandDeclaration {
@@ -15,6 +16,9 @@ class SlashCommandDeclarationBuilder(val name: String, val description: String) 
     var executor: SlashCommandExecutorDeclaration? = null
     val subcommands = mutableListOf<SlashCommandDeclaration>()
     val subcommandGroups = mutableListOf<SlashCommandGroupDeclaration>()
+    // Only root commands can have permissions and dmPermission
+    var defaultMemberPermissions: Permissions? = null
+    var dmPermission: Boolean? = null
 
     fun subcommand(name: String, description: String, block: SlashCommandDeclarationBuilder.() -> (Unit)) {
         subcommands += SlashCommandDeclarationBuilder(name, description).apply(block)
@@ -33,6 +37,8 @@ class SlashCommandDeclarationBuilder(val name: String, val description: String) 
             description,
             descriptionLocalizations,
             executor,
+            defaultMemberPermissions,
+            dmPermission,
             subcommands,
             subcommandGroups
         )
@@ -67,11 +73,15 @@ fun userCommand(name: String, executor: UserCommandExecutorDeclaration): UserCom
 
 class UserCommandDeclarationBuilder(val name: String, val executor: UserCommandExecutorDeclaration) {
     var nameLocalizations: Map<Locale, String>? = null
+    var defaultMemberPermissions: Permissions? = null
+    var dmPermission: Boolean? = null
 
     fun build(): UserCommandDeclaration {
         return UserCommandDeclaration(
             name,
             nameLocalizations,
+            defaultMemberPermissions,
+            dmPermission,
             executor
         )
     }
@@ -84,11 +94,15 @@ fun messageCommand(name: String, executor: MessageCommandExecutorDeclaration): M
 
 class MessageCommandDeclarationBuilder(val name: String, val executor: MessageCommandExecutorDeclaration) {
     var nameLocalizations: Map<Locale, String>? = null
+    var defaultMemberPermissions: Permissions? = null
+    var dmPermission: Boolean? = null
 
     fun build(): MessageCommandDeclaration {
         return MessageCommandDeclaration(
             name,
             nameLocalizations,
+            defaultMemberPermissions,
+            dmPermission,
             executor
         )
     }

@@ -50,7 +50,12 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
                 builder.input(declaration.name, declaration.description) {
                     nameLocalizations = declaration.nameLocalizations?.toMutableMap()
                     descriptionLocalizations = declaration.descriptionLocalizations?.toMutableMap()
-                    options = mutableListOf() // Initialize a empty list so we can use it
+                    defaultMemberPermissions = declaration.defaultMemberPermissions
+
+                    if (builder is GlobalMultiApplicationCommandBuilder)
+                        (this as GlobalChatInputCreateBuilder).dmPermission = declaration.dmPermission
+                    
+                    options = mutableListOf() // Initialize an empty list so we can use it
 
                     // We can only have (subcommands OR subcommand groups) OR arguments
                     if (declaration.subcommands.isNotEmpty() || declaration.subcommandGroups.isNotEmpty()) {
