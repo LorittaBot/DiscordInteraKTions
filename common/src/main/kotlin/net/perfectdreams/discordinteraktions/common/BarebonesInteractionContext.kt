@@ -1,6 +1,7 @@
 package net.perfectdreams.discordinteraktions.common
 
 import dev.kord.common.entity.Snowflake
+import dev.kord.rest.builder.component.ActionRowBuilder
 import dev.kord.rest.builder.interaction.ModalBuilder
 import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
@@ -45,11 +46,11 @@ open class BarebonesInteractionContext(
         wasInitiallyDeferredEphemerally = true
     }
 
-    suspend inline fun sendMessage(block: InteractionOrFollowupMessageCreateBuilder.() -> (Unit))
-            = sendPublicMessage(InteractionOrFollowupMessageCreateBuilder(false).apply(block))
+    suspend inline fun sendMessage(block: InteractionOrFollowupMessageCreateBuilder.() -> (Unit)) =
+        sendPublicMessage(InteractionOrFollowupMessageCreateBuilder(false).apply(block))
 
-    suspend inline fun sendEphemeralMessage(block: InteractionOrFollowupMessageCreateBuilder.() -> (Unit))
-            = sendEphemeralMessage(InteractionOrFollowupMessageCreateBuilder(true).apply(block))
+    suspend inline fun sendEphemeralMessage(block: InteractionOrFollowupMessageCreateBuilder.() -> (Unit)) =
+        sendEphemeralMessage(InteractionOrFollowupMessageCreateBuilder(true).apply(block))
 
     suspend fun sendPublicMessage(message: InteractionOrFollowupMessageCreateBuilder): EditableMessage {
         // Check if state matches what we expect
@@ -81,11 +82,31 @@ open class BarebonesInteractionContext(
         return bridge.manager.sendEphemeralMessage(message)
     }
 
-    suspend fun sendModal(declaration: ModalSubmitExecutorDeclaration, title: String, builder: ModalBuilder.() -> (Unit)) = sendModal(declaration.id, title, builder)
-    suspend fun sendModal(declaration: ModalSubmitExecutorDeclaration, data: String, title: String, builder: ModalBuilder.() -> (Unit)) = sendModal(declaration.id, data, title, builder)
-    suspend fun sendModal(id: String, data: String, title: String, builder: ModalBuilder.() -> (Unit)) = sendModal("$id:$data", title, builder)
-    suspend fun sendModal(idWithData: String, title: String, builder: ModalBuilder.() -> (Unit)) {
-        return bridge.manager.sendModal(title, idWithData, builder)
+    suspend fun sendModal(declaration: ModalSubmitExecutorDeclaration, title: String, data: String? = null) {
+        val rows = mutableListOf(
+            ActionRowBuilder(),
+            ActionRowBuilder(),
+            ActionRowBuilder(),
+            ActionRowBuilder(),
+            ActionRowBuilder()
+        )
+
+        return bridge.manager.sendModal(title, "${declaration.id}:$data") {
+            declaration.options.arguments.forEach {
+                if (it.actionRowNumber !in 0..4) error("")
+
+                rows[it.actionRowNumber].apply {
+                    textInput(it.style, it.customId, it.label) {
+                        allowedLength = it.allowedLength
+                        placeholder = it.placeholder
+                        value = it.value
+                        required = it.required
+                    }
+                }
+
+                components.add(rows[it.actionRowNumber])
+            }
+        }
     }
 }
 
