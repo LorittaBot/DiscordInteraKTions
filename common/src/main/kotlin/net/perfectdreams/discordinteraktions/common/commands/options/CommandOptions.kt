@@ -25,6 +25,24 @@ sealed class ChoiceableCommandOption<T, ChoiceableType>(
     val autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<ChoiceableType>?
 ) : CommandOption<T>(name, nameLocalizations, description, descriptionLocalizations)
 
+sealed class NumericCommandOption<T, ChoiceableType>(
+    name: String,
+    nameLocalizations: Map<Locale, String>?,
+    description: String,
+    descriptionLocalizations: Map<Locale, String>?,
+    choices: List<CommandChoice<ChoiceableType>>,
+    autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<ChoiceableType>?,
+    val minValue: ChoiceableType?,
+    val maxValue: ChoiceableType?
+) : ChoiceableCommandOption<T, ChoiceableType>(
+    name,
+    nameLocalizations,
+    description,
+    descriptionLocalizations,
+    choices,
+    autoCompleteExecutorDeclaration
+)
+
 // ===[ STRING ]===
 class StringCommandOption(
     name: String,
@@ -33,7 +51,14 @@ class StringCommandOption(
     descriptionLocalizations: Map<Locale, String>?,
     choices: List<CommandChoice<String>>,
     autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<String>?
-) : ChoiceableCommandOption<String, String>(name, nameLocalizations, description, descriptionLocalizations, choices, autoCompleteExecutorDeclaration)
+) : ChoiceableCommandOption<String, String>(
+    name,
+    nameLocalizations,
+    description,
+    descriptionLocalizations,
+    choices,
+    autoCompleteExecutorDeclaration
+)
 
 class NullableStringCommandOption(
     name: String,
@@ -42,7 +67,14 @@ class NullableStringCommandOption(
     descriptionLocalizations: Map<Locale, String>?,
     choices: List<CommandChoice<String>>,
     autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<String>?
-) : ChoiceableCommandOption<String?, String>(name, nameLocalizations, description, descriptionLocalizations, choices, autoCompleteExecutorDeclaration), NullableCommandOption
+) : ChoiceableCommandOption<String?, String>(
+    name,
+    nameLocalizations,
+    description,
+    descriptionLocalizations,
+    choices,
+    autoCompleteExecutorDeclaration
+), NullableCommandOption
 
 // ===[ INTEGER ]===
 class IntegerCommandOption(
@@ -51,8 +83,19 @@ class IntegerCommandOption(
     description: String,
     descriptionLocalizations: Map<Locale, String>?,
     choices: List<CommandChoice<Long>>,
-    autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<Long>?
-) : ChoiceableCommandOption<Long, Long>(name, nameLocalizations, description, descriptionLocalizations, choices, autoCompleteExecutorDeclaration)
+    autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<Long>?,
+    minValue: Long?,
+    maxValue: Long?
+) : NumericCommandOption<Long, Long>(
+    name,
+    nameLocalizations,
+    description,
+    descriptionLocalizations,
+    choices,
+    autoCompleteExecutorDeclaration,
+    minValue,
+    maxValue
+)
 
 class NullableIntegerCommandOption(
     name: String,
@@ -60,8 +103,19 @@ class NullableIntegerCommandOption(
     description: String,
     descriptionLocalizations: Map<Locale, String>?,
     choices: List<CommandChoice<Long>>,
-    autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<Long>?
-) : ChoiceableCommandOption<Long?, Long>(name, nameLocalizations, description, descriptionLocalizations, choices, autoCompleteExecutorDeclaration), NullableCommandOption
+    autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<Long>?,
+    minValue: Long?,
+    maxValue: Long?
+) : NumericCommandOption<Long?, Long>(
+    name,
+    nameLocalizations,
+    description,
+    descriptionLocalizations,
+    choices,
+    autoCompleteExecutorDeclaration,
+    minValue,
+    maxValue
+), NullableCommandOption
 
 // ===[ NUMBER ]===
 class NumberCommandOption(
@@ -70,8 +124,19 @@ class NumberCommandOption(
     description: String,
     descriptionLocalizations: Map<Locale, String>?,
     choices: List<CommandChoice<Double>>,
-    autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<Double>?
-) : ChoiceableCommandOption<Double, Double>(name, nameLocalizations, description, descriptionLocalizations, choices, autoCompleteExecutorDeclaration)
+    autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<Double>?,
+    minValue: Double?,
+    maxValue: Double?
+) : NumericCommandOption<Double, Double>(
+    name,
+    nameLocalizations,
+    description,
+    descriptionLocalizations,
+    choices,
+    autoCompleteExecutorDeclaration,
+    minValue,
+    maxValue
+)
 
 class NullableNumberCommandOption(
     name: String,
@@ -79,25 +144,92 @@ class NullableNumberCommandOption(
     description: String,
     descriptionLocalizations: Map<Locale, String>?,
     choices: List<CommandChoice<Double>>,
-    autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<Double>?
-) : ChoiceableCommandOption<Double?, Double>(name, nameLocalizations, description, descriptionLocalizations, choices, autoCompleteExecutorDeclaration), NullableCommandOption
+    autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<Double>?,
+    minValue: Double?,
+    maxValue: Double?
+) : NumericCommandOption<Double?, Double>(
+    name,
+    nameLocalizations,
+    description,
+    descriptionLocalizations,
+    choices,
+    autoCompleteExecutorDeclaration,
+    minValue,
+    maxValue
+), NullableCommandOption
 
 // ===[ BOOLEAN ]===
-class BooleanCommandOption(name: String, nameLocalizations: Map<Locale, String>?, description: String, descriptionLocalizations: Map<Locale, String>?) : CommandOption<Boolean>(name, nameLocalizations, description, descriptionLocalizations)
-class NullableBooleanCommandOption(name: String, nameLocalizations: Map<Locale, String>?, description: String, descriptionLocalizations: Map<Locale, String>?) : CommandOption<Boolean?>(name, nameLocalizations, description, descriptionLocalizations), NullableCommandOption
+class BooleanCommandOption(
+    name: String,
+    nameLocalizations: Map<Locale, String>?,
+    description: String,
+    descriptionLocalizations: Map<Locale, String>?
+) : CommandOption<Boolean>(name, nameLocalizations, description, descriptionLocalizations)
+
+class NullableBooleanCommandOption(
+    name: String,
+    nameLocalizations: Map<Locale, String>?,
+    description: String,
+    descriptionLocalizations: Map<Locale, String>?
+) : CommandOption<Boolean?>(name, nameLocalizations, description, descriptionLocalizations), NullableCommandOption
 
 // ===[ USER ]===
-class UserCommandOption(name: String, nameLocalizations: Map<Locale, String>?, description: String, descriptionLocalizations: Map<Locale, String>?) : CommandOption<User>(name, nameLocalizations, description, descriptionLocalizations)
-class NullableUserCommandOption(name: String, nameLocalizations: Map<Locale, String>?, description: String, descriptionLocalizations: Map<Locale, String>?) : CommandOption<User?>(name, nameLocalizations, description, descriptionLocalizations), NullableCommandOption
+class UserCommandOption(
+    name: String,
+    nameLocalizations: Map<Locale, String>?,
+    description: String,
+    descriptionLocalizations: Map<Locale, String>?
+) : CommandOption<User>(name, nameLocalizations, description, descriptionLocalizations)
+
+class NullableUserCommandOption(
+    name: String,
+    nameLocalizations: Map<Locale, String>?,
+    description: String,
+    descriptionLocalizations: Map<Locale, String>?
+) : CommandOption<User?>(name, nameLocalizations, description, descriptionLocalizations), NullableCommandOption
 
 // ===[ CHANNEL ]===
-class ChannelCommandOption(name: String, nameLocalizations: Map<Locale, String>?, description: String, descriptionLocalizations: Map<Locale, String>?) : CommandOption<Channel>(name, nameLocalizations, description, descriptionLocalizations)
-class NullableChannelCommandOption(name: String, nameLocalizations: Map<Locale, String>?, description: String, descriptionLocalizations: Map<Locale, String>?) : CommandOption<Channel?>(name, nameLocalizations, description, descriptionLocalizations), NullableCommandOption
+class ChannelCommandOption(
+    name: String,
+    nameLocalizations: Map<Locale, String>?,
+    description: String,
+    descriptionLocalizations: Map<Locale, String>?
+) : CommandOption<Channel>(name, nameLocalizations, description, descriptionLocalizations)
+
+class NullableChannelCommandOption(
+    name: String,
+    nameLocalizations: Map<Locale, String>?,
+    description: String,
+    descriptionLocalizations: Map<Locale, String>?
+) : CommandOption<Channel?>(name, nameLocalizations, description, descriptionLocalizations), NullableCommandOption
 
 // ===[ ROLE ]===
-class RoleCommandOption(name: String, nameLocalizations: Map<Locale, String>?, description: String, descriptionLocalizations: Map<Locale, String>?) : CommandOption<Role>(name, nameLocalizations, description, descriptionLocalizations)
-class NullableRoleCommandOption(name: String, nameLocalizations: Map<Locale, String>?, description: String, descriptionLocalizations: Map<Locale, String>?) : CommandOption<Role?>(name, nameLocalizations, description, descriptionLocalizations), NullableCommandOption
+class RoleCommandOption(
+    name: String,
+    nameLocalizations: Map<Locale, String>?,
+    description: String,
+    descriptionLocalizations: Map<Locale, String>?
+) : CommandOption<Role>(name, nameLocalizations, description, descriptionLocalizations)
+
+class NullableRoleCommandOption(
+    name: String,
+    nameLocalizations: Map<Locale, String>?,
+    description: String,
+    descriptionLocalizations: Map<Locale, String>?
+) : CommandOption<Role?>(name, nameLocalizations, description, descriptionLocalizations), NullableCommandOption
 
 // ===[ ATTACHMENT ]===
-class AttachmentCommandOption(name: String, nameLocalizations: Map<Locale, String>?, description: String, descriptionLocalizations: Map<Locale, String>?) : CommandOption<DiscordAttachment>(name, nameLocalizations, description, descriptionLocalizations)
-class NullableAttachmentCommandOption(name: String, nameLocalizations: Map<Locale, String>?, description: String, descriptionLocalizations: Map<Locale, String>?) : CommandOption<DiscordAttachment?>(name, nameLocalizations, description, descriptionLocalizations), NullableCommandOption
+class AttachmentCommandOption(
+    name: String,
+    nameLocalizations: Map<Locale, String>?,
+    description: String,
+    descriptionLocalizations: Map<Locale, String>?
+) : CommandOption<DiscordAttachment>(name, nameLocalizations, description, descriptionLocalizations)
+
+class NullableAttachmentCommandOption(
+    name: String,
+    nameLocalizations: Map<Locale, String>?,
+    description: String,
+    descriptionLocalizations: Map<Locale, String>?
+) : CommandOption<DiscordAttachment?>(name, nameLocalizations, description, descriptionLocalizations),
+    NullableCommandOption
