@@ -19,4 +19,6 @@ open class GuildModalSubmitContext(
     discordInteractionData: DiscordInteraction,
     val guildId: Snowflake,
     val member: InteractionMember
-) : ModalSubmitContext(bridge, sender, channelId, data, discordInteractionData)
+) : ModalSubmitContext(bridge, sender, channelId, data, discordInteractionData) {
+    val appPermissions = discordInteractionData.appPermissions.value ?: error("App Permissions field is null on a Guild Interaction! Bug?")
+}

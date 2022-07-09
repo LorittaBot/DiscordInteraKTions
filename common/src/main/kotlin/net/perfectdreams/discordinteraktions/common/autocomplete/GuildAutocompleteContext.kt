@@ -15,4 +15,6 @@ open class GuildAutocompleteContext(
     discordInteractionData: DiscordInteraction,
     val guildId: Snowflake,
     val member: InteractionMember
-) : AutocompleteContext(sender, channelId, data, arguments, discordInteractionData)
+) : AutocompleteContext(sender, channelId, data, arguments, discordInteractionData) {
+    val appPermissions = discordInteractionData.appPermissions.value ?: error("App Permissions field is null on a Guild Interaction! Bug?")
+}
