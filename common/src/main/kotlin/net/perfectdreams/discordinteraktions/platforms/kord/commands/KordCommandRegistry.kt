@@ -125,6 +125,10 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
                         this.required = cmdOption !is NullableCommandOption
                         this.autocomplete = cmdOption.autoCompleteExecutorDeclaration != null
 
+                        val numericOption = (cmdOption as NumericCommandOption<*, *>)
+                        this.minValue = numericOption.minValue as Long
+                        this.maxValue = numericOption.maxValue as Long
+
                         for (choice in cmdOption.choices) {
                             choice(choice.name, choice.value as Long, choice.nameLocalizations.optional())
                         }
@@ -137,6 +141,10 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
                         this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
                         this.required = cmdOption !is NullableCommandOption
                         this.autocomplete = cmdOption.autoCompleteExecutorDeclaration != null
+
+                        val numericOption = (cmdOption as NumericCommandOption<*, *>)
+                        this.minValue = numericOption.minValue as Double
+                        this.maxValue = numericOption.maxValue as Double
 
                         for (choice in cmdOption.choices) {
                             choice(choice.name, choice.value as Double, choice.nameLocalizations.optional())
