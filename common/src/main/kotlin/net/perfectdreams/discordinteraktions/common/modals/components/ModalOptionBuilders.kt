@@ -1,11 +1,14 @@
 package net.perfectdreams.discordinteraktions.common.modals.components
 
-interface ModalComponentBuilder {
-    var allowedLength: ClosedRange<Int>?
-    var placeholder: String?
-    var value: String?
-    var required: Boolean?
-    var actionRowNumber: Int
+sealed class ModalComponentBuilder<T>(
+    val name: String
+) {
+    abstract fun build(): ModalComponent<T>
 }
 
-interface StringModalComponentBuilder : ModalComponentBuilder
+// ===[ STRING ]===
+class StringModalComponentBuilder(name: String) : ModalComponentBuilder<String>(name) {
+    override fun build() = StringModalComponent(
+        name
+    )
+}

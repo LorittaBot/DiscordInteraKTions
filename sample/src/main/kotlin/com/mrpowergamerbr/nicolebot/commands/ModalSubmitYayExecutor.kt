@@ -1,6 +1,5 @@
 package com.mrpowergamerbr.nicolebot.commands
 
-import dev.kord.common.entity.TextInputStyle
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.modals.ModalSubmitContext
 import net.perfectdreams.discordinteraktions.common.modals.ModalSubmitExecutor
@@ -11,16 +10,11 @@ import net.perfectdreams.discordinteraktions.common.modals.components.ModalCompo
 class ModalSubmitYayExecutor : ModalSubmitExecutor {
     companion object : ModalSubmitExecutorDeclaration("modal_submit_example") {
         object Options : ModalComponents() {
-            val something = textInput("something", "something cool and epic!", TextInputStyle.Short) {
-                actionRowNumber = 0
-            }
+            val something = textInput("something")
+                .register()
 
-            val somethingEvenBigger = textInput("something_even_bigger", "How's your day?", TextInputStyle.Paragraph) {
-                actionRowNumber = 1
-
-                required = false
-                allowedLength = 50..200
-            }
+            val somethingEvenBigger = textInput("something_even_bigger")
+                .register()
         }
 
         override val options = Options

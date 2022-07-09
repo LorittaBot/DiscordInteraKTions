@@ -1,24 +1,17 @@
 package net.perfectdreams.discordinteraktions.common.modals.components
 
-import dev.kord.common.entity.TextInputStyle
-
 open class ModalComponents {
     val arguments = mutableListOf<ModalComponent<*>>()
 
-    fun textInput(
-        label: String,
-        customId: String,
-        style: TextInputStyle,
-        builder: StringModalComponentBuilder.() -> (Unit) = {}
-    ) = StringModalComponent<String>(label, customId, style).apply(builder).also {
-        it.register()
-    }
+    fun textInput(id: String) = StringModalComponentBuilder(id)
 
-    private fun <T> ModalComponent<T>.register(): ModalComponent<T> {
-        if (arguments.any { it.customId == this.customId })
-            throw IllegalArgumentException("Duplicate argument \"${this.customId}\"!")
+    fun <T> ModalComponentBuilder<T>.register(): ModalComponent<T> {
+        if (arguments.any { it.name == this.name })
+            throw IllegalArgumentException("Duplicate argument \"${this.name}\"!")
 
-        arguments.add(this)
-        return this
+        val option = this.build()
+
+        arguments.add(option)
+        return option
     }
 }
