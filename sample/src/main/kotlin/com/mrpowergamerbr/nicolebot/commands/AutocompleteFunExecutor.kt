@@ -10,11 +10,15 @@ class AutocompleteFunExecutor : SlashCommandExecutor() {
     companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val text = string("text", "Text")
-                .register()
 
-            val autocompleteText = string("autocomplete_text", "Autocomplete Text")
-                .autocomplete(AutocompleteFunAutocompleteExecutor)
-                .register()
+            val autocompleteText = string("autocomplete_text", "Autocomplete Text") {
+                autocomplete(AutocompleteFunAutocompleteExecutor)
+            }
+
+            val number = optionalLong("number", "A cool number") {
+                minValue = 100
+                maxValue = 1000
+            }
         }
 
         override val options = Options
@@ -22,7 +26,8 @@ class AutocompleteFunExecutor : SlashCommandExecutor() {
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.sendEphemeralMessage {
-            content = "You typed ${args[options.text]} and ${args[options.autocompleteText]}"
+            content =
+                "You typed ${args[options.text]} and ${args[options.autocompleteText]} with ${args[options.number] ?: 0}"
         }
     }
 }
