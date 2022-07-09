@@ -8,8 +8,8 @@ import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordRole
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
 
 abstract class CommandOption<T>(
-    override var name: String,
-    override var description: String,
+    val name: String,
+    val description: String,
     val required: Boolean
 ) : CommandOptionBuilder {
     override var nameLocalizations: Map<Locale, String>? = null

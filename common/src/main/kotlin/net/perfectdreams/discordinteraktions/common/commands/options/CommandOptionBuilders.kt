@@ -5,9 +5,7 @@ import dev.kord.common.entity.ChannelType
 import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteExecutorDeclaration
 
 interface CommandOptionBuilder {
-    var name: String
     var nameLocalizations: Map<Locale, String>?
-    var description: String
     var descriptionLocalizations: Map<Locale, String>?
     var default: Boolean?
 }
