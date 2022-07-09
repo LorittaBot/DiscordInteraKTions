@@ -155,8 +155,8 @@ class KordCommandRegistry(
                     this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
                     this.required = cmdOption.required
                     this.autocomplete = cmdOption.autocomplete != null
-                    //this.minLength = cmdOption.minLength
-                    //this.maxLength = cmdOption.maxLength
+                    this.minLength = cmdOption.minLength
+                    this.maxLength = cmdOption.maxLength
 
                     cmdOption.choices?.forEach { choice ->
                         choice(choice.name, choice.value, choice.nameLocalizations.optional())
