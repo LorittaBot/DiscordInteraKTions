@@ -10,5 +10,5 @@ fun ActionRowBuilder.textInput(
     label: String,
     builder: TextInputBuilder.() -> (Unit)
 ) {
-   this.textInput(style, option.name, label, builder)
+   this.textInput(style, option.customId, label, builder)
 }

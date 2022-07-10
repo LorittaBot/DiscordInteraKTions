@@ -11,10 +11,8 @@ class ModalSubmitYayExecutor : ModalSubmitExecutor {
     companion object : ModalSubmitExecutorDeclaration("modal_submit_example") {
         object Options : ModalComponents() {
             val something = textInput("something")
-                .register()
 
             val somethingEvenBigger = textInput("something_even_bigger")
-                .register()
         }
 
         override val options = Options

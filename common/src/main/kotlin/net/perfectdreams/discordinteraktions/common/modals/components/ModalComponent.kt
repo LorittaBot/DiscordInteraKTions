@@ -1,10 +1,10 @@
 package net.perfectdreams.discordinteraktions.common.modals.components
 
 sealed class ModalComponent<T>(
-    val name: String,
+    val customId: String,
 )
 
 // ===[ STRING ]===
 class StringModalComponent(
-    name: String
-) : ModalComponent<String>(name)
+    customId: String
+) : ModalComponent<String>(customId), StringModalComponentBuilder
