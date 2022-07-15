@@ -4,7 +4,6 @@ import dev.kord.common.entity.CommandArgument
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Snowflake
 import net.perfectdreams.discordinteraktions.common.commands.options.CommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.NullableCommandOption
 import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 
@@ -31,7 +30,7 @@ open class AutocompleteContext(
     fun <T> getArgument(option: CommandOption<T>): T {
         val matchedArgument = arguments.firstOrNull { it.name == option.name }
 
-        if (matchedArgument == null && option !is NullableCommandOption)
+        if (matchedArgument == null && option.required)
             error("Missing argument ${option.name}!")
 
         if (matchedArgument is CommandArgument.AutoCompleteArgument)

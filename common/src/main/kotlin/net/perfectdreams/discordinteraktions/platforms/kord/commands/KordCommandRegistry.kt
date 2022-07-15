@@ -7,7 +7,11 @@ import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.common.commands.*
 import net.perfectdreams.discordinteraktions.common.commands.options.*
 
-class KordCommandRegistry(private val applicationId: Snowflake, private val rest: RestClient, private val manager: CommandManager) : CommandRegistry {
+class KordCommandRegistry(
+    private val applicationId: Snowflake,
+    private val rest: RestClient,
+    private val manager: CommandManager
+) : CommandRegistry {
     override suspend fun updateAllCommandsInGuild(guildId: Snowflake) {
         rest.interaction.createGuildApplicationCommands(
             applicationId,
@@ -31,7 +35,10 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
         }
     }
 
-    private fun convertCommandDeclarationToKord(builder: MultiApplicationCommandBuilder, declaration: ApplicationCommandDeclaration) {
+    private fun convertCommandDeclarationToKord(
+        builder: MultiApplicationCommandBuilder,
+        declaration: ApplicationCommandDeclaration
+    ) {
         // Workaround because Kord's CommandCreateBuilder builders are internal now
         when (declaration) {
             is UserCommandDeclaration -> {
@@ -116,85 +123,76 @@ class KordCommandRegistry(private val applicationId: Snowflake, private val rest
 
     private fun convertCommandOptionToKord(cmdOption: CommandOption<*>, builder: BaseInputChatBuilder) {
         when (cmdOption) {
-            // TODO: Add all possible types
-            is IntegerCommandOption, is NullableIntegerCommandOption ->
-                if (cmdOption is ChoiceableCommandOption<*, *>) {
-                    builder.int(cmdOption.name, cmdOption.description) {
-                        this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
-                        this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
-                        this.required = cmdOption !is NullableCommandOption
-                        this.autocomplete = cmdOption.autoCompleteExecutorDeclaration != null
+            is IntegerCommandOption ->
+                builder.int(cmdOption.name, cmdOption.description) {
+                    this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
+                    this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
+                    this.required = cmdOption.required
+                    this.autocomplete = cmdOption.autocomplete != null
+                    this.minValue = cmdOption.minValue
+                    this.maxValue = cmdOption.maxValue
 
-                        val numericOption = (cmdOption as NumericCommandOption<*, *>)
-                        this.minValue = numericOption.minValue as Long
-                        this.maxValue = numericOption.maxValue as Long
-
-                        for (choice in cmdOption.choices) {
-                            choice(choice.name, choice.value as Long, choice.nameLocalizations.optional())
-                        }
+                    cmdOption.choices?.forEach { choice ->
+                        choice(choice.name, choice.value, choice.nameLocalizations.optional())
                     }
-                } else error("The $cmdOption should be choiceable, but it isn't! Bug?")
-            is NumberCommandOption, is NullableNumberCommandOption ->
-                if (cmdOption is ChoiceableCommandOption<*, *>) {
-                    builder.number(cmdOption.name, cmdOption.description) {
-                        this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
-                        this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
-                        this.required = cmdOption !is NullableCommandOption
-                        this.autocomplete = cmdOption.autoCompleteExecutorDeclaration != null
+                }
+            is NumberCommandOption ->
+                builder.number(cmdOption.name, cmdOption.description) {
+                    this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
+                    this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
+                    this.required = cmdOption.required
+                    this.autocomplete = cmdOption.autocomplete != null
+                    this.minValue = cmdOption.minValue
+                    this.maxValue = cmdOption.maxValue
 
-                        val numericOption = (cmdOption as NumericCommandOption<*, *>)
-                        this.minValue = numericOption.minValue as Double
-                        this.maxValue = numericOption.maxValue as Double
-
-                        for (choice in cmdOption.choices) {
-                            choice(choice.name, choice.value as Double, choice.nameLocalizations.optional())
-                        }
+                    cmdOption.choices?.forEach { choice ->
+                        choice(choice.name, choice.value, choice.nameLocalizations.optional())
                     }
-                } else error("The $cmdOption should be choiceable, but it isn't! Bug?")
-            is StringCommandOption, is NullableStringCommandOption ->
-                if (cmdOption is ChoiceableCommandOption<*, *>) {
-                    builder.string(cmdOption.name, cmdOption.description) {
-                        this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
-                        this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
-                        this.required = cmdOption !is NullableCommandOption
-                        this.autocomplete = cmdOption.autoCompleteExecutorDeclaration != null
+                }
+            is StringCommandOption ->
+                builder.string(cmdOption.name, cmdOption.description) {
+                    this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
+                    this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
+                    this.required = cmdOption.required
+                    this.autocomplete = cmdOption.autocomplete != null
+                    this.minLength = cmdOption.minLength
+                    this.maxLength = cmdOption.maxLength
 
-                        for (choice in cmdOption.choices) {
-                            choice(choice.name, choice.value as String, choice.nameLocalizations.optional())
-                        }
+                    cmdOption.choices?.forEach { choice ->
+                        choice(choice.name, choice.value, choice.nameLocalizations.optional())
                     }
-                } else error("The $cmdOption should be choiceable, but it isn't! Bug?")
-            is BooleanCommandOption, is NullableBooleanCommandOption ->
+                }
+            is BooleanCommandOption ->
                 builder.boolean(cmdOption.name, cmdOption.description) {
                     this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
                     this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
-                    this.required = cmdOption !is NullableCommandOption
+                    this.required = cmdOption.required
                 }
-            is UserCommandOption, is NullableUserCommandOption ->
+            is UserCommandOption ->
                 builder.user(cmdOption.name, cmdOption.description) {
                     this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
                     this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
-                    this.required = cmdOption !is NullableCommandOption
+                    this.required = cmdOption.required
                 }
-            is ChannelCommandOption, is NullableChannelCommandOption ->
+            is ChannelCommandOption ->
                 builder.channel(cmdOption.name, cmdOption.description) {
                     this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
                     this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
-                    this.required = cmdOption !is NullableCommandOption
+                    this.required = cmdOption.required
+                    this.channelTypes = cmdOption.channelTypes
                 }
-            is RoleCommandOption, is NullableRoleCommandOption ->
+            is RoleCommandOption ->
                 builder.role(cmdOption.name, cmdOption.description) {
                     this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
                     this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
-                    this.required = cmdOption !is NullableCommandOption
+                    this.required = cmdOption.required
                 }
-            is AttachmentCommandOption, is NullableAttachmentCommandOption ->
+            is AttachmentCommandOption ->
                 builder.attachment(cmdOption.name, cmdOption.description) {
                     this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
                     this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
-                    this.required = cmdOption !is NullableCommandOption
+                    this.required = cmdOption.required
                 }
-            else -> error("Unsupported type ${cmdOption::class}")
         }
     }
 }

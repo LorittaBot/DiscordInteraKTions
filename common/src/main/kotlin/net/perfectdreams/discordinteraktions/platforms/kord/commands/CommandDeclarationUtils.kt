@@ -4,25 +4,13 @@ import dev.kord.common.entity.CommandArgument
 import dev.kord.common.entity.CommandGroup
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Option
-import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.SubCommand
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
-import net.perfectdreams.discordinteraktions.common.commands.options.AttachmentCommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.ChannelCommandOption
 import net.perfectdreams.discordinteraktions.common.commands.options.CommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.NullableAttachmentCommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.NullableChannelCommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.NullableRoleCommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.NullableUserCommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.RoleCommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.UserCommandOption
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordChannel
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordRole
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
 import kotlin.reflect.KClass
 
 object CommandDeclarationUtils {
@@ -208,68 +196,15 @@ object CommandDeclarationUtils {
 
     fun convertOptions(request: DiscordInteraction, executorDeclaration: SlashCommandExecutorDeclaration, relativeOptions: List<Option>): Map<CommandOption<*>, Any?> {
         val arguments = mutableMapOf<CommandOption<*>, Any?>()
+        val options = relativeOptions.filterIsInstance<CommandArgument<*>>()
 
-        for (option in relativeOptions) {
+        for (option in options) {
             val interaKTionOption = executorDeclaration.options.arguments
                 .firstOrNull { it.name == option.name } ?: continue
 
-            val argument = option as CommandArgument<*>
-
-            arguments[interaKTionOption] = convertOption(
-                interaKTionOption,
-                argument,
-                request
-            )
+            arguments[interaKTionOption] = interaKTionOption.parse(options, request)
         }
 
         return arguments
-    }
-
-    private fun convertOption(interaKTionOption: CommandOption<*>, argument: CommandArgument<*>, request: DiscordInteraction): Any? {
-        logger.debug { interaKTionOption::class }
-        logger.debug { argument.value }
-
-        return when (interaKTionOption) {
-            is UserCommandOption, is NullableUserCommandOption -> {
-                val userId = argument.value as Snowflake
-
-                val resolved = request.data.resolved.value ?: return null
-                val resolvedMap = resolved.users.value ?: return null
-                val kordInstance = resolvedMap[userId] ?: return null
-
-                // Now we need to wrap the kord user in our own implementation!
-                return KordUser(kordInstance)
-            }
-            is ChannelCommandOption, is NullableChannelCommandOption -> {
-                val userId = argument.value as Snowflake
-
-                val resolved = request.data.resolved.value ?: return null
-                val resolvedMap = resolved.channels.value ?: return null
-                val kordInstance = resolvedMap[userId] ?: return null
-
-                // Now we need to wrap the kord user in our own implementation!
-                return KordChannel(kordInstance)
-            }
-            is RoleCommandOption, is NullableRoleCommandOption -> {
-                val userId = argument.value as Snowflake
-
-                val resolved = request.data.resolved.value ?: return null
-                val resolvedMap = resolved.roles.value ?: return null
-                val kordInstance = resolvedMap[userId] ?: return null
-
-                // Now we need to wrap the kord user in our own implementation!
-                return KordRole(kordInstance)
-            }
-            is AttachmentCommandOption, is NullableAttachmentCommandOption -> {
-                val attachmentId = argument.value as Snowflake
-
-                val resolved = request.data.resolved.value ?: return null
-                val resolvedMap = resolved.attachments.value ?: return null
-                val kordInstance = resolvedMap[attachmentId] ?: return null
-
-                return kordInstance
-            }
-            else -> { argument.value }
-        }
     }
 }

@@ -24,7 +24,7 @@ While Discord InteraKTions has a bunch of nifty features, it still doesn't suppo
 * [X] Buttons
 * [X] Select Menus
 * [X] *(Experimental)* Autocomplete
-* [ ] Permissions
+* [X] Permissions
 * [ ] *Good* Documentation
 * [ ] Being a good project :3
 
@@ -101,14 +101,13 @@ class CharacterExecutor : SlashCommandExecutor() {
         override val options = Option
 
         object Option : ApplicationCommandOptions() {
-            val character = string("character", "Select a Character!") // Here we are creating a String option
-                .choice("loritta", "Loritta Morenitta :3") // ...with custom choices!
-                .choice("pantufa", "Pantufa ;w;")
-                .choice("gabriela", "Gabriela ^-^")
-                .register() // Don't forget to register!
+            val character = string("character", "Select a Character!") { // Here we are creating a String option
+                choice("loritta", "Loritta Morenitta :3") // ...with custom choices! 
+                choice("pantufa", "Pantufa ;w;")
+                choice("gabriela", "Gabriela ^-^")
+            }
 
-            val repeat = optionalInteger("repeat", "How many times the character name should be repeated") // Here we are creating a Int option
-                .register() // This isn't required (so it is optional!) and, as always, don't forget to register!
+            val repeat = optionalLong("repeat", "How many times the character name should be repeated") // Here we are creating a Int option
         }
     }
 

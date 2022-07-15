@@ -1,235 +1,118 @@
 package net.perfectdreams.discordinteraktions.common.commands.options
 
 import dev.kord.common.Locale
-import dev.kord.common.entity.DiscordAttachment
-import net.perfectdreams.discordinteraktions.common.entities.Channel
-import net.perfectdreams.discordinteraktions.common.entities.Role
-import net.perfectdreams.discordinteraktions.common.entities.User
+import dev.kord.common.entity.*
 import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteExecutorDeclaration
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordChannel
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordRole
+import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
 
-sealed class CommandOption<T>(
+abstract class CommandOption<T>(
     val name: String,
-    val nameLocalizations: Map<Locale, String>?,
     val description: String,
-    val descriptionLocalizations: Map<Locale, String>?
-)
+    val required: Boolean
+) : CommandOptionBuilder {
+    override var nameLocalizations: Map<Locale, String>? = null
+    override var descriptionLocalizations: Map<Locale, String>? = null
+    override var default: Boolean? = null
 
-interface NullableCommandOption
+    abstract fun parse(args: List<CommandArgument<*>>?, interaction: DiscordInteraction): T
+}
 
-sealed class ChoiceableCommandOption<T, ChoiceableType>(
+abstract class ChoiceableCommandOption<T, S : Any>(name: String, description: String, required: Boolean) :
+    CommandOption<T>(name, description, required), ChoiceableCommandOptionBuilder<S> {
+    override var choices: MutableList<CommandChoice<S>>? = null
+    override var autocomplete: AutocompleteExecutorDeclaration<S>? = null
+}
+
+abstract class NumericCommandOption<T, S : Any>(name: String, description: String, required: Boolean) :
+    ChoiceableCommandOption<T, S>(name, description, required), NumericCommandOptionBuilder<S> {
+    override var minValue: S? = null
+    override var maxValue: S? = null
+}
+
+class StringCommandOption<T : String?>(name: String, description: String, required: Boolean) :
+    ChoiceableCommandOption<T, String>(name, description, required), StringCommandOptionBuilder {
+    override var minLength: Int? = null
+    override var maxLength: Int? = null
+
+    override fun parse(args: List<CommandArgument<*>>?, interaction: DiscordInteraction): T {
+        return args?.firstOrNull { it.name == name }?.value as T
+    }
+}
+
+class IntegerCommandOption<T : Long?>(name: String, description: String, required: Boolean) :
+    NumericCommandOption<T, Long>(name, description, required), IntegerCommandOptionBuilder {
+    override fun parse(args: List<CommandArgument<*>>?, interaction: DiscordInteraction): T {
+        return args?.firstOrNull { it.name == name }?.value as T
+    }
+}
+
+class NumberCommandOption<T : Double?>(name: String, description: String, required: Boolean) :
+    NumericCommandOption<T, Double>(name, description, required), NumberCommandOptionBuilder {
+    override fun parse(args: List<CommandArgument<*>>?, interaction: DiscordInteraction): T {
+        return args?.firstOrNull { it.name == name }?.value as T
+    }
+}
+
+class BooleanCommandOption<T : Boolean?>(name: String, description: String, required: Boolean) :
+    CommandOption<T>(name, description, required), BooleanCommandOptionBuilder {
+    override fun parse(args: List<CommandArgument<*>>?, interaction: DiscordInteraction): T {
+        return args?.firstOrNull { it.name == name }?.value as T
+    }
+}
+
+class UserCommandOption<T : KordUser?>(name: String, description: String, required: Boolean) :
+    CommandOption<T>(name, description, required), UserCommandOptionBuilder {
+    override fun parse(args: List<CommandArgument<*>>?, interaction: DiscordInteraction): T {
+        val userId = args?.firstOrNull { it.name == name }?.value as Snowflake?
+        val resolved = interaction.data.resolved.value?.users?.value
+
+        return resolved?.get(userId)?.let { KordUser(it) } as T
+    }
+}
+
+class RoleCommandOption<T : KordRole?>(name: String, description: String, required: Boolean) :
+    CommandOption<T>(name, description, required), RoleCommandOptionBuilder {
+    override fun parse(args: List<CommandArgument<*>>?, interaction: DiscordInteraction): T {
+        val roleId = args?.firstOrNull { it.name == name }?.value as Snowflake?
+        val resolved = interaction.data.resolved.value?.roles?.value
+
+        return resolved?.get(roleId)?.let { KordRole(it) } as T
+    }
+}
+
+class ChannelCommandOption<T : KordChannel?>(name: String, description: String, required: Boolean) :
+    CommandOption<T>(name, description, required), ChannelCommandOptionBuilder {
+    override var channelTypes: List<ChannelType>? = null
+
+    override fun parse(args: List<CommandArgument<*>>?, interaction: DiscordInteraction): T {
+        val channelId = args?.firstOrNull { it.name == name }?.value as Snowflake?
+        val resolved = interaction.data.resolved.value?.channels?.value
+
+        return resolved?.get(channelId)?.let { KordChannel(it) } as T
+    }
+}
+
+class MentionableCommandOption<T : CommandArgument.MentionableArgument?>(
     name: String,
-    nameLocalizations: Map<Locale, String>?,
     description: String,
-    descriptionLocalizations: Map<Locale, String>?,
-    val choices: List<CommandChoice<ChoiceableType>>,
-    val autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<ChoiceableType>?
-) : CommandOption<T>(name, nameLocalizations, description, descriptionLocalizations)
+    required: Boolean
+) : CommandOption<T>(name, description, required), MentionableCommandOptionBuilder {
+    override fun parse(args: List<CommandArgument<*>>?, interaction: DiscordInteraction): T {
+        return args?.firstOrNull { it.name == name }?.value as T
+    }
+}
 
-sealed class NumericCommandOption<T, ChoiceableType>(
+class AttachmentCommandOption<T : DiscordAttachment?>(
     name: String,
-    nameLocalizations: Map<Locale, String>?,
     description: String,
-    descriptionLocalizations: Map<Locale, String>?,
-    choices: List<CommandChoice<ChoiceableType>>,
-    autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<ChoiceableType>?,
-    val minValue: ChoiceableType?,
-    val maxValue: ChoiceableType?
-) : ChoiceableCommandOption<T, ChoiceableType>(
-    name,
-    nameLocalizations,
-    description,
-    descriptionLocalizations,
-    choices,
-    autoCompleteExecutorDeclaration
-)
+    required: Boolean
+) : CommandOption<T>(name, description, required), AttachmentCommandOptionBuilder {
+    override fun parse(args: List<CommandArgument<*>>?, interaction: DiscordInteraction): T {
+        val attachmentId = args?.firstOrNull { it.name == name }?.value as Snowflake?
+        val attachment = interaction.data.resolved.value?.attachments?.value?.get(attachmentId)
 
-// ===[ STRING ]===
-class StringCommandOption(
-    name: String,
-    nameLocalizations: Map<Locale, String>?,
-    description: String,
-    descriptionLocalizations: Map<Locale, String>?,
-    choices: List<CommandChoice<String>>,
-    autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<String>?
-) : ChoiceableCommandOption<String, String>(
-    name,
-    nameLocalizations,
-    description,
-    descriptionLocalizations,
-    choices,
-    autoCompleteExecutorDeclaration
-)
-
-class NullableStringCommandOption(
-    name: String,
-    nameLocalizations: Map<Locale, String>?,
-    description: String,
-    descriptionLocalizations: Map<Locale, String>?,
-    choices: List<CommandChoice<String>>,
-    autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<String>?
-) : ChoiceableCommandOption<String?, String>(
-    name,
-    nameLocalizations,
-    description,
-    descriptionLocalizations,
-    choices,
-    autoCompleteExecutorDeclaration
-), NullableCommandOption
-
-// ===[ INTEGER ]===
-class IntegerCommandOption(
-    name: String,
-    nameLocalizations: Map<Locale, String>?,
-    description: String,
-    descriptionLocalizations: Map<Locale, String>?,
-    choices: List<CommandChoice<Long>>,
-    autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<Long>?,
-    minValue: Long?,
-    maxValue: Long?
-) : NumericCommandOption<Long, Long>(
-    name,
-    nameLocalizations,
-    description,
-    descriptionLocalizations,
-    choices,
-    autoCompleteExecutorDeclaration,
-    minValue,
-    maxValue
-)
-
-class NullableIntegerCommandOption(
-    name: String,
-    nameLocalizations: Map<Locale, String>?,
-    description: String,
-    descriptionLocalizations: Map<Locale, String>?,
-    choices: List<CommandChoice<Long>>,
-    autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<Long>?,
-    minValue: Long?,
-    maxValue: Long?
-) : NumericCommandOption<Long?, Long>(
-    name,
-    nameLocalizations,
-    description,
-    descriptionLocalizations,
-    choices,
-    autoCompleteExecutorDeclaration,
-    minValue,
-    maxValue
-), NullableCommandOption
-
-// ===[ NUMBER ]===
-class NumberCommandOption(
-    name: String,
-    nameLocalizations: Map<Locale, String>?,
-    description: String,
-    descriptionLocalizations: Map<Locale, String>?,
-    choices: List<CommandChoice<Double>>,
-    autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<Double>?,
-    minValue: Double?,
-    maxValue: Double?
-) : NumericCommandOption<Double, Double>(
-    name,
-    nameLocalizations,
-    description,
-    descriptionLocalizations,
-    choices,
-    autoCompleteExecutorDeclaration,
-    minValue,
-    maxValue
-)
-
-class NullableNumberCommandOption(
-    name: String,
-    nameLocalizations: Map<Locale, String>?,
-    description: String,
-    descriptionLocalizations: Map<Locale, String>?,
-    choices: List<CommandChoice<Double>>,
-    autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<Double>?,
-    minValue: Double?,
-    maxValue: Double?
-) : NumericCommandOption<Double?, Double>(
-    name,
-    nameLocalizations,
-    description,
-    descriptionLocalizations,
-    choices,
-    autoCompleteExecutorDeclaration,
-    minValue,
-    maxValue
-), NullableCommandOption
-
-// ===[ BOOLEAN ]===
-class BooleanCommandOption(
-    name: String,
-    nameLocalizations: Map<Locale, String>?,
-    description: String,
-    descriptionLocalizations: Map<Locale, String>?
-) : CommandOption<Boolean>(name, nameLocalizations, description, descriptionLocalizations)
-
-class NullableBooleanCommandOption(
-    name: String,
-    nameLocalizations: Map<Locale, String>?,
-    description: String,
-    descriptionLocalizations: Map<Locale, String>?
-) : CommandOption<Boolean?>(name, nameLocalizations, description, descriptionLocalizations), NullableCommandOption
-
-// ===[ USER ]===
-class UserCommandOption(
-    name: String,
-    nameLocalizations: Map<Locale, String>?,
-    description: String,
-    descriptionLocalizations: Map<Locale, String>?
-) : CommandOption<User>(name, nameLocalizations, description, descriptionLocalizations)
-
-class NullableUserCommandOption(
-    name: String,
-    nameLocalizations: Map<Locale, String>?,
-    description: String,
-    descriptionLocalizations: Map<Locale, String>?
-) : CommandOption<User?>(name, nameLocalizations, description, descriptionLocalizations), NullableCommandOption
-
-// ===[ CHANNEL ]===
-class ChannelCommandOption(
-    name: String,
-    nameLocalizations: Map<Locale, String>?,
-    description: String,
-    descriptionLocalizations: Map<Locale, String>?
-) : CommandOption<Channel>(name, nameLocalizations, description, descriptionLocalizations)
-
-class NullableChannelCommandOption(
-    name: String,
-    nameLocalizations: Map<Locale, String>?,
-    description: String,
-    descriptionLocalizations: Map<Locale, String>?
-) : CommandOption<Channel?>(name, nameLocalizations, description, descriptionLocalizations), NullableCommandOption
-
-// ===[ ROLE ]===
-class RoleCommandOption(
-    name: String,
-    nameLocalizations: Map<Locale, String>?,
-    description: String,
-    descriptionLocalizations: Map<Locale, String>?
-) : CommandOption<Role>(name, nameLocalizations, description, descriptionLocalizations)
-
-class NullableRoleCommandOption(
-    name: String,
-    nameLocalizations: Map<Locale, String>?,
-    description: String,
-    descriptionLocalizations: Map<Locale, String>?
-) : CommandOption<Role?>(name, nameLocalizations, description, descriptionLocalizations), NullableCommandOption
-
-// ===[ ATTACHMENT ]===
-class AttachmentCommandOption(
-    name: String,
-    nameLocalizations: Map<Locale, String>?,
-    description: String,
-    descriptionLocalizations: Map<Locale, String>?
-) : CommandOption<DiscordAttachment>(name, nameLocalizations, description, descriptionLocalizations)
-
-class NullableAttachmentCommandOption(
-    name: String,
-    nameLocalizations: Map<Locale, String>?,
-    description: String,
-    descriptionLocalizations: Map<Locale, String>?
-) : CommandOption<DiscordAttachment?>(name, nameLocalizations, description, descriptionLocalizations),
-    NullableCommandOption
+        return attachment as T
+    }
+}

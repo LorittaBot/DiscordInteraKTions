@@ -3,15 +3,16 @@ package net.perfectdreams.discordinteraktions.common.modals.components
 open class ModalComponents {
     val arguments = mutableListOf<ModalComponent<*>>()
 
-    fun textInput(id: String) = StringModalComponentBuilder(id)
+    fun textInput(customId: String, block: StringModalComponentBuilder.() -> (Unit) = {}) =
+        StringModalComponent(customId).apply(block).also {
+            it.register()
+        }
 
-    fun <T> ModalComponentBuilder<T>.register(): ModalComponent<T> {
-        if (arguments.any { it.name == this.name })
-            throw IllegalArgumentException("Duplicate argument \"${this.name}\"!")
+    private fun <T> ModalComponent<T>.register(): ModalComponent<T> {
+        if (arguments.any { it.customId == this.customId })
+            throw IllegalArgumentException("Duplicate argument \"${this.customId}\"!")
 
-        val option = this.build()
-
-        arguments.add(option)
-        return option
+        arguments.add(this)
+        return this
     }
 }

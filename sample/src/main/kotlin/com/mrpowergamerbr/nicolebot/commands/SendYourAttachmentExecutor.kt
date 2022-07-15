@@ -13,7 +13,6 @@ class SendYourAttachmentExecutor : SlashCommandExecutor() {
     companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val attachment = attachment("attachment", "Your attachment")
-                .register()
         }
 
         override val options = Options
