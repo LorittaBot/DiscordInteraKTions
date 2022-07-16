@@ -16,7 +16,7 @@ open class ApplicationCommandOptions {
         name: String,
         description: String,
         builder: StringCommandOptionBuilder.() -> (Unit) = {}
-    ): StringCommandOption<String> = StringCommandOption<String>(name, description, true).apply(builder).also {
+    ): StringCommandOption<String> = StringCommandOption<String>(name, description).apply(builder).also {
         it.register()
     }
 
@@ -24,7 +24,7 @@ open class ApplicationCommandOptions {
         name: String,
         description: String,
         builder: StringCommandOptionBuilder.() -> (Unit) = {}
-    ): StringCommandOption<String?> = StringCommandOption<String?>(name, description, false).apply(builder).also {
+    ): StringCommandOption<String?> = StringCommandOption<String?>(name, description).apply(builder).also {
         it.register()
     }
 
@@ -32,7 +32,7 @@ open class ApplicationCommandOptions {
         name: String,
         description: String,
         builder: IntegerCommandOptionBuilder.() -> (Unit) = {}
-    ): IntegerCommandOption<Long> = IntegerCommandOption<Long>(name, description, true).apply(builder).also {
+    ): IntegerCommandOption<Long> = IntegerCommandOption<Long>(name, description).apply(builder).also {
         it.register()
     }
 
@@ -40,7 +40,7 @@ open class ApplicationCommandOptions {
         name: String,
         description: String,
         builder: IntegerCommandOptionBuilder.() -> (Unit) = {}
-    ): IntegerCommandOption<Long?> = IntegerCommandOption<Long?>(name, description, false).apply(builder).also {
+    ): IntegerCommandOption<Long?> = IntegerCommandOption<Long?>(name, description).apply(builder).also {
         it.register()
     }
 
@@ -48,7 +48,7 @@ open class ApplicationCommandOptions {
         name: String,
         description: String,
         builder: NumberCommandOptionBuilder.() -> (Unit) = {}
-    ): NumberCommandOption<Double> = NumberCommandOption<Double>(name, description, true).apply(builder).also {
+    ): NumberCommandOption<Double> = NumberCommandOption<Double>(name, description).apply(builder).also {
         it.register()
     }
 
@@ -56,7 +56,7 @@ open class ApplicationCommandOptions {
         name: String,
         description: String,
         builder: NumberCommandOptionBuilder.() -> (Unit) = {}
-    ): NumberCommandOption<Double?> = NumberCommandOption<Double?>(name, description, false).apply(builder).also {
+    ): NumberCommandOption<Double?> = NumberCommandOption<Double?>(name, description).apply(builder).also {
         it.register()
     }
 
@@ -64,7 +64,7 @@ open class ApplicationCommandOptions {
         name: String,
         description: String,
         builder: BooleanCommandOptionBuilder.() -> (Unit) = {}
-    ): BooleanCommandOption<Boolean> = BooleanCommandOption<Boolean>(name, description, true).apply(builder).also {
+    ): BooleanCommandOption<Boolean> = BooleanCommandOption<Boolean>(name, description).apply(builder).also {
         it.register()
     }
 
@@ -72,7 +72,7 @@ open class ApplicationCommandOptions {
         name: String,
         description: String,
         builder: BooleanCommandOptionBuilder.() -> (Unit) = {}
-    ): BooleanCommandOption<Boolean?> = BooleanCommandOption<Boolean?>(name, description, false).apply(builder).also {
+    ): BooleanCommandOption<Boolean?> = BooleanCommandOption<Boolean?>(name, description).apply(builder).also {
         it.register()
     }
 
@@ -80,7 +80,7 @@ open class ApplicationCommandOptions {
         name: String,
         description: String,
         builder: UserCommandOptionBuilder.() -> (Unit) = {}
-    ): UserCommandOption<KordUser> = UserCommandOption<KordUser>(name, description, true).apply(builder).also {
+    ): UserCommandOption<KordUser> = UserCommandOption<KordUser>(name, description).apply(builder).also {
         it.register()
     }
 
@@ -89,7 +89,7 @@ open class ApplicationCommandOptions {
         description: String,
         builder: UserCommandOptionBuilder.() -> (Unit) = {}
     ): UserCommandOption<KordUser?> =
-        UserCommandOption<KordUser?>(name, description, false).apply(builder).also {
+        UserCommandOption<KordUser?>(name, description).apply(builder).also {
             it.register()
         }
 
@@ -97,7 +97,7 @@ open class ApplicationCommandOptions {
         name: String,
         description: String,
         builder: RoleCommandOptionBuilder.() -> (Unit) = {}
-    ): RoleCommandOption<KordRole> = RoleCommandOption<KordRole>(name, description, true).apply(builder).also {
+    ): RoleCommandOption<KordRole> = RoleCommandOption<KordRole>(name, description).apply(builder).also {
         it.register()
     }
 
@@ -105,7 +105,7 @@ open class ApplicationCommandOptions {
         name: String,
         description: String,
         builder: RoleCommandOptionBuilder.() -> (Unit) = {}
-    ): RoleCommandOption<KordRole?> = RoleCommandOption<KordRole?>(name, description, false).apply(builder).also {
+    ): RoleCommandOption<KordRole?> = RoleCommandOption<KordRole?>(name, description).apply(builder).also {
         it.register()
     }
 
@@ -114,7 +114,7 @@ open class ApplicationCommandOptions {
         description: String,
         builder: ChannelCommandOptionBuilder.() -> (Unit) = {}
     ): ChannelCommandOption<KordChannel> =
-        ChannelCommandOption<KordChannel>(name, description, true).apply(builder).also {
+        ChannelCommandOption<KordChannel>(name, description).apply(builder).also {
             it.register()
         }
 
@@ -123,7 +123,7 @@ open class ApplicationCommandOptions {
         description: String,
         builder: ChannelCommandOptionBuilder.() -> (Unit) = {}
     ): ChannelCommandOption<KordChannel?> =
-        ChannelCommandOption<KordChannel?>(name, description, false).apply(builder).also {
+        ChannelCommandOption<KordChannel?>(name, description).apply(builder).also {
             it.register()
         }
 
@@ -132,7 +132,7 @@ open class ApplicationCommandOptions {
         description: String,
         builder: MentionableCommandOptionBuilder.() -> (Unit) = {}
     ): MentionableCommandOption<CommandArgument.MentionableArgument> =
-        MentionableCommandOption<CommandArgument.MentionableArgument>(name, description, true).apply(builder).also {
+        MentionableCommandOption<CommandArgument.MentionableArgument>(name, description).apply(builder).also {
             it.register()
         }
 
@@ -141,7 +141,7 @@ open class ApplicationCommandOptions {
         description: String,
         builder: MentionableCommandOptionBuilder.() -> (Unit) = {}
     ): MentionableCommandOption<CommandArgument.MentionableArgument?> =
-        MentionableCommandOption<CommandArgument.MentionableArgument?>(name, description, false).apply(builder).also {
+        MentionableCommandOption<CommandArgument.MentionableArgument?>(name, description).apply(builder).also {
             it.register()
         }
 
@@ -150,7 +150,7 @@ open class ApplicationCommandOptions {
         description: String,
         builder: AttachmentCommandOptionBuilder.() -> (Unit) = {}
     ): AttachmentCommandOption<DiscordAttachment> =
-        AttachmentCommandOption<DiscordAttachment>(name, description, true).apply(builder).also {
+        AttachmentCommandOption<DiscordAttachment>(name, description).apply(builder).also {
             it.register()
         }
 
@@ -159,13 +159,17 @@ open class ApplicationCommandOptions {
         description: String,
         builder: AttachmentCommandOptionBuilder.() -> (Unit) = {}
     ): AttachmentCommandOption<DiscordAttachment?> =
-        AttachmentCommandOption<DiscordAttachment?>(name, description, false).apply(builder).also {
+        AttachmentCommandOption<DiscordAttachment?>(name, description).apply(builder).also {
             it.register()
         }
 
-    private fun <T> CommandOption<T>.register(): CommandOption<T> {
+    private inline fun <reified T> CommandOption<T>.register(): CommandOption<T> {
         if (arguments.any { it.name == this.name })
             throw IllegalArgumentException("Duplicate argument \"${this.name}\"!")
+
+        this.apply {
+            required = null !is T
+        }
 
         arguments.add(this)
         return this

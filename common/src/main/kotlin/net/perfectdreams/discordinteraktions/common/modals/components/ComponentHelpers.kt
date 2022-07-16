@@ -5,10 +5,16 @@ import dev.kord.rest.builder.component.ActionRowBuilder
 import dev.kord.rest.builder.component.TextInputBuilder
 
 fun ActionRowBuilder.textInput(
-    option: ModalComponent<String>,
+    option: TextInputModalComponent<*>,
     style: TextInputStyle,
     label: String,
-    builder: TextInputBuilder.() -> (Unit)
+    block: TextInputComponentBuilder.() -> (Unit) = {}
 ) {
-   this.textInput(style, option.customId, label, builder)
+    val builder = TextInputComponentBuilder().apply(block)
+
+   this.textInput(style, option.customId, label) {
+       required = option.required
+       placeholder = builder.placeholder
+       allowedLength = builder.allowedLength
+   }
 }

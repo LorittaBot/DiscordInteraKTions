@@ -44,12 +44,20 @@ class KordCommandRegistry(
             is UserCommandDeclaration -> {
                 return builder.user(declaration.name) {
                     nameLocalizations = declaration.nameLocalizations?.toMutableMap()
+                    defaultMemberPermissions = declaration.defaultMemberPermissions
+
+                    if (builder is GlobalMultiApplicationCommandBuilder)
+                        (this as GlobalUserCommandCreateBuilder).dmPermission = declaration.dmPermission
                 }
             }
 
             is MessageCommandDeclaration -> {
                 return builder.message(declaration.name) {
                     nameLocalizations = declaration.nameLocalizations?.toMutableMap()
+                    defaultMemberPermissions = declaration.defaultMemberPermissions
+
+                    if (builder is GlobalMultiApplicationCommandBuilder)
+                        (this as GlobalMessageCommandCreateBuilder).dmPermission = declaration.dmPermission
                 }
             }
 
