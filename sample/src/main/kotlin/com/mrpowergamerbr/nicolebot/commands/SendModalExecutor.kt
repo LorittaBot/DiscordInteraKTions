@@ -13,12 +13,11 @@ class SendModalExecutor : SlashCommandExecutor() {
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.sendModal(ModalSubmitYayExecutor, "Hello World!!") {
             actionRow {
-                textInput(ModalSubmitYayExecutor.options.something, TextInputStyle.Short, "something cool and epic!") {}
+                textInput(ModalSubmitYayExecutor.options.something, TextInputStyle.Short, "something cool and epic!")
             }
 
             actionRow {
                 textInput(ModalSubmitYayExecutor.options.somethingEvenBigger, TextInputStyle.Paragraph, "How's your day?") {
-                    required = false
                     allowedLength = 50..200
                 }
             }

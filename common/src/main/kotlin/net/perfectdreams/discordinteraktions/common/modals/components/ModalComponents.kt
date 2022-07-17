@@ -4,13 +4,22 @@ open class ModalComponents {
     val arguments = mutableListOf<ModalComponent<*>>()
 
     fun textInput(customId: String, block: StringModalComponentBuilder.() -> (Unit) = {}) =
-        StringModalComponent(customId).apply(block).also {
+        TextInputModalComponent<String>(customId).apply(block).also {
             it.register()
         }
 
-    private fun <T> ModalComponent<T>.register(): ModalComponent<T> {
+    fun optionalTextInput(customId: String, block: StringModalComponentBuilder.() -> (Unit) = {}) =
+        TextInputModalComponent<String?>(customId).apply(block).also {
+            it.register()
+        }
+
+    private inline fun <reified T> ModalComponent<T>.register(): ModalComponent<T> {
         if (arguments.any { it.customId == this.customId })
             throw IllegalArgumentException("Duplicate argument \"${this.customId}\"!")
+
+        this.apply {
+            required = null !is T
+        }
 
         arguments.add(this)
         return this

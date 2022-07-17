@@ -12,7 +12,7 @@ class ModalSubmitYayExecutor : ModalSubmitExecutor {
         object Options : ModalComponents() {
             val something = textInput("something")
 
-            val somethingEvenBigger = textInput("something_even_bigger")
+            val somethingEvenBigger = optionalTextInput("something_even_bigger")
         }
 
         override val options = Options
@@ -27,8 +27,7 @@ class ModalSubmitYayExecutor : ModalSubmitExecutor {
 
             val somethingEvenBigger = args[Options.somethingEvenBigger]
 
-            // In Discord's API: Optional TextInputs are empty if the user hasn't filled it
-            if (somethingEvenBigger.isNotEmpty()) {
+            if (somethingEvenBigger != null) {
                 embed {
                     title = "How's your day?"
                     description = args[Options.somethingEvenBigger]
