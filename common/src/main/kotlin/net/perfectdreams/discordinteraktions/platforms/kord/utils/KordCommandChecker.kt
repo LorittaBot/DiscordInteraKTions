@@ -94,6 +94,7 @@ class KordCommandChecker(val commandManager: CommandManager) {
                 // Convert the Nested Options into a map, then we can access them with our Discord InteraKTion options!
                 val arguments = CommandDeclarationUtils.convertOptions(
                     request,
+                    command,
                     executorDeclaration,
                     relativeOptions ?: listOf()
                 )

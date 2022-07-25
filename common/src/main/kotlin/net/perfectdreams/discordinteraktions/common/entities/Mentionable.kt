@@ -1,0 +1,3 @@
+package net.perfectdreams.discordinteraktions.common.entities
+
+interface Mentionable

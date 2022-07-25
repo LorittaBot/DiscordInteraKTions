@@ -2,6 +2,8 @@ package net.perfectdreams.discordinteraktions.common.commands
 
 import dev.kord.common.Locale
 import dev.kord.common.entity.Permissions
+import net.perfectdreams.discordinteraktions.common.commands.options.DiscordCommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.InteraKTionsCommandOption
 
 /**
  * Base class of every application declaration, because all interactions share a [name]
@@ -17,6 +19,7 @@ class SlashCommandDeclaration(
     val description: String,
     val descriptionLocalizations: Map<Locale, String>? = null,
     val executor: SlashCommandExecutorDeclaration? = null,
+    val options: List<InteraKTionsCommandOption<*>>?,
     val defaultMemberPermissions: Permissions?,
     val dmPermission: Boolean?,
     val subcommands: List<SlashCommandDeclaration>,

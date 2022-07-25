@@ -14,11 +14,6 @@ class AutocompleteFunExecutor : SlashCommandExecutor() {
             val autocompleteText = string("autocomplete_text", "Autocomplete Text") {
                 autocomplete(AutocompleteFunAutocompleteExecutor)
             }
-
-            val number = optionalInteger("number", "A cool number") {
-                minValue = 100
-                maxValue = 1000
-            }
         }
 
         override val options = Options
@@ -26,8 +21,7 @@ class AutocompleteFunExecutor : SlashCommandExecutor() {
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.sendEphemeralMessage {
-            content =
-                "You typed ${args[options.text]} and ${args[options.autocompleteText]} with ${args[options.number] ?: 0}"
+            content = "You typed ${args[options.text]} and ${args[options.autocompleteText]}"
         }
     }
 }

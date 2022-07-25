@@ -8,6 +8,7 @@ import net.perfectdreams.discordinteraktions.common.components.SelectMenuBaseExe
 import net.perfectdreams.discordinteraktions.common.components.SelectMenuExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.modals.ModalSubmitBaseExecutor
 import net.perfectdreams.discordinteraktions.common.modals.ModalSubmitExecutorDeclaration
+import net.perfectdreams.discordinteraktions.common.stringhandlers.StringDataHandlers
 
 open class CommandManager {
     val applicationCommandsDeclarations = mutableListOf<ApplicationCommandDeclaration>()
@@ -28,8 +29,22 @@ open class CommandManager {
     val componentDeclarations: List<String>
         get() = buttonDeclarations.map { it.id } + selectMenusDeclarations.map { it.id }
 
-    fun register(declarationWrapper: ApplicationCommandDeclarationWrapper, vararg executors: ApplicationCommandExecutor) =
-        register(declarationWrapper.declaration(), *executors)
+    val handlers = StringDataHandlers()
+
+    fun register(declarationWrapper: SlashCommandDeclarationWrapper, vararg executors: ApplicationCommandExecutor) {
+        val builder = declarationWrapper.declaration()
+        register(builder.build(handlers), *executors)
+    }
+
+    fun register(declarationWrapper: MessageCommandDeclarationWrapper, vararg executors: ApplicationCommandExecutor) {
+        val builder = declarationWrapper.declaration()
+        register(builder.build(handlers), *executors)
+    }
+
+    fun register(declarationWrapper: UserCommandDeclarationWrapper, vararg executors: ApplicationCommandExecutor) {
+        val builder = declarationWrapper.declaration()
+        register(builder.build(handlers), *executors)
+    }
 
     fun register(declaration: ApplicationCommandDeclaration, vararg executors: ApplicationCommandExecutor) {
         // TODO: Validate if all executors of the command are present

@@ -1,177 +1,283 @@
 package net.perfectdreams.discordinteraktions.common.commands.options
 
-import dev.kord.common.entity.*
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordChannel
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordRole
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
+import net.perfectdreams.discordinteraktions.common.stringhandlers.RawStringData
+import net.perfectdreams.discordinteraktions.common.stringhandlers.StringData
 
 open class ApplicationCommandOptions {
     companion object {
         val NO_OPTIONS = object : ApplicationCommandOptions() {}
     }
 
-    val arguments = mutableListOf<CommandOption<*>>()
+    val optionBuilders = mutableListOf<CommandOptionBuilder<*, *>>()
+    val references = mutableListOf<OptionReference<*>>()
 
     fun string(
         name: String,
         description: String,
         builder: StringCommandOptionBuilder.() -> (Unit) = {}
-    ): StringCommandOption<String> = StringCommandOption<String>(name, description).apply(builder).also {
-        it.register()
-    }
+    ) = string(name, RawStringData(description), builder)
+
+    fun string(
+        name: String,
+        description: StringData<*>,
+        builder: StringCommandOptionBuilder.() -> (Unit) = {}
+    ) = StringCommandOptionBuilder(name, description)
+        .apply(builder)
+        .let { register(it) }
 
     fun optionalString(
         name: String,
         description: String,
-        builder: StringCommandOptionBuilder.() -> (Unit) = {}
-    ): StringCommandOption<String?> = StringCommandOption<String?>(name, description).apply(builder).also {
-        it.register()
-    }
+        builder: NullableStringCommandOptionBuilder.() -> (Unit) = {}
+    ) = optionalString(name, RawStringData(description), builder)
+
+    fun optionalString(
+        name: String,
+        description: StringData<*>,
+        builder: NullableStringCommandOptionBuilder.() -> (Unit) = {}
+    ) = NullableStringCommandOptionBuilder(name, description)
+        .apply(builder)
+        .let { register(it) }
 
     fun integer(
         name: String,
         description: String,
         builder: IntegerCommandOptionBuilder.() -> (Unit) = {}
-    ): IntegerCommandOption<Long> = IntegerCommandOption<Long>(name, description).apply(builder).also {
-        it.register()
-    }
+    ) = integer(name, RawStringData(description), builder)
+
+    fun integer(
+        name: String,
+        description: StringData<*>,
+        builder: IntegerCommandOptionBuilder.() -> (Unit) = {}
+    ) = IntegerCommandOptionBuilder(name, description)
+        .apply(builder)
+        .let { register(it) }
 
     fun optionalInteger(
         name: String,
         description: String,
-        builder: IntegerCommandOptionBuilder.() -> (Unit) = {}
-    ): IntegerCommandOption<Long?> = IntegerCommandOption<Long?>(name, description).apply(builder).also {
-        it.register()
-    }
+        builder: NullableIntegerCommandOptionBuilder.() -> (Unit) = {}
+    ) = optionalInteger(name, RawStringData(description), builder)
+
+    fun optionalInteger(
+        name: String,
+        description: StringData<*>,
+        builder: NullableIntegerCommandOptionBuilder.() -> (Unit) = {}
+    ) = NullableIntegerCommandOptionBuilder(name, description)
+        .apply(builder)
+        .let { register(it) }
 
     fun number(
         name: String,
         description: String,
         builder: NumberCommandOptionBuilder.() -> (Unit) = {}
-    ): NumberCommandOption<Double> = NumberCommandOption<Double>(name, description).apply(builder).also {
-        it.register()
-    }
+    ) = number(name, RawStringData(description), builder)
+
+    fun number(
+        name: String,
+        description: StringData<*>,
+        builder: NumberCommandOptionBuilder.() -> (Unit) = {}
+    ) = NumberCommandOptionBuilder(name, description)
+        .apply(builder)
+        .let { register(it) }
 
     fun optionalNumber(
         name: String,
         description: String,
-        builder: NumberCommandOptionBuilder.() -> (Unit) = {}
-    ): NumberCommandOption<Double?> = NumberCommandOption<Double?>(name, description).apply(builder).also {
-        it.register()
-    }
+        builder: NullableNumberCommandOptionBuilder.() -> (Unit) = {}
+    ) = optionalNumber(name, RawStringData(description), builder)
+
+    fun optionalNumber(
+        name: String,
+        description: StringData<*>,
+        builder: NullableNumberCommandOptionBuilder.() -> (Unit) = {}
+    ) = NullableNumberCommandOptionBuilder(name, description)
+        .apply(builder)
+        .let { register(it) }
 
     fun boolean(
         name: String,
         description: String,
         builder: BooleanCommandOptionBuilder.() -> (Unit) = {}
-    ): BooleanCommandOption<Boolean> = BooleanCommandOption<Boolean>(name, description).apply(builder).also {
-        it.register()
-    }
+    ) = boolean(name, RawStringData(description), builder)
+
+    fun boolean(
+        name: String,
+        description: StringData<*>,
+        builder: BooleanCommandOptionBuilder.() -> (Unit) = {}
+    ) = BooleanCommandOptionBuilder(name, description)
+        .apply(builder)
+        .let { register(it) }
 
     fun optionalBoolean(
         name: String,
         description: String,
-        builder: BooleanCommandOptionBuilder.() -> (Unit) = {}
-    ): BooleanCommandOption<Boolean?> = BooleanCommandOption<Boolean?>(name, description).apply(builder).also {
-        it.register()
-    }
+        builder: NullableBooleanCommandOptionBuilder.() -> (Unit) = {}
+    ) = optionalBoolean(name, RawStringData(description), builder)
+
+    fun optionalBoolean(
+        name: String,
+        description: StringData<*>,
+        builder: NullableBooleanCommandOptionBuilder.() -> (Unit) = {}
+    ) = NullableBooleanCommandOptionBuilder(name, description)
+        .apply(builder)
+        .let { register(it) }
 
     fun user(
         name: String,
         description: String,
         builder: UserCommandOptionBuilder.() -> (Unit) = {}
-    ): UserCommandOption<KordUser> = UserCommandOption<KordUser>(name, description).apply(builder).also {
-        it.register()
-    }
+    ) = user(name, RawStringData(description), builder)
+
+    fun user(
+        name: String,
+        description: StringData<*>,
+        builder: UserCommandOptionBuilder.() -> (Unit) = {}
+    ) = UserCommandOptionBuilder(name, description)
+        .apply(builder)
+        .let { register(it) }
 
     fun optionalUser(
         name: String,
         description: String,
-        builder: UserCommandOptionBuilder.() -> (Unit) = {}
-    ): UserCommandOption<KordUser?> =
-        UserCommandOption<KordUser?>(name, description).apply(builder).also {
-            it.register()
-        }
+        builder: NullableUserCommandOptionBuilder.() -> (Unit) = {}
+    ) = optionalUser(name, RawStringData(description), builder)
+
+    fun optionalUser(
+        name: String,
+        description: StringData<*>,
+        builder: NullableUserCommandOptionBuilder.() -> (Unit) = {}
+    ) = NullableUserCommandOptionBuilder(name, description)
+        .apply(builder)
+        .let { register(it) }
 
     fun role(
         name: String,
         description: String,
         builder: RoleCommandOptionBuilder.() -> (Unit) = {}
-    ): RoleCommandOption<KordRole> = RoleCommandOption<KordRole>(name, description).apply(builder).also {
-        it.register()
-    }
+    ) = role(name, RawStringData(description), builder)
+
+    fun role(
+        name: String,
+        description: StringData<*>,
+        builder: RoleCommandOptionBuilder.() -> (Unit) = {}
+    ) = RoleCommandOptionBuilder(name, description)
+        .apply(builder)
+        .let { register(it) }
 
     fun optionalRole(
         name: String,
         description: String,
-        builder: RoleCommandOptionBuilder.() -> (Unit) = {}
-    ): RoleCommandOption<KordRole?> = RoleCommandOption<KordRole?>(name, description).apply(builder).also {
-        it.register()
-    }
+        builder: NullableRoleCommandOptionBuilder.() -> (Unit) = {}
+    ) = optionalRole(name, RawStringData(description), builder)
+
+    fun optionalRole(
+        name: String,
+        description: StringData<*>,
+        builder: NullableRoleCommandOptionBuilder.() -> (Unit) = {}
+    ) = NullableRoleCommandOptionBuilder(name, description)
+        .apply(builder)
+        .let { register(it) }
 
     fun channel(
         name: String,
         description: String,
         builder: ChannelCommandOptionBuilder.() -> (Unit) = {}
-    ): ChannelCommandOption<KordChannel> =
-        ChannelCommandOption<KordChannel>(name, description).apply(builder).also {
-            it.register()
-        }
+    ) = channel(name, RawStringData(description), builder)
+
+    fun channel(
+        name: String,
+        description: StringData<*>,
+        builder: ChannelCommandOptionBuilder.() -> (Unit) = {}
+    ) = ChannelCommandOptionBuilder(name, description)
+        .apply(builder)
+        .let { register(it) }
 
     fun optionalChannel(
         name: String,
         description: String,
-        builder: ChannelCommandOptionBuilder.() -> (Unit) = {}
-    ): ChannelCommandOption<KordChannel?> =
-        ChannelCommandOption<KordChannel?>(name, description).apply(builder).also {
-            it.register()
-        }
+        builder: NullableChannelCommandOptionBuilder.() -> (Unit) = {}
+    ) = optionalChannel(name, RawStringData(description), builder)
+
+    fun optionalChannel(
+        name: String,
+        description: StringData<*>,
+        builder: NullableChannelCommandOptionBuilder.() -> (Unit) = {}
+    ) = NullableChannelCommandOptionBuilder(name, description)
+        .apply(builder)
+        .let { register(it) }
 
     fun mentionable(
         name: String,
         description: String,
         builder: MentionableCommandOptionBuilder.() -> (Unit) = {}
-    ): MentionableCommandOption<CommandArgument.MentionableArgument> =
-        MentionableCommandOption<CommandArgument.MentionableArgument>(name, description).apply(builder).also {
-            it.register()
-        }
+    ) = mentionable(name, RawStringData(description), builder)
+
+    fun mentionable(
+        name: String,
+        description: StringData<*>,
+        builder: MentionableCommandOptionBuilder.() -> (Unit) = {}
+    ) = MentionableCommandOptionBuilder(name, description)
+        .apply(builder)
+        .let { register(it) }
 
     fun optionalMentionable(
         name: String,
         description: String,
-        builder: MentionableCommandOptionBuilder.() -> (Unit) = {}
-    ): MentionableCommandOption<CommandArgument.MentionableArgument?> =
-        MentionableCommandOption<CommandArgument.MentionableArgument?>(name, description).apply(builder).also {
-            it.register()
-        }
+        builder: NullableMentionableCommandOptionBuilder.() -> (Unit) = {}
+    ) = optionalMentionable(name, RawStringData(description), builder)
+
+    fun optionalMentionable(
+        name: String,
+        description: StringData<*>,
+        builder: NullableMentionableCommandOptionBuilder.() -> (Unit) = {}
+    ) = NullableMentionableCommandOptionBuilder(name, description)
+        .apply(builder)
+        .let { register(it) }
 
     fun attachment(
         name: String,
         description: String,
         builder: AttachmentCommandOptionBuilder.() -> (Unit) = {}
-    ): AttachmentCommandOption<DiscordAttachment> =
-        AttachmentCommandOption<DiscordAttachment>(name, description).apply(builder).also {
-            it.register()
-        }
+    ) = attachment(name, RawStringData(description), builder)
+
+    fun attachment(
+        name: String,
+        description: StringData<*>,
+        builder: AttachmentCommandOptionBuilder.() -> (Unit) = {}
+    ) = AttachmentCommandOptionBuilder(name, description)
+        .apply(builder)
+        .let { register(it) }
 
     fun optionalAttachment(
         name: String,
         description: String,
-        builder: AttachmentCommandOptionBuilder.() -> (Unit) = {}
-    ): AttachmentCommandOption<DiscordAttachment?> =
-        AttachmentCommandOption<DiscordAttachment?>(name, description).apply(builder).also {
-            it.register()
-        }
+        builder: NullableAttachmentCommandOptionBuilder.() -> (Unit) = {}
+    ) = optionalAttachment(name, RawStringData(description), builder)
 
-    private inline fun <reified T> CommandOption<T>.register(): CommandOption<T> {
-        if (arguments.any { it.name == this.name })
-            throw IllegalArgumentException("Duplicate argument \"${this.name}\"!")
+    fun optionalAttachment(
+        name: String,
+        description: StringData<*>,
+        builder: NullableAttachmentCommandOptionBuilder.() -> (Unit) = {}
+    ) = NullableAttachmentCommandOptionBuilder(name, description)
+        .apply(builder)
+        .let { register(it) }
+}
 
-        this.apply {
-            required = null !is T
-        }
+/**
+ * Registers a [optionBuilder] to an [ApplicationCommandOptions]
+ *
+ * @param optionBuilder the option builder
+ * @return an [OptionReference]
+ */
+inline fun <reified T, ChoiceableType> ApplicationCommandOptions.register(optionBuilder: CommandOptionBuilder<T, ChoiceableType>): OptionReference<T> {
+    if (optionBuilders.any { it.name == optionBuilder.name })
+        throw IllegalArgumentException("Duplicate argument \"${optionBuilder.name}\"!")
 
-        arguments.add(this)
-        return this
-    }
+    val optionReference = OptionReference<T>(optionBuilder.name, optionBuilder.required)
+
+    optionBuilders.add(optionBuilder)
+    references.add(optionReference)
+
+    return optionReference
 }

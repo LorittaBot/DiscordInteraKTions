@@ -10,7 +10,7 @@ import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandD
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
-import net.perfectdreams.discordinteraktions.common.commands.options.CommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.OptionReference
 import kotlin.reflect.KClass
 
 object CommandDeclarationUtils {
@@ -104,7 +104,7 @@ object CommandDeclarationUtils {
         if (declaration is SlashCommandDeclaration)
             return getLabelsConnectedToSlashCommandDeclaration(labels, declaration)
 
-        // Let's not over complicate this, we already know that Discord only supports one level deep of nesting
+        // Let's not overcomplicate this, we already know that Discord only supports one level deep of nesting
         // (so group -> subcommand)
         // So let's do easy and quick checks
         if (labels.first() is RootCommandLabel && labels.first().label == declaration.name) {
@@ -194,15 +194,24 @@ object CommandDeclarationUtils {
     class SubCommandLabel(label: String) : CommandLabel(label)
     class CommandGroupLabel(label: String) : CommandLabel(label)
 
-    fun convertOptions(request: DiscordInteraction, executorDeclaration: SlashCommandExecutorDeclaration, relativeOptions: List<Option>): Map<CommandOption<*>, Any?> {
-        val arguments = mutableMapOf<CommandOption<*>, Any?>()
+    fun convertOptions(
+        request: DiscordInteraction,
+        declaration: SlashCommandDeclaration,
+        executorDeclaration: SlashCommandExecutorDeclaration,
+        relativeOptions: List<Option>
+    ): Map<OptionReference<*>, Any?> {
+        val arguments = mutableMapOf<OptionReference<*>, Any?>()
         val options = relativeOptions.filterIsInstance<CommandArgument<*>>()
 
-        for (option in options) {
-            val interaKTionOption = executorDeclaration.options.arguments
-                .firstOrNull { it.name == option.name } ?: continue
+        if (options.isNotEmpty()) {
+            val declarationOptions = declaration.options ?: error("Declaration options list is null, but we have received options on the interaction! Bug?")
 
-            arguments[interaKTionOption] = interaKTionOption.parse(options, request)
+            for (declarationOption in declarationOptions) {
+                val optionReference = executorDeclaration.options.references
+                    .firstOrNull { it.name == declarationOption.name } ?: continue
+
+                arguments[optionReference] = declarationOption.parse(options, request)
+            }
         }
 
         return arguments

@@ -1,27 +1,28 @@
 package com.mrpowergamerbr.nicolebot.commands
 
-import dev.kord.common.entity.ButtonStyle
-import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
+import com.mrpowergamerbr.nicolebot.utils.customoptions.stringList
 import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import net.perfectdreams.discordinteraktions.common.components.interactiveButton
 
-class SendYourAttachmentExecutor : SlashCommandExecutor() {
+class CustomOptionsExecutor : SlashCommandExecutor() {
     companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
-            // val attachment = attachment("attachment", "Your attachment")
+            val choices = stringList("choice", "The list of options that you want me to choose for you", minimum = 2, maximum = 25)
         }
 
         override val options = Options
     }
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+        val choices = args[Options.choices]
+
         context.sendMessage {
-            // The attachment URL is ephemeral, so you need to reupload it somewhere else if you want to persist it!
-            // content = "You sent ${args[Options.attachment].url} to me!"
+            content = buildString {
+                append("Hmmm... I've chosen ${choices.random()}! :3")
+            }
         }
     }
 }

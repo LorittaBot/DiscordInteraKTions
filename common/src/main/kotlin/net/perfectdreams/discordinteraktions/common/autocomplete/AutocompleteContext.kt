@@ -3,7 +3,8 @@ package net.perfectdreams.discordinteraktions.common.autocomplete
 import dev.kord.common.entity.CommandArgument
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Snowflake
-import net.perfectdreams.discordinteraktions.common.commands.options.CommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.DiscordCommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.OptionReference
 import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 
@@ -20,14 +21,14 @@ open class AutocompleteContext(
     val discordInteraction: DiscordInteraction
 ) {
     /**
-     * Gets the filled argument from the [arguments] map, matching it via the [CommandOption].
+     * Gets the filled argument from the [arguments] map, matching it via the [DiscordCommandOption].
      *
      * **You should not use this to match the focused option!** Due to the way Discord works, a [CommandArgument.AutoCompleteArgument] is a String, so
      * it would be impossible to return the data in the proper type to you. If you do this, an error will be thrown.
      *
      * @param option the command option
      */
-    fun <T> getArgument(option: CommandOption<T>): T {
+    fun <T> getArgument(option: OptionReference<T>): T {
         val matchedArgument = arguments.firstOrNull { it.name == option.name }
 
         if (matchedArgument == null && option.required)

@@ -1,21 +1,10 @@
 package com.mrpowergamerbr.nicolebot
 
-import com.mrpowergamerbr.nicolebot.commands.AutocompleteFunExecutor
-import com.mrpowergamerbr.nicolebot.commands.ButtonsExecutor
-import com.mrpowergamerbr.nicolebot.commands.CounterButtonClickExecutor
-import com.mrpowergamerbr.nicolebot.commands.CounterExecutor
-import com.mrpowergamerbr.nicolebot.commands.FancyButtonClickExecutor
-import com.mrpowergamerbr.nicolebot.commands.SendModalExecutor
-import com.mrpowergamerbr.nicolebot.commands.HelloWorldExecutor
-import com.mrpowergamerbr.nicolebot.commands.ModalSubmitYayExecutor
-import com.mrpowergamerbr.nicolebot.commands.SendYourAttachmentExecutor
-import com.mrpowergamerbr.nicolebot.commands.AutocompleteFunAutocompleteExecutor
-import com.mrpowergamerbr.nicolebot.commands.declarations.AutocompleteFunCommand
-import com.mrpowergamerbr.nicolebot.commands.declarations.CounterCommand
-import com.mrpowergamerbr.nicolebot.commands.declarations.HelloWorldCommand
-import com.mrpowergamerbr.nicolebot.commands.declarations.InteractivityCommand
-import com.mrpowergamerbr.nicolebot.commands.declarations.SendYourAttachmentCommand
+import com.mrpowergamerbr.nicolebot.commands.*
+import com.mrpowergamerbr.nicolebot.commands.declarations.*
 import com.mrpowergamerbr.nicolebot.utils.Counter
+import com.mrpowergamerbr.nicolebot.utils.ExternalStringData
+import com.mrpowergamerbr.nicolebot.utils.LanguageManager
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
@@ -27,17 +16,37 @@ class NicoleBot(
     val commandManager: CommandManager
 ) {
     companion object {
-        val APPLICATION_ID = Snowflake(744361365724069898L)
-        val GUILD_ID = Snowflake(297732013006389252L)
+        val APPLICATION_ID = Snowflake(680539524400676977L)
+        val GUILD_ID = Snowflake(936391274951503873L)
     }
 
     val counter = Counter(0)
+    val languageManager = LanguageManager()
 
     suspend fun registerCommands() {
+        // With "addHandler", you can add a handler to handle externally provided strings for your command label, description, options, or whenever else
+        // This is useful if you are pulling strings from a file (example: language system) and you don't want to hardcode the command structure strings
+        // on your code!
+        commandManager.handlers.addHandler {
+            if (it !is ExternalStringData)
+                return@addHandler null
+
+            it.provide(languageManager)
+        }
+
         // ===[ /helloworld ]===
         commandManager.register(
             HelloWorldCommand,
             HelloWorldExecutor()
+        )
+
+        // ===[ /options ]===
+        commandManager.register(
+            OptionsCommand,
+            RequiredOptionsExecutor(),
+            OptionalOptionsExecutor(),
+            CustomOptionsExecutor(),
+            DSCustomOptionsExecutor()
         )
 
         // ===[ /interactivity ]===
@@ -83,6 +92,12 @@ class NicoleBot(
         commandManager.register(
             AutocompleteFunAutocompleteExecutor,
             AutocompleteFunAutocompleteExecutor()
+        )
+
+        // ===[ /externallyprovidedstring ]===
+        commandManager.register(
+            ExternallyProvidedStringCommand,
+            ExternallyProvidedStringExecutor()
         )
 
         val registry = KordCommandRegistry(
