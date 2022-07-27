@@ -6,9 +6,6 @@ import dev.kord.common.entity.DiscordInteraction
 import dev.kord.rest.builder.interaction.BaseInputChatBuilder
 import dev.kord.rest.builder.interaction.string
 import net.perfectdreams.discordinteraktions.common.commands.options.*
-import net.perfectdreams.discordinteraktions.common.stringhandlers.RawStringData
-import net.perfectdreams.discordinteraktions.common.stringhandlers.StringData
-import net.perfectdreams.discordinteraktions.common.stringhandlers.StringDataHandlers
 
 // A custom "String List" command option implementation, showing off how to implement your own custom options
 // While for your code it looks like a List<String>, "behind the scenes" it is actually multiple string options
@@ -45,15 +42,15 @@ class StringListCommandOption(
 // ===[ BUILDER ]===
 class StringListCommandOptionBuilder(
     name: String,
-    description: StringData<*>,
+    description: String,
     private val minimum: Int,
     private val maximum: Int
 ) : CommandOptionBuilder<List<String>, List<String>>(name, description, true) {
-    override fun build(handlers: StringDataHandlers) = StringListCommandOption(
+    override fun build() = StringListCommandOption(
         name,
-        handlers.provide(description),
-        nameLocalizations?.entries?.associate { it.key to handlers.provide(it.value) },
-        descriptionLocalizations?.entries?.associate { it.key to handlers.provide(it.value) },
+        description,
+        nameLocalizations,
+        descriptionLocalizations,
         minimum,
         maximum
     )
@@ -66,6 +63,6 @@ fun ApplicationCommandOptions.stringList(
     minimum: Int,
     maximum: Int,
     builder: StringListCommandOptionBuilder.() -> (Unit) = {}
-) = StringListCommandOptionBuilder(name, RawStringData(description), minimum, maximum)
+) = StringListCommandOptionBuilder(name, description, minimum, maximum)
     .apply(builder)
     .let { register(it) }

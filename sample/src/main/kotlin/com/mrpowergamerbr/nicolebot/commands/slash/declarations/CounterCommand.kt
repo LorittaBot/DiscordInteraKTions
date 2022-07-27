@@ -1,6 +1,6 @@
-package com.mrpowergamerbr.nicolebot.commands.declarations
+package com.mrpowergamerbr.nicolebot.commands.slash.declarations
 
-import com.mrpowergamerbr.nicolebot.commands.CounterExecutor
+import com.mrpowergamerbr.nicolebot.commands.slash.CounterExecutor
 import com.mrpowergamerbr.nicolebot.utils.Counter
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.discordinteraktions.common.commands.slashCommand

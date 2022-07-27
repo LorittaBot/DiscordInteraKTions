@@ -7,4 +7,6 @@ class LanguageManager {
         "command_option" to "A nice and fluffy option",
         "command_choice_name" to "This is dynamically provided from the LanguageManager class!"
     )
+
+    fun get(key: String) = strings[key]!!
 }

@@ -3,15 +3,13 @@ package com.mrpowergamerbr.nicolebot.utils.customoptions
 import dev.kord.common.Locale
 import dev.kord.common.entity.CommandArgument
 import dev.kord.common.entity.DiscordInteraction
-import dev.kord.rest.Image
 import dev.kord.rest.builder.interaction.BaseInputChatBuilder
 import dev.kord.rest.builder.interaction.string
 import kotlinx.coroutines.delay
-import net.perfectdreams.discordinteraktions.common.commands.options.*
-import net.perfectdreams.discordinteraktions.common.stringhandlers.RawStringData
-import net.perfectdreams.discordinteraktions.common.stringhandlers.StringData
-import net.perfectdreams.discordinteraktions.common.stringhandlers.StringDataHandlers
-import kotlin.streams.toList
+import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
+import net.perfectdreams.discordinteraktions.common.commands.options.CommandOptionBuilder
+import net.perfectdreams.discordinteraktions.common.commands.options.NameableCommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.register
 
 // A custom "Delayed Suspendable" command option, showing off how you can parse options that may require a "suspend" call
 // This is useful if you need to pull information from the CommandContext, or if you need to call a suspend method
@@ -52,13 +50,13 @@ class ImageReferenceCommandOption(
 // ===[ BUILDER ]===
 class DelayedSuspendableCommandOptionBuilder(
     name: String,
-    description: StringData<*>
+    description: String
 ) : CommandOptionBuilder<SuspendableData, SuspendableData>(name, description, true) {
-    override fun build(handlers: StringDataHandlers) = ImageReferenceCommandOption(
+    override fun build() = ImageReferenceCommandOption(
         name,
-        handlers.provide(description),
-        nameLocalizations?.entries?.associate { it.key to handlers.provide(it.value) },
-        descriptionLocalizations?.entries?.associate { it.key to handlers.provide(it.value) }
+        description,
+        nameLocalizations,
+        descriptionLocalizations
     )
 }
 
@@ -67,6 +65,6 @@ fun ApplicationCommandOptions.delayedSuspendable(
     name: String,
     description: String,
     builder: DelayedSuspendableCommandOptionBuilder.() -> (Unit) = {}
-) = DelayedSuspendableCommandOptionBuilder(name, RawStringData(description))
+) = DelayedSuspendableCommandOptionBuilder(name, description)
     .apply(builder)
     .let { register(it) }

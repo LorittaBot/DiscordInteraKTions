@@ -2,14 +2,14 @@ package com.mrpowergamerbr.nicolebot.commands.slash
 
 import dev.kord.common.entity.TextInputStyle
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
-import net.perfectdreams.discordinteraktions.common.modals.ModalSubmitContext
-import net.perfectdreams.discordinteraktions.common.modals.ModalSubmitExecutor
-import net.perfectdreams.discordinteraktions.common.modals.ModalSubmitExecutorDeclaration
+import net.perfectdreams.discordinteraktions.common.modals.ModalContext
+import net.perfectdreams.discordinteraktions.common.modals.ModalExecutor
+import net.perfectdreams.discordinteraktions.common.modals.ModalExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.modals.components.ModalArguments
 import net.perfectdreams.discordinteraktions.common.modals.components.ModalComponents
 
-class ModalSubmitYayExecutor : ModalSubmitExecutor {
-    companion object : ModalSubmitExecutorDeclaration("modal_submit_example") {
+class ModalYayExecutor : ModalExecutor {
+    companion object : ModalExecutorDeclaration("modal_submit_example") {
         object Options : ModalComponents() {
             val something = textInput("something", TextInputStyle.Short)
 
@@ -21,8 +21,8 @@ class ModalSubmitYayExecutor : ModalSubmitExecutor {
         override val options = Options
     }
 
-    override suspend fun onModalSubmit(
-        context: ModalSubmitContext,
+    override suspend fun onSubmit(
+        context: ModalContext,
         args: ModalArguments
     ) {
         context.sendEphemeralMessage {

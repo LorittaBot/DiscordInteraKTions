@@ -1,8 +1,7 @@
-package com.mrpowergamerbr.nicolebot.commands.declarations
+package com.mrpowergamerbr.nicolebot.commands.slash.declarations
 
-import com.mrpowergamerbr.nicolebot.commands.ButtonsExecutor
-import com.mrpowergamerbr.nicolebot.commands.HelloWorldExecutor
-import com.mrpowergamerbr.nicolebot.commands.SendModalExecutor
+import com.mrpowergamerbr.nicolebot.commands.slash.ButtonsExecutor
+import com.mrpowergamerbr.nicolebot.commands.slash.SendModalExecutor
 import dev.kord.common.Locale
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.discordinteraktions.common.commands.slashCommand

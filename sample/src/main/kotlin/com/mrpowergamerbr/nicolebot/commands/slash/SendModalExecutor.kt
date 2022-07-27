@@ -1,6 +1,5 @@
-package com.mrpowergamerbr.nicolebot.commands
+package com.mrpowergamerbr.nicolebot.commands.slash
 
-import dev.kord.common.entity.TextInputStyle
 import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
@@ -11,14 +10,16 @@ class SendModalExecutor : SlashCommandExecutor() {
         context: ApplicationCommandContext,
         args: SlashCommandArguments
     ) {
-        context.sendModal(ModalSubmitYayExecutor, "Hello World!!") {
+        context.sendModal(ModalYayExecutor, "Hello World!!") {
             actionRow {
-                textInput(ModalSubmitYayExecutor.options.something, TextInputStyle.Short, "something cool and epic!")
+                textInput(ModalYayExecutor.options.something, "something cool and epic!") {
+                    placeholder = "Loritta is very cool and epic :3"
+                }
             }
 
             actionRow {
-                textInput(ModalSubmitYayExecutor.options.somethingEvenBigger, TextInputStyle.Paragraph, "How's your day?") {
-                    allowedLength = 50..200
+                textInput(ModalYayExecutor.options.somethingEvenBigger, "How's your day?") {
+                    value = "It is going fine, thank you :D"
                 }
             }
         }

@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.nicolebot.commands
+package com.mrpowergamerbr.nicolebot.commands.slash
 
 import dev.kord.common.entity.ButtonStyle
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow

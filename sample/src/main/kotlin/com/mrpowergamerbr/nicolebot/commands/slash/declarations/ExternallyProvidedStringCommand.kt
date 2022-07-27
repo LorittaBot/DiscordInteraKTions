@@ -1,8 +1,7 @@
-package com.mrpowergamerbr.nicolebot.commands.declarations
+package com.mrpowergamerbr.nicolebot.commands.slash.declarations
 
-import com.mrpowergamerbr.nicolebot.commands.ExternallyProvidedStringExecutor
+import com.mrpowergamerbr.nicolebot.commands.slash.ExternallyProvidedStringExecutor
 import com.mrpowergamerbr.nicolebot.utils.LanguageManager
-import net.perfectdreams.discordinteraktions.common.attributes.AttributeKey
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.discordinteraktions.common.commands.slashCommand
 

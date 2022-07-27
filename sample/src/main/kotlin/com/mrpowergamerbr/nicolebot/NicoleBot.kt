@@ -1,9 +1,12 @@
 package com.mrpowergamerbr.nicolebot
 
-import com.mrpowergamerbr.nicolebot.commands.*
-import com.mrpowergamerbr.nicolebot.commands.declarations.*
+import com.mrpowergamerbr.nicolebot.commands.message.declarations.ContentLengthMessageCommand
+import com.mrpowergamerbr.nicolebot.commands.slash.CounterButtonExecutor
+import com.mrpowergamerbr.nicolebot.commands.slash.FancyButtonClickExecutor
+import com.mrpowergamerbr.nicolebot.commands.slash.ModalYayExecutor
+import com.mrpowergamerbr.nicolebot.commands.slash.declarations.*
+import com.mrpowergamerbr.nicolebot.commands.user.declarations.ViewAvatarUserCommand
 import com.mrpowergamerbr.nicolebot.utils.Counter
-import com.mrpowergamerbr.nicolebot.utils.ExternalStringData
 import com.mrpowergamerbr.nicolebot.utils.LanguageManager
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.service.RestClient
@@ -21,84 +24,42 @@ class NicoleBot(
     }
 
     val counter = Counter(0)
-    val languageManager = LanguageManager()
+    private val languageManager = LanguageManager()
 
     suspend fun registerCommands() {
-        // With "addHandler", you can add a handler to handle externally provided strings for your command label, description, options, or whenever else
-        // This is useful if you are pulling strings from a file (example: language system) and you don't want to hardcode the command structure strings
-        // on your code!
-        commandManager.handlers.addHandler {
-            if (it !is ExternalStringData)
-                return@addHandler null
-
-            it.provide(languageManager)
-        }
-
         // ===[ /helloworld ]===
-        commandManager.register(
-            HelloWorldCommand,
-            HelloWorldExecutor()
-        )
+        commandManager.register(HelloWorldCommand)
 
         // ===[ /options ]===
-        commandManager.register(
-            OptionsCommand,
-            RequiredOptionsExecutor(),
-            OptionalOptionsExecutor(),
-            CustomOptionsExecutor(),
-            DSCustomOptionsExecutor()
-        )
+        commandManager.register(OptionsCommand)
 
         // ===[ /interactivity ]===
-        commandManager.register(
-            InteractivityCommand,
-            ButtonsExecutor(),
-            SendModalExecutor()
-        )
+        commandManager.register(InteractivityCommand)
+        commandManager.register(FancyButtonClickExecutor())
 
         commandManager.register(
-            FancyButtonClickExecutor,
-            FancyButtonClickExecutor()
-        )
-
-        commandManager.register(
-            ModalSubmitYayExecutor,
-            ModalSubmitYayExecutor()
+            ModalYayExecutor,
+            ModalYayExecutor()
         )
 
         // ===[ /counter ]===
-        commandManager.register(
-            CounterCommand,
-            CounterExecutor(counter)
-        )
-
-        commandManager.register(
-            CounterButtonClickExecutor,
-            CounterButtonClickExecutor(counter)
-        )
+        commandManager.register(CounterCommand(counter))
+        commandManager.register(CounterButtonExecutor(counter))
 
         // ===[ /sendyourattachment ]===
-        commandManager.register(
-            SendYourAttachmentCommand,
-            SendYourAttachmentExecutor()
-        )
+        commandManager.register(SendYourAttachmentCommand)
 
         // ===[ /autocompletefun ]===
-        commandManager.register(
-            AutocompleteFunCommand,
-            AutocompleteFunExecutor()
-        )
-
-        commandManager.register(
-            AutocompleteFunAutocompleteExecutor,
-            AutocompleteFunAutocompleteExecutor()
-        )
+        commandManager.register(AutocompleteFunCommand)
 
         // ===[ /externallyprovidedstring ]===
-        commandManager.register(
-            ExternallyProvidedStringCommand,
-            ExternallyProvidedStringExecutor()
-        )
+        commandManager.register(ExternallyProvidedStringCommand(languageManager))
+
+        // ===[ "View avatar" ]===
+        commandManager.register(ViewAvatarUserCommand)
+
+        // ===[ "View content length" ]===
+        commandManager.register(ContentLengthMessageCommand)
 
         val registry = KordCommandRegistry(
             APPLICATION_ID,

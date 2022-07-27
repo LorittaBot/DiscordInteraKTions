@@ -1,6 +1,9 @@
-package com.mrpowergamerbr.nicolebot.commands.declarations
+package com.mrpowergamerbr.nicolebot.commands.slash.declarations
 
-import com.mrpowergamerbr.nicolebot.commands.*
+import com.mrpowergamerbr.nicolebot.commands.slash.CustomOptionsExecutor
+import com.mrpowergamerbr.nicolebot.commands.slash.DSCustomOptionsExecutor
+import com.mrpowergamerbr.nicolebot.commands.slash.OptionalOptionsExecutor
+import com.mrpowergamerbr.nicolebot.commands.slash.RequiredOptionsExecutor
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.discordinteraktions.common.commands.slashCommand
 

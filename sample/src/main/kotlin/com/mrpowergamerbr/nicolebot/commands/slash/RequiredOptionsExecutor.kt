@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.nicolebot.commands
+package com.mrpowergamerbr.nicolebot.commands.slash
 
 import dev.kord.common.entity.ChannelType
 import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext

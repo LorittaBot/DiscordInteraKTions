@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.nicolebot.commands
+package com.mrpowergamerbr.nicolebot.commands.slash
 
 import com.mrpowergamerbr.nicolebot.utils.customoptions.delayedSuspendable
 import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext

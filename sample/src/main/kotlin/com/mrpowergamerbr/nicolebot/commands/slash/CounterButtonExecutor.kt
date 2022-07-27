@@ -1,14 +1,14 @@
 package com.mrpowergamerbr.nicolebot.commands.slash
 
 import com.mrpowergamerbr.nicolebot.utils.Counter
-import net.perfectdreams.discordinteraktions.common.components.ButtonClickExecutor
-import net.perfectdreams.discordinteraktions.common.components.ButtonClickExecutorDeclaration
+import net.perfectdreams.discordinteraktions.common.components.ButtonExecutor
+import net.perfectdreams.discordinteraktions.common.components.ButtonExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.components.ComponentContext
 import net.perfectdreams.discordinteraktions.common.entities.User
 
-class CounterButtonClickExecutor(private val counter: Counter) : ButtonClickExecutor {
+class CounterButtonExecutor(private val counter: Counter) : ButtonExecutor {
     // All buttons must have unique IDs!
-    companion object : ButtonClickExecutorDeclaration("counter")
+    companion object : ButtonExecutorDeclaration("counter")
 
     override suspend fun onClick(user: User, context: ComponentContext) {
         val newCount = counter.addAndGet()

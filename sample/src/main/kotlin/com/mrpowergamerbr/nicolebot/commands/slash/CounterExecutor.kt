@@ -1,4 +1,4 @@
-package com.mrpowergamerbr.nicolebot.commands
+package com.mrpowergamerbr.nicolebot.commands.slash
 
 import com.mrpowergamerbr.nicolebot.utils.Counter
 import dev.kord.common.entity.ButtonStyle
@@ -20,7 +20,7 @@ class CounterExecutor(private val counter: Counter) : SlashCommandExecutor() {
             actionRow {
                 interactiveButton(
                     ButtonStyle.Primary,
-                    CounterButtonClickExecutor
+                    CounterButtonExecutor
                 ) {
                     label = "Increase the counter!"
                 }
