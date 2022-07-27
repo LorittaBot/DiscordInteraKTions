@@ -6,10 +6,10 @@ interface SlashCommandDeclarationWrapper : ApplicationCommandDeclarationWrapper 
     fun declaration(): SlashCommandDeclarationBuilder
 }
 
-interface UserCommandDeclarationWrapper : ApplicationCommandDeclarationWrapper{
+interface UserCommandDeclarationWrapper : ApplicationCommandDeclarationWrapper {
     fun declaration(): UserCommandDeclarationBuilder
 }
 
-interface MessageCommandDeclarationWrapper : ApplicationCommandDeclarationWrapper{
+interface MessageCommandDeclarationWrapper : ApplicationCommandDeclarationWrapper {
     fun declaration(): MessageCommandDeclarationBuilder
 }

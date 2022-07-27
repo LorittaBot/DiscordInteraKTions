@@ -35,7 +35,6 @@ import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.Ko
  * @param applicationId The bot's application id
  * @param interactionToken The request's token
  * @param call The request data
- * @param notificationChannel The notification pipe that we use for notifying events
  */
 class WebServerRequestManager(
     bridge: RequestBridge,

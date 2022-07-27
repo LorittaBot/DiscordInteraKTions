@@ -3,60 +3,33 @@ package net.perfectdreams.discordinteraktions.common.commands.options
 import dev.kord.common.Locale
 import dev.kord.common.entity.ChannelType
 import dev.kord.common.entity.DiscordAttachment
-import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteExecutorDeclaration
+import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteHandler
 import net.perfectdreams.discordinteraktions.common.entities.Channel
 import net.perfectdreams.discordinteraktions.common.entities.Mentionable
 import net.perfectdreams.discordinteraktions.common.entities.Role
 import net.perfectdreams.discordinteraktions.common.entities.User
-import net.perfectdreams.discordinteraktions.common.stringhandlers.RawStringData
-import net.perfectdreams.discordinteraktions.common.stringhandlers.StringData
-import net.perfectdreams.discordinteraktions.common.stringhandlers.StringDataHandlers
 
 abstract class CommandOptionBuilder<T, ChoiceableType>(
-    // We don't allow providing a StringProvider here because Discord InteraKTions uses the "name" to match arguments to options
     val name: String,
-    val description: StringData<*>,
+    val description: String,
     val required: Boolean
 ) {
-    var nameLocalizations: Map<Locale, StringData<*>>? = null
-    var descriptionLocalizations: Map<Locale, StringData<*>>? = null
+    var nameLocalizations: Map<Locale, String>? = null
+    var descriptionLocalizations: Map<Locale, String>? = null
 
-    fun nameLocalizations(localizationsMap: Map<Locale, String>) =
-        nameLocalizations(
-            localizationsMap.entries.associate { it.key to RawStringData(it.value) }
-        )
-
-    @JvmName("nameLocalizationsFromProvider")
-    fun nameLocalizations(localizationsMap: Map<Locale, StringData<*>>) {
-        this.nameLocalizations = localizationsMap
-    }
-
-    fun descriptionLocalizations(localizationsMap: Map<Locale, String>) =
-        descriptionLocalizations(
-            localizationsMap.entries.associate { it.key to RawStringData(it.value) }
-        )
-
-    @JvmName("descriptionLocalizationsFromProvider")
-    fun descriptionLocalizations(localizationsMap: Map<Locale, StringData<*>>) {
-        this.descriptionLocalizations = localizationsMap
-    }
-
-    abstract fun build(handlers: StringDataHandlers): InteraKTionsCommandOption<ChoiceableType>
+    abstract fun build(): InteraKTionsCommandOption<ChoiceableType>
 }
 
 abstract class ChoiceableCommandOptionBuilder<T, ChoiceableType>(
     name: String,
-    description: StringData<*>,
+    description: String,
     required: Boolean
 ) : CommandOptionBuilder<T, ChoiceableType>(name, description, required) {
     var choices: MutableList<CommandChoiceBuilder<ChoiceableType>>? = mutableListOf()
-    var autocomplete: AutocompleteExecutorDeclaration<ChoiceableType>? = null
+    var autocompleteExecutor: AutocompleteHandler<ChoiceableType>? = null
 
-    fun choice(name: String, value: ChoiceableType, block: CommandChoiceBuilder<ChoiceableType>.() -> (Unit) = {})
-            = choice(RawStringData(name), value, block)
-
-    fun choice(name: StringData<*>, value: ChoiceableType, block: CommandChoiceBuilder<ChoiceableType>.() -> (Unit) = {}) {
-        require(autocomplete == null) {
+    fun choice(name: String, value: ChoiceableType, block: CommandChoiceBuilder<ChoiceableType>.() -> (Unit) = {}) {
+        require(autocompleteExecutor == null) {
             "You can't use pre-defined choices with an autocomplete executor set!"
         }
 
@@ -67,51 +40,57 @@ abstract class ChoiceableCommandOptionBuilder<T, ChoiceableType>(
         choices?.add(builder)
     }
 
-    fun autocomplete(declaration: AutocompleteExecutorDeclaration<ChoiceableType>) {
+    fun autocomplete(handler: AutocompleteHandler<ChoiceableType>) {
         require(choices?.isNotEmpty() == false) {
             "You can't use autocomplete with pre-defined choices!"
         }
 
-        autocomplete = declaration
+        autocompleteExecutor = handler
     }
 }
 
 // ===[ STRING ]===
 abstract class StringCommandOptionBuilderBase<T>(
     name: String,
-    description: StringData<*>,
+    description: String,
     required: Boolean
 ) : ChoiceableCommandOptionBuilder<T, String>(name, description, required) {
     var minLength: Int? = null
     var maxLength: Int? = null
+    var allowedLength: IntRange
+        get() = error("This is a settable property only")
+        set(value) {
+            minLength = value.first
+            maxLength = value.last
+        }
 
-    override fun build(handlers: StringDataHandlers) = StringCommandOption(
+    override fun build() = StringCommandOption(
         name,
-        handlers.provide(description),
-        nameLocalizations?.entries?.associate { it.key to handlers.provide(it.value) },
-        descriptionLocalizations?.entries?.associate { it.key to handlers.provide(it.value) },
+        description,
+        nameLocalizations,
+        descriptionLocalizations,
         required,
-        choices?.map { it.build(handlers) },
+        choices?.map { it.build() },
         minLength,
         maxLength,
-        autocomplete != null
+        autocompleteExecutor
     )
 }
 
 class StringCommandOptionBuilder(
     name: String,
-    description: StringData<*>
+    description: String
 ) : StringCommandOptionBuilderBase<String>(name, description, true)
 
 class NullableStringCommandOptionBuilder(
     name: String,
-    description: StringData<*>
+    description: String
 ) : StringCommandOptionBuilderBase<String?>(name, description, false)
 
 // ===[ INTEGER ]===
 abstract class IntegerCommandOptionBuilderBase<T>(
     name: String,
-    description: StringData<*>,
+    description: String,
     required: Boolean
 ) : ChoiceableCommandOptionBuilder<T, Long>(name, description, required) {
     var minValue: Long? = null
@@ -123,33 +102,33 @@ abstract class IntegerCommandOptionBuilderBase<T>(
             maxValue = value.last
         }
 
-    override fun build(handlers: StringDataHandlers) = IntegerCommandOption(
+    override fun build() = IntegerCommandOption(
         name,
-        handlers.provide(description),
-        nameLocalizations?.entries?.associate { it.key to handlers.provide(it.value) },
-        descriptionLocalizations?.entries?.associate { it.key to handlers.provide(it.value) },
+        description,
+        nameLocalizations,
+        descriptionLocalizations,
         required,
-        choices?.map { it.build(handlers) },
+        choices?.map { it.build() },
         minValue,
         maxValue,
-        autocomplete != null
+        autocompleteExecutor
     )
 }
 
 class IntegerCommandOptionBuilder(
     name: String,
-    description: StringData<*>
+    description: String
 ) : IntegerCommandOptionBuilderBase<Long>(name, description, true)
 
 class NullableIntegerCommandOptionBuilder(
     name: String,
-    description: StringData<*>
+    description: String
 ) : IntegerCommandOptionBuilderBase<Long?>(name, description, false)
 
 // ===[ NUMBER ]===
 abstract class NumberCommandOptionBuilderBase<T>(
     name: String,
-    description: StringData<*>,
+    description: String,
     required: Boolean
 ) : ChoiceableCommandOptionBuilder<T, Double>(name, description, required) {
     var minValue: Double? = null
@@ -161,117 +140,117 @@ abstract class NumberCommandOptionBuilderBase<T>(
             maxValue = value.endInclusive
         }
 
-    override fun build(handlers: StringDataHandlers) = NumberCommandOption(
+    override fun build() = NumberCommandOption(
         name,
-        handlers.provide(description),
-        nameLocalizations?.entries?.associate { it.key to handlers.provide(it.value) },
-        descriptionLocalizations?.entries?.associate { it.key to handlers.provide(it.value) },
+        description,
+        nameLocalizations,
+        descriptionLocalizations,
         required,
-        choices?.map { it.build(handlers) },
+        choices?.map { it.build() },
         minValue,
         maxValue,
-        autocomplete != null
+        autocompleteExecutor
     )
 }
 
 class NumberCommandOptionBuilder(
     name: String,
-    description: StringData<*>
+    description: String
 ) : NumberCommandOptionBuilderBase<Double>(name, description, true)
 
 class NullableNumberCommandOptionBuilder(
     name: String,
-    description: StringData<*>
+    description: String
 ) : NumberCommandOptionBuilderBase<Double?>(name, description, false)
 
 // ===[ BOOLEAN ]===
 abstract class BooleanCommandOptionBuilderBase<T>(
     name: String,
-    description: StringData<*>,
+    description: String,
     required: Boolean
 ) : CommandOptionBuilder<T, Boolean>(name, description, required) {
-    override fun build(handlers: StringDataHandlers) = BooleanCommandOption(
+    override fun build() = BooleanCommandOption(
         name,
-        handlers.provide(description),
-        nameLocalizations?.entries?.associate { it.key to handlers.provide(it.value) },
-        descriptionLocalizations?.entries?.associate { it.key to handlers.provide(it.value) },
+        description,
+        nameLocalizations,
+        descriptionLocalizations,
         required
     )
 }
 
 class BooleanCommandOptionBuilder(
     name: String,
-    description: StringData<*>
+    description: String
 ) : BooleanCommandOptionBuilderBase<Boolean>(name, description, true)
 
 class NullableBooleanCommandOptionBuilder(
     name: String,
-    description: StringData<*>
+    description: String
 ) : BooleanCommandOptionBuilderBase<Boolean?>(name, description, false)
 
 // ===[ USER ]===
 abstract class UserCommandOptionBuilderBase<T>(
     name: String,
-    description: StringData<*>,
+    description: String,
     required: Boolean
 ) : CommandOptionBuilder<T, User>(name, description, required) {
-    override fun build(handlers: StringDataHandlers) = UserCommandOption(
+    override fun build() = UserCommandOption(
         name,
-        handlers.provide(description),
-        nameLocalizations?.entries?.associate { it.key to handlers.provide(it.value) },
-        descriptionLocalizations?.entries?.associate { it.key to handlers.provide(it.value) },
+        description,
+        nameLocalizations,
+        descriptionLocalizations,
         required
     )
 }
 
 class UserCommandOptionBuilder(
     name: String,
-    description: StringData<*>
+    description: String
 ) : UserCommandOptionBuilderBase<User>(name, description, true)
 
 class NullableUserCommandOptionBuilder(
     name: String,
-    description: StringData<*>
+    description: String
 ) : UserCommandOptionBuilderBase<User?>(name, description, false)
 
 // ===[ ROLE ]===
 abstract class RoleCommandOptionBuilderBase<T>(
     name: String,
-    description: StringData<*>,
+    description: String,
     required: Boolean
 ) : CommandOptionBuilder<T, Role>(name, description, required) {
-    override fun build(handlers: StringDataHandlers) = RoleCommandOption(
+    override fun build() = RoleCommandOption(
         name,
-        handlers.provide(description),
-        nameLocalizations?.entries?.associate { it.key to handlers.provide(it.value) },
-        descriptionLocalizations?.entries?.associate { it.key to handlers.provide(it.value) },
+        description,
+        nameLocalizations,
+        descriptionLocalizations,
         required
     )
 }
 
 class RoleCommandOptionBuilder(
     name: String,
-    description: StringData<*>
+    description: String
 ) : RoleCommandOptionBuilderBase<Role>(name, description, true)
 
 class NullableRoleCommandOptionBuilder(
     name: String,
-    description: StringData<*>
+    description: String
 ) : RoleCommandOptionBuilderBase<Role?>(name, description, false)
 
 // ===[ CHANNEL ]===
 abstract class ChannelCommandOptionBuilderBase<T>(
     name: String,
-    description: StringData<*>,
+    description: String,
     required: Boolean
 ) : CommandOptionBuilder<T, Channel>(name, description, required) {
     var channelTypes: List<ChannelType>? = null
 
-    override fun build(handlers: StringDataHandlers) = ChannelCommandOption(
+    override fun build() = ChannelCommandOption(
         name,
-        handlers.provide(description),
-        nameLocalizations?.entries?.associate { it.key to handlers.provide(it.value) },
-        descriptionLocalizations?.entries?.associate { it.key to handlers.provide(it.value) },
+        description,
+        nameLocalizations,
+        descriptionLocalizations,
         required,
         channelTypes
     )
@@ -279,60 +258,60 @@ abstract class ChannelCommandOptionBuilderBase<T>(
 
 class ChannelCommandOptionBuilder(
     name: String,
-    description: StringData<*>
+    description: String
 ) : ChannelCommandOptionBuilderBase<Role>(name, description, true)
 
 class NullableChannelCommandOptionBuilder(
     name: String,
-    description: StringData<*>
+    description: String
 ) : ChannelCommandOptionBuilderBase<Role?>(name, description, false)
 
 // ===[ MENTIONABLE ]===
 abstract class MentionableCommandOptionBuilderBase<T>(
     name: String,
-    description: StringData<*>,
+    description: String,
     required: Boolean
 ) : CommandOptionBuilder<T, Mentionable>(name, description, required) {
-    override fun build(handlers: StringDataHandlers) = MentionableCommandOption(
+    override fun build() = MentionableCommandOption(
         name,
-        handlers.provide(description),
-        nameLocalizations?.entries?.associate { it.key to handlers.provide(it.value) },
-        descriptionLocalizations?.entries?.associate { it.key to handlers.provide(it.value) },
+        description,
+        nameLocalizations,
+        descriptionLocalizations,
         required
     )
 }
 
 class MentionableCommandOptionBuilder(
     name: String,
-    description: StringData<*>
+    description: String
 ) : MentionableCommandOptionBuilderBase<Mentionable>(name, description, true)
 
 class NullableMentionableCommandOptionBuilder(
     name: String,
-    description: StringData<*>
+    description: String
 ) : MentionableCommandOptionBuilderBase<Mentionable?>(name, description, false)
 
 // ===[ ATTACHMENT ]===
 abstract class AttachmentCommandOptionBuilderBase<T>(
     name: String,
-    description: StringData<*>,
+    description: String,
     required: Boolean
 ) : CommandOptionBuilder<T, DiscordAttachment>(name, description, required) {
-    override fun build(handlers: StringDataHandlers) = AttachmentCommandOption(
+    override fun build() = AttachmentCommandOption(
         name,
-        handlers.provide(description),
-        nameLocalizations?.entries?.associate { it.key to handlers.provide(it.value) },
-        descriptionLocalizations?.entries?.associate { it.key to handlers.provide(it.value) },
+        description,
+        nameLocalizations,
+        descriptionLocalizations,
         required
     )
 }
 
 class AttachmentCommandOptionBuilder(
     name: String,
-    description: StringData<*>
+    description: String
 ) : AttachmentCommandOptionBuilderBase<DiscordAttachment>(name, description, true)
 
 class NullableAttachmentCommandOptionBuilder(
     name: String,
-    description: StringData<*>
+    description: String
 ) : AttachmentCommandOptionBuilderBase<DiscordAttachment?>(name, description, false)

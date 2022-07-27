@@ -12,11 +12,13 @@ open class GuildComponentContext(
     bridge: RequestBridge,
     sender: User,
     channelId: Snowflake,
+    declaration: ComponentExecutorDeclaration,
     message: Message,
-    data: InteractionData,
+    dataOrNull: String?,
+    interactionData: InteractionData,
     discordInteractionData: DiscordInteraction,
     val guildId: Snowflake,
     val member: InteractionMember
-) : ComponentContext(bridge, sender, channelId, message, data, discordInteractionData) {
+) : ComponentContext(bridge, sender, channelId, declaration, message, dataOrNull, interactionData, discordInteractionData) {
     val appPermissions = discordInteractionData.appPermissions.value ?: error("App Permissions field is null on a Guild Interaction! Bug?")
 }

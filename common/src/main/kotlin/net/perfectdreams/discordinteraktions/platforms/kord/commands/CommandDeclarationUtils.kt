@@ -6,10 +6,7 @@ import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Option
 import dev.kord.common.entity.SubCommand
 import mu.KotlinLogging
-import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandDeclaration
-import net.perfectdreams.discordinteraktions.common.commands.CommandManager
-import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclaration
-import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.discordinteraktions.common.commands.*
 import net.perfectdreams.discordinteraktions.common.commands.options.OptionReference
 import kotlin.reflect.KClass
 
@@ -196,22 +193,17 @@ object CommandDeclarationUtils {
 
     fun convertOptions(
         request: DiscordInteraction,
-        declaration: SlashCommandDeclaration,
-        executorDeclaration: SlashCommandExecutorDeclaration,
+        executor: SlashCommandExecutor,
         relativeOptions: List<Option>
     ): Map<OptionReference<*>, Any?> {
         val arguments = mutableMapOf<OptionReference<*>, Any?>()
         val options = relativeOptions.filterIsInstance<CommandArgument<*>>()
 
-        if (options.isNotEmpty()) {
-            val declarationOptions = declaration.options ?: error("Declaration options list is null, but we have received options on the interaction! Bug?")
+        for (declarationOption in executor.options.registeredOptions) {
+            val optionReference = executor.options.references
+                .firstOrNull { it.name == declarationOption.name } ?: continue
 
-            for (declarationOption in declarationOptions) {
-                val optionReference = executorDeclaration.options.references
-                    .firstOrNull { it.name == declarationOption.name } ?: continue
-
-                arguments[optionReference] = declarationOption.parse(options, request)
-            }
+            arguments[optionReference] = declarationOption.parse(options, request)
         }
 
         return arguments

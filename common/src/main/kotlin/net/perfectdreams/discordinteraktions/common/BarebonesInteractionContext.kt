@@ -5,7 +5,7 @@ import dev.kord.rest.builder.interaction.ModalBuilder
 import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.entities.messages.EditableMessage
-import net.perfectdreams.discordinteraktions.common.modals.ModalSubmitExecutorDeclaration
+import net.perfectdreams.discordinteraktions.common.modals.ModalExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.requests.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.requests.RequestBridge
 import net.perfectdreams.discordinteraktions.common.requests.managers.HttpRequestManager
@@ -81,8 +81,8 @@ open class BarebonesInteractionContext(
         return bridge.manager.sendEphemeralMessage(message)
     }
 
-    suspend fun sendModal(declaration: ModalSubmitExecutorDeclaration, title: String, builder: ModalBuilder.() -> (Unit)) = sendModal(declaration.id, title, builder)
-    suspend fun sendModal(declaration: ModalSubmitExecutorDeclaration, data: String, title: String, builder: ModalBuilder.() -> (Unit)) = sendModal(declaration.id, data, title, builder)
+    suspend fun sendModal(declaration: ModalExecutorDeclaration, title: String, builder: ModalBuilder.() -> (Unit)) = sendModal(declaration.id, title, builder)
+    suspend fun sendModal(declaration: ModalExecutorDeclaration, data: String, title: String, builder: ModalBuilder.() -> (Unit)) = sendModal(declaration.id, data, title, builder)
     suspend fun sendModal(id: String, data: String, title: String, builder: ModalBuilder.() -> (Unit)) = sendModal("$id:$data", title, builder)
     suspend fun sendModal(idWithData: String, title: String, builder: ModalBuilder.() -> (Unit)) {
         return bridge.manager.sendModal(title, idWithData, builder)

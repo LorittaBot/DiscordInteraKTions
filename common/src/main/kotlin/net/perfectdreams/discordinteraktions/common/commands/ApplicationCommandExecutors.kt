@@ -1,5 +1,6 @@
 package net.perfectdreams.discordinteraktions.common.commands
 
+import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.entities.InteractionMember
 import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
@@ -25,6 +26,8 @@ sealed class ApplicationCommandExecutor {
  * want to create an Slash Command.
  */
 abstract class SlashCommandExecutor : ApplicationCommandExecutor() {
+    open val options: ApplicationCommandOptions = ApplicationCommandOptions.NO_OPTIONS
+
     abstract suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments)
 }
 

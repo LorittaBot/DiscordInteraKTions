@@ -1,8 +1,11 @@
-package net.perfectdreams.discordinteraktions.common.components
+package net.perfectdreams.discordinteraktions.common.modals
 
+import net.perfectdreams.discordinteraktions.common.components.ComponentExecutorDeclaration.Companion.ID_REGEX
+import net.perfectdreams.discordinteraktions.common.modals.ModalExecutorDeclaration.Companion.ID_REGEX
+import net.perfectdreams.discordinteraktions.common.modals.components.ModalComponents
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.CommandDeclarationUtils
 
-sealed class ComponentExecutorDeclaration(
+open class ModalExecutorDeclaration(
     /**
      * The [parent] is Any? to avoid issues with anonymous classes
      *
@@ -13,9 +16,9 @@ sealed class ComponentExecutorDeclaration(
     var parent: Any? = null,
 
     /**
-     * The executor's ID, this is stored in the button, to be able to figure out what executor should be used
+     * The executor's ID, this is stored in the modal, to be able to figure out what executor should be used
      *
-     * All button executors should be unique!
+     * All modal executors should be unique!
      */
     val id: String,
 
@@ -40,18 +43,6 @@ sealed class ComponentExecutorDeclaration(
         if (parent == null)
             parent = CommandDeclarationUtils.getParentClass(this)
     }
-}
 
-open class ButtonExecutorDeclaration(
-    parent: Any? = null,
-    id: String
-) : ComponentExecutorDeclaration(parent, id) {
-    constructor(id: String) : this(null, id)
-}
-
-open class SelectMenuExecutorDeclaration(
-    parent: Any? = null,
-    id: String
-) : ComponentExecutorDeclaration(parent, id) {
-    constructor(id: String) : this(null, id)
+    open val options: ModalComponents = object: ModalComponents() {}
 }

@@ -4,6 +4,7 @@ import dev.kord.common.Locale
 import dev.kord.common.entity.*
 import dev.kord.common.entity.optional.optional
 import dev.kord.rest.builder.interaction.*
+import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteHandler
 import net.perfectdreams.discordinteraktions.common.entities.Channel
 import net.perfectdreams.discordinteraktions.common.entities.Mentionable
 import net.perfectdreams.discordinteraktions.common.entities.Role
@@ -49,6 +50,7 @@ abstract class GenericCommandOption<T>(
 
 interface ChoiceableCommandOption<T> {
     val choices: List<CommandChoice<T>>?
+    val autocompleteExecutor: AutocompleteHandler<T>?
 }
 
 // ===[ STRING ]===
@@ -61,14 +63,14 @@ class StringCommandOption(
     override val choices: List<CommandChoice<String>>?,
     val minLength: Int?,
     val maxLength: Int?,
-    val autocomplete: Boolean
+    override val autocompleteExecutor: AutocompleteHandler<String>?
 ) : GenericCommandOption<String>(name, description, nameLocalizations, descriptionLocalizations, required), ChoiceableCommandOption<String> {
     override fun register(builder: BaseInputChatBuilder) {
         builder.string(this@StringCommandOption.name, this@StringCommandOption.description) {
             this.nameLocalizations = this@StringCommandOption.nameLocalizations?.toMutableMap()
             this.descriptionLocalizations = this@StringCommandOption.descriptionLocalizations?.toMutableMap()
             this.required = this@StringCommandOption.required
-            this.autocomplete = this@StringCommandOption.autocomplete
+            this.autocomplete = this@StringCommandOption.autocompleteExecutor != null
             this.minLength = this@StringCommandOption.minLength
             this.maxLength = this@StringCommandOption.maxLength
 
@@ -88,14 +90,14 @@ class IntegerCommandOption(
     override val choices: List<CommandChoice<Long>>?,
     val minValue: Long?,
     val maxValue: Long?,
-    val autocomplete: Boolean
+    override val autocompleteExecutor: AutocompleteHandler<Long>?
 ) : GenericCommandOption<Long>(name, description, nameLocalizations, descriptionLocalizations, required), ChoiceableCommandOption<Long> {
     override fun register(builder: BaseInputChatBuilder) {
         builder.int(this@IntegerCommandOption.name, this@IntegerCommandOption.description) {
             this.nameLocalizations = this@IntegerCommandOption.nameLocalizations?.toMutableMap()
             this.descriptionLocalizations = this@IntegerCommandOption.descriptionLocalizations?.toMutableMap()
             this.required = this@IntegerCommandOption.required
-            this.autocomplete = this@IntegerCommandOption.autocomplete
+            this.autocomplete = this@IntegerCommandOption.autocompleteExecutor != null
             this.minValue = this@IntegerCommandOption.minValue
             this.maxValue = this@IntegerCommandOption.maxValue
 
@@ -115,14 +117,14 @@ class NumberCommandOption(
     override val choices: List<CommandChoice<Double>>?,
     val minValue: Double?,
     val maxValue: Double?,
-    val autocomplete: Boolean
+    override val autocompleteExecutor: AutocompleteHandler<Double>?
 ) : GenericCommandOption<Double>(name, description, nameLocalizations, descriptionLocalizations, required), ChoiceableCommandOption<Double> {
     override fun register(builder: BaseInputChatBuilder) {
         builder.number(this@NumberCommandOption.name, this@NumberCommandOption.description) {
             this.nameLocalizations = this@NumberCommandOption.nameLocalizations?.toMutableMap()
             this.descriptionLocalizations = this@NumberCommandOption.descriptionLocalizations?.toMutableMap()
             this.required = this@NumberCommandOption.required
-            this.autocomplete = this@NumberCommandOption.autocomplete
+            this.autocomplete = this@NumberCommandOption.autocompleteExecutor != null
             this.minValue = this@NumberCommandOption.minValue
             this.maxValue = this@NumberCommandOption.maxValue
 

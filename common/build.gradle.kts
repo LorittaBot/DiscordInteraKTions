@@ -8,6 +8,7 @@ group = "net.perfectdreams.discordinteraktions"
 
 dependencies {
     implementation(kotlin("stdlib"))
+    implementation(kotlin("reflect"))
 
     api(libs.kord.common)
     api(libs.kord.rest)

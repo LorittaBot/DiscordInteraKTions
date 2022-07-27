@@ -2,17 +2,17 @@ package net.perfectdreams.discordinteraktions.platforms.kord.utils
 
 import dev.kord.common.entity.ComponentType
 import dev.kord.common.entity.DiscordInteraction
+import dev.kord.common.entity.Snowflake
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
-import net.perfectdreams.discordinteraktions.common.components.ButtonClickExecutor
-import net.perfectdreams.discordinteraktions.common.components.ButtonClickWithDataExecutor
-import net.perfectdreams.discordinteraktions.common.components.SelectMenuExecutor
-import net.perfectdreams.discordinteraktions.common.components.SelectMenuWithDataExecutor
 import net.perfectdreams.discordinteraktions.common.components.ComponentContext
+import net.perfectdreams.discordinteraktions.common.components.ComponentExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.components.GuildComponentContext
+import net.perfectdreams.discordinteraktions.common.entities.messages.Message
 import net.perfectdreams.discordinteraktions.common.requests.managers.RequestManager
 import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
+import net.perfectdreams.discordinteraktions.common.requests.RequestBridge
 import net.perfectdreams.discordinteraktions.common.utils.InteraKTionsExceptions
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordInteractionMember
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
@@ -40,42 +40,12 @@ class KordComponentChecker(val commandManager: CommandManager) {
 
         val interactionData = InteractionData(request.data.resolved.value?.toDiscordInteraKTionsResolvedObjects(guildId))
 
-        // If the guild ID is not null, then it means that the interaction happened in a guild!
-        val componentContext = if (guildId != null) {
-            val member = request.member.value!! // Should NEVER be null!
-            val kordMember = KordInteractionMember(
-                guildId,
-                member,
-                KordUser(member.user.value!!) // Also should NEVER be null!
-            )
-
-            GuildComponentContext(
-                bridge,
-                kordUser,
-                request.channelId,
-                kordPublicMessage,
-                interactionData,
-                request,
-                guildId,
-                kordMember
-            )
-        } else {
-            ComponentContext(
-                bridge,
-                kordUser,
-                request.channelId,
-                kordPublicMessage,
-                interactionData,
-                request
-            )
-        }
-
         // Now this changes a bit depending on what we are trying to execute
         when (componentType) {
             is ComponentType.Unknown -> error("Unknown Component Type!")
             ComponentType.ActionRow -> error("Received a ActionRow component interaction... but that's impossible!")
             ComponentType.Button -> {
-                val buttonExecutorDeclaration = commandManager.buttonDeclarations
+                val executorDeclaration = commandManager.componentExecutorDeclarations
                     .asSequence()
                     .filter {
                         it.id == executorId
@@ -83,25 +53,27 @@ class KordComponentChecker(val commandManager: CommandManager) {
                     .firstOrNull() ?: InteraKTionsExceptions.missingDeclaration("button")
 
                 val executor = commandManager.buttonExecutors.firstOrNull {
-                    it.signature() == buttonExecutorDeclaration.parent
+                    it.signature() == executorDeclaration.parent
                 } ?: InteraKTionsExceptions.missingExecutor("button")
 
                 GlobalScope.launch {
-                    when (executor) {
-                        is ButtonClickExecutor -> executor.onClick(
+                    executor.onClick(
+                        kordUser,
+                        createContext(
+                            executorDeclaration,
+                            bridge,
                             kordUser,
-                            componentContext
-                        )
-                        is ButtonClickWithDataExecutor -> executor.onClick(
-                            kordUser,
-                            componentContext,
+                            request,
+                            interactionData,
+                            guildId,
+                            kordPublicMessage,
                             data
                         )
-                    }
+                    )
                 }
             }
             ComponentType.SelectMenu -> {
-                val executorDeclaration = commandManager.selectMenusDeclarations
+                val executorDeclaration = commandManager.componentExecutorDeclarations
                     .asSequence()
                     .filter {
                         it.id == executorId
@@ -113,22 +85,68 @@ class KordComponentChecker(val commandManager: CommandManager) {
                 } ?: InteraKTionsExceptions.missingExecutor("select menu")
 
                 GlobalScope.launch {
-                    when (executor) {
-                        is SelectMenuExecutor -> executor.onSelect(
+                    executor.onSelect(
+                        kordUser,
+                        createContext(
+                            executorDeclaration,
+                            bridge,
                             kordUser,
-                            componentContext,
-                            request.data.values.value ?: error("Values list is null!")
-                        )
-                        is SelectMenuWithDataExecutor -> executor.onSelect(
-                            kordUser,
-                            componentContext,
-                            data,
-                            request.data.values.value ?: error("Values list is null!")
-                        )
-                    }
+                            request,
+                            interactionData,
+                            guildId,
+                            kordPublicMessage,
+                            data
+                        ),
+                        request.data.values.value ?: error("Values list is null!")
+                    )
                 }
             }
             ComponentType.TextInput -> TODO() // As far as I know this should NEVER happen here!
+        }
+    }
+
+    private fun createContext(
+        declaration: ComponentExecutorDeclaration,
+        bridge: RequestBridge,
+        kordUser: KordUser,
+        request: DiscordInteraction,
+        interactionData: InteractionData,
+        guildId: Snowflake?,
+        message: Message,
+        data: String
+    ): ComponentContext {
+        // If the guild ID is not null, then it means that the interaction happened in a guild!
+        return if (guildId != null) {
+            val member = request.member.value!! // Should NEVER be null!
+            val kordMember = KordInteractionMember(
+                guildId,
+                member,
+                KordUser(member.user.value!!) // Also should NEVER be null!
+            )
+
+            GuildComponentContext(
+                bridge,
+                kordUser,
+                request.channelId,
+                declaration,
+                message,
+                data.ifEmpty { null },
+                interactionData,
+                request,
+                guildId,
+                kordMember
+            )
+        } else {
+            ComponentContext(
+                bridge,
+                kordUser,
+                request.channelId,
+                declaration,
+                message,
+                data.ifEmpty { null },
+                interactionData,
+                request
+            )
         }
     }
 }

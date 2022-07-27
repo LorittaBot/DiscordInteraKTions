@@ -1,7 +1,6 @@
 package net.perfectdreams.discordinteraktions.platforms.kord.commands
 
 import dev.kord.common.entity.Snowflake
-import dev.kord.common.entity.optional.optional
 import dev.kord.rest.builder.interaction.*
 import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.common.commands.*
@@ -82,9 +81,11 @@ class KordCommandRegistry(
                             options?.add(convertSubcommandGroupDeclarationToKord(it))
                         }
                     } else {
-                        require(declaration.executor != null) { "Root command without a executor!" }
+                        val executor = declaration.executor
 
-                        declaration.options?.forEach {
+                        require(executor != null) { "Root command without a executor!" }
+
+                        executor.options.registeredOptions.forEach {
                             convertCommandOptionToKord(it, this)
                         }
                     }
@@ -101,10 +102,12 @@ class KordCommandRegistry(
             options = mutableListOf() // Initialize a empty list so we can use it
         }
 
-        // This is a subcommand, so we only have an executor anyway
-        require(declaration.executor != null) { "Subcommand without a executor!" }
+        // This is a subcommand, so we SHOUlD have an non-null executor
+        val executor = declaration.executor
 
-        declaration.options?.forEach {
+        require(executor != null) { "Subcommand without a executor!" }
+
+        executor.options.registeredOptions.forEach {
             convertCommandOptionToKord(it, commandData)
         }
 
