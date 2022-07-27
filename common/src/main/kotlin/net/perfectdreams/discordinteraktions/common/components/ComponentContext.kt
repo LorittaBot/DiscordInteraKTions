@@ -14,10 +14,15 @@ open class ComponentContext(
     bridge: RequestBridge,
     sender: User,
     channelId: Snowflake,
+    val componentExecutorDeclaration: ComponentExecutorDeclaration,
     val message: Message,
-    data: InteractionData,
+    val dataOrNull: String?,
+    interactionData: InteractionData,
     discordInteractionData: DiscordInteraction
-) : InteractionContext(bridge, sender, channelId, data, discordInteractionData) {
+) : InteractionContext(bridge, sender, channelId, interactionData, discordInteractionData) {
+    val data: String
+        get() = dataOrNull ?: error("There isn't any custom data present in this component context!")
+
     suspend fun deferUpdateMessage() {
         if (!isDeferred) {
             bridge.manager.deferUpdateMessage()

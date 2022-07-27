@@ -6,11 +6,8 @@ import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Option
 import dev.kord.common.entity.SubCommand
 import mu.KotlinLogging
-import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandDeclaration
-import net.perfectdreams.discordinteraktions.common.commands.CommandManager
-import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclaration
-import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
-import net.perfectdreams.discordinteraktions.common.commands.options.CommandOption
+import net.perfectdreams.discordinteraktions.common.commands.*
+import net.perfectdreams.discordinteraktions.common.commands.options.OptionReference
 import kotlin.reflect.KClass
 
 object CommandDeclarationUtils {
@@ -104,7 +101,7 @@ object CommandDeclarationUtils {
         if (declaration is SlashCommandDeclaration)
             return getLabelsConnectedToSlashCommandDeclaration(labels, declaration)
 
-        // Let's not over complicate this, we already know that Discord only supports one level deep of nesting
+        // Let's not overcomplicate this, we already know that Discord only supports one level deep of nesting
         // (so group -> subcommand)
         // So let's do easy and quick checks
         if (labels.first() is RootCommandLabel && labels.first().label == declaration.name) {
@@ -194,15 +191,19 @@ object CommandDeclarationUtils {
     class SubCommandLabel(label: String) : CommandLabel(label)
     class CommandGroupLabel(label: String) : CommandLabel(label)
 
-    fun convertOptions(request: DiscordInteraction, executorDeclaration: SlashCommandExecutorDeclaration, relativeOptions: List<Option>): Map<CommandOption<*>, Any?> {
-        val arguments = mutableMapOf<CommandOption<*>, Any?>()
+    fun convertOptions(
+        request: DiscordInteraction,
+        executor: SlashCommandExecutor,
+        relativeOptions: List<Option>
+    ): Map<OptionReference<*>, Any?> {
+        val arguments = mutableMapOf<OptionReference<*>, Any?>()
         val options = relativeOptions.filterIsInstance<CommandArgument<*>>()
 
-        for (option in options) {
-            val interaKTionOption = executorDeclaration.options.arguments
-                .firstOrNull { it.name == option.name } ?: continue
+        for (declarationOption in executor.options.registeredOptions) {
+            val optionReference = executor.options.references
+                .firstOrNull { it.name == declarationOption.name } ?: continue
 
-            arguments[interaKTionOption] = interaKTionOption.parse(options, request)
+            arguments[optionReference] = declarationOption.parse(options, request)
         }
 
         return arguments

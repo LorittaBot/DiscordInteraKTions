@@ -8,10 +8,8 @@ import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
-import net.perfectdreams.discordinteraktions.common.modals.GuildModalSubmitContext
-import net.perfectdreams.discordinteraktions.common.modals.ModalSubmitContext
-import net.perfectdreams.discordinteraktions.common.modals.ModalSubmitExecutor
-import net.perfectdreams.discordinteraktions.common.modals.ModalSubmitWithDataExecutor
+import net.perfectdreams.discordinteraktions.common.modals.GuildModalContext
+import net.perfectdreams.discordinteraktions.common.modals.ModalContext
 import net.perfectdreams.discordinteraktions.common.modals.components.ModalArguments
 import net.perfectdreams.discordinteraktions.common.requests.managers.RequestManager
 import net.perfectdreams.discordinteraktions.common.utils.InteraKTionsExceptions
@@ -44,8 +42,10 @@ class KordModalSubmitChecker(val commandManager: CommandManager) {
 
         val interactionData = InteractionData(request.data.resolved.value?.toDiscordInteraKTionsResolvedObjects(guildId))
 
+        val modalSubmitDeclaration = commandManager.modalDeclarations.firstOrNull { it.id == executorId } ?: InteraKTionsExceptions.missingDeclaration("modal submit")
+
         // If the guild ID is not null, then it means that the interaction happened in a guild!
-        val modalSubmitContext = if (guildId != null) {
+        val modalContext = if (guildId != null) {
             val member = request.member.value!! // Should NEVER be null!
             val kordMember = KordInteractionMember(
                 guildId,
@@ -53,27 +53,30 @@ class KordModalSubmitChecker(val commandManager: CommandManager) {
                 KordUser(member.user.value!!) // Also should NEVER be null!
             )
 
-            GuildModalSubmitContext(
+            GuildModalContext(
                 bridge,
                 kordUser,
                 request.channelId,
+                modalSubmitDeclaration,
+                data.ifEmpty { null },
                 interactionData,
                 request,
                 guildId,
                 kordMember
             )
         } else {
-            ModalSubmitContext(
+            ModalContext(
                 bridge,
                 kordUser,
                 request.channelId,
+                modalSubmitDeclaration,
+                data.ifEmpty { null },
                 interactionData,
                 request
             )
         }
 
-        val modalSubmitDeclaration = commandManager.modalSubmitDeclarations.firstOrNull { it.id == executorId } ?: InteraKTionsExceptions.missingDeclaration("modal submit")
-        val modalSubmitExecutor = commandManager.modalSubmitExecutors.firstOrNull { it.signature() == modalSubmitDeclaration.parent } ?: InteraKTionsExceptions.missingExecutor("modal submit")
+        val modalExecutor = commandManager.modalExecutors.firstOrNull { it.signature() == modalSubmitDeclaration.parent } ?: InteraKTionsExceptions.missingExecutor("modal submit")
         val allComponentsInRequest = request.data.components.value ?: error("Missing component list for the modal submit request!")
         val componentsFlatMap = mutableListOf<DiscordComponent>()
         allComponentsInRequest.forEach {
@@ -81,30 +84,18 @@ class KordModalSubmitChecker(val commandManager: CommandManager) {
         }
 
         val textInputComponents = componentsFlatMap.filter { it.type == ComponentType.TextInput }
-            .filterIsInstance<DiscordComponent>()
 
         val map = textInputComponents.associate {
-            (modalSubmitDeclaration.options.arguments.firstOrNull { arg ->
+            (modalSubmitDeclaration.options.references.firstOrNull { arg ->
                 arg.customId == it.customId.value
             } ?: error("I couldn't find a matching ModalComponent named ${it.customId.value} in the modal executor declaration!")) to it.value.value
         }
 
         GlobalScope.launch {
-            when (modalSubmitExecutor) {
-                is ModalSubmitExecutor -> {
-                    modalSubmitExecutor.onModalSubmit(
-                        modalSubmitContext,
-                        ModalArguments(map)
-                    )
-                }
-                is ModalSubmitWithDataExecutor -> {
-                    modalSubmitExecutor.onModalSubmit(
-                        modalSubmitContext,
-                        ModalArguments(map),
-                        data
-                    )
-                }
-            }
+            modalExecutor.onSubmit(
+                modalContext,
+                ModalArguments(map)
+            )
         }
     }
 

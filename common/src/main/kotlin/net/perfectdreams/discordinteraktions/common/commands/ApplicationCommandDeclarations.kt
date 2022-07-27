@@ -6,43 +6,72 @@ import dev.kord.common.entity.Permissions
 /**
  * Base class of every application declaration, because all interactions share a [name]
  */
-sealed class ApplicationCommandDeclaration(
-    val name: String,
-    val nameLocalizations: Map<Locale, String>? = null
-)
+sealed class ApplicationCommandDeclaration {
+    abstract val name: String
+    abstract val nameLocalizations: Map<Locale, String>?
+}
 
-class SlashCommandDeclaration(
-    name: String,
-    nameLocalizations: Map<Locale, String>? = null,
-    val description: String,
-    val descriptionLocalizations: Map<Locale, String>? = null,
-    val executor: SlashCommandExecutorDeclaration? = null,
-    val defaultMemberPermissions: Permissions?,
-    val dmPermission: Boolean?,
-    val subcommands: List<SlashCommandDeclaration>,
-    val subcommandGroups: List<SlashCommandGroupDeclaration>
-) : ApplicationCommandDeclaration(name, nameLocalizations)
+abstract class SlashCommandDeclaration : ApplicationCommandDeclaration() {
+    abstract val description: String
+    abstract val descriptionLocalizations: Map<Locale, String>?
+    abstract val executor: SlashCommandExecutor?
+    abstract val defaultMemberPermissions: Permissions?
+    abstract val dmPermission: Boolean?
+    abstract val subcommands: List<SlashCommandDeclaration>
+    abstract val subcommandGroups: List<SlashCommandGroupDeclaration>
+}
 
-class SlashCommandGroupDeclaration(
-    name: String,
-    nameLocalizations: Map<Locale, String>? = null,
-    val description: String,
-    val descriptionLocalizations: Map<Locale, String>? = null,
-    val subcommands: List<SlashCommandDeclaration>
-) : ApplicationCommandDeclaration(name, nameLocalizations)
+abstract class SlashCommandGroupDeclaration : ApplicationCommandDeclaration() {
+    abstract val description: String
+    abstract val descriptionLocalizations: Map<Locale, String>?
+    abstract val subcommands: List<SlashCommandDeclaration>
+}
 
-class UserCommandDeclaration(
-    name: String,
-    nameLocalizations: Map<Locale, String>? = null,
-    val defaultMemberPermissions: Permissions?,
-    val dmPermission: Boolean?,
-    val executor: UserCommandExecutorDeclaration // User/Message commands always requires an executor, that's why it is not nullable!
-) : ApplicationCommandDeclaration(name, nameLocalizations)
+abstract class UserCommandDeclaration : ApplicationCommandDeclaration() {
+    abstract val defaultMemberPermissions: Permissions?
+    abstract val executor: UserCommandExecutor // User/Message commands always requires an executor, that's why it is not nullable!
+    abstract val dmPermission: Boolean?
+}
 
-class MessageCommandDeclaration(
-    name: String,
-    nameLocalizations: Map<Locale, String>? = null,
-    val defaultMemberPermissions: Permissions?,
-    val dmPermission: Boolean?,
-    val executor: MessageCommandExecutorDeclaration // User/Message commands always requires an executor, that's why it is not nullable!
-) : ApplicationCommandDeclaration(name, nameLocalizations)
+abstract class MessageCommandDeclaration : ApplicationCommandDeclaration() {
+    abstract val defaultMemberPermissions: Permissions?
+    abstract val executor: MessageCommandExecutor // User/Message commands always requires an executor, that's why it is not nullable!
+    abstract val dmPermission: Boolean?
+}
+
+// ===[ DEFAULT IMPLEMENTATIONS ]===
+class InteraKTionsSlashCommandDeclaration(
+    override val name: String,
+    override val nameLocalizations: Map<Locale, String>? = null,
+    override val description: String,
+    override val descriptionLocalizations: Map<Locale, String>? = null,
+    override val executor: SlashCommandExecutor? = null,
+    override val defaultMemberPermissions: Permissions?,
+    override val dmPermission: Boolean?,
+    override val subcommands: List<SlashCommandDeclaration>,
+    override val subcommandGroups: List<SlashCommandGroupDeclaration>
+) : SlashCommandDeclaration()
+
+class InteraKTionsSlashCommandGroupDeclaration(
+    override val name: String,
+    override val nameLocalizations: Map<Locale, String>? = null,
+    override val description: String,
+    override val descriptionLocalizations: Map<Locale, String>? = null,
+    override val subcommands: List<SlashCommandDeclaration>
+) : SlashCommandGroupDeclaration()
+
+class InteraKTionsUserCommandDeclaration(
+    override val name: String,
+    override val nameLocalizations: Map<Locale, String>? = null,
+    override val executor: UserCommandExecutor,
+    override val defaultMemberPermissions: Permissions?,
+    override val dmPermission: Boolean?
+) : UserCommandDeclaration()
+
+class InteraKTionsMessageCommandDeclaration(
+    override val name: String,
+    override val nameLocalizations: Map<Locale, String>? = null,
+    override val executor: MessageCommandExecutor,
+    override val defaultMemberPermissions: Permissions?,
+    override val dmPermission: Boolean?
+) : MessageCommandDeclaration()

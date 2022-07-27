@@ -12,5 +12,6 @@ open class ApplicationCommandContext(
     sender: User,
     channelId: Snowflake,
     data: InteractionData,
-    discordInteractionData: DiscordInteraction
+    discordInteractionData: DiscordInteraction,
+    val applicationCommandDeclaration: ApplicationCommandDeclaration
 ) : InteractionContext(bridge, sender, channelId, data, discordInteractionData)

@@ -42,7 +42,7 @@ sealed class ComponentExecutorDeclaration(
     }
 }
 
-open class ButtonClickExecutorDeclaration(
+open class ButtonExecutorDeclaration(
     parent: Any? = null,
     id: String
 ) : ComponentExecutorDeclaration(parent, id) {

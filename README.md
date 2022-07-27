@@ -23,8 +23,9 @@ While Discord InteraKTions has a bunch of nifty features, it still doesn't suppo
 * [X] User/Message Commands (Context Menu)
 * [X] Buttons
 * [X] Select Menus
-* [X] *(Experimental)* Autocomplete
+* [X] Autocomplete
 * [X] Permissions
+* [X] *(Experimental)* Modals
 * [ ] *Good* Documentation
 * [ ] Being a good project :3
 
@@ -53,13 +54,9 @@ suspend fun main() {
     // Keep in mind that you need to register all the executors used in the declarations!
     interactionsServer.commandManager.register(
         CharacterCommand,   // The declaration of the command
-        CharacterExecutor() // All executors related to that command, this argument is a vararg!
     )
 
-    // And now we will create our command registry!
-    // You may be wondering: "Why this can't be in the CommandManager?"
-    // Because CommandManager does not know what platform we are using, we may be using another lib that isn't Kord!
-    // So we need to create the command registry with our command manager!
+    // And now we will create our command registry to register our commands!
     val registry = KordCommandRegistry(
         Snowflake(12345L), // Your application ID, get it from the Discord Developers' dashboard!
         interactionsServer.rest,
@@ -91,24 +88,19 @@ object CharacterCommand : SlashCommandDeclarationWrapper {
         "character", // The command label
         "So many choices, so little time..." // The command description shown in the Discord UI
     ) {
-        executor = CharacterExecutor // This is a reference to what executor should execute the command
+        executor = CharacterExecutor() // This is a reference to what executor should execute the command
     }
 }
 
 class CharacterExecutor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration() { // This needs to be a class reference to the executor class!
-        // By default, if you don't override the options, no options will be set
-        override val options = Option
-
-        object Option : ApplicationCommandOptions() {
-            val character = string("character", "Select a Character!") { // Here we are creating a String option
-                choice("loritta", "Loritta Morenitta :3") // ...with custom choices! 
-                choice("pantufa", "Pantufa ;w;")
-                choice("gabriela", "Gabriela ^-^")
-            }
-
-            val repeat = optionalLong("repeat", "How many times the character name should be repeated") // Here we are creating a Int option
+    inner class Options : ApplicationCommandOptions() {
+        val character = string("character", "Select a Character!") { // Here we are creating a String option
+            choice("loritta", "Loritta Morenitta :3") // ...with custom choices! 
+            choice("pantufa", "Pantufa ;w;")
+            choice("gabriela", "Gabriela ^-^")
         }
+
+        val repeat = optionalLong("repeat", "How many times the character name should be repeated") // Here we are creating a Int option
     }
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
@@ -240,16 +232,12 @@ val interactionsServer = InteractionsServer(
 )
 
 // Register the command...
- // Keep in mind that you need to register all the executors used in the declarations!
+// Keep in mind that you need to register all the executors used in the declarations!
 interactionsServer.commandManager.register(
-    CharacterCommand,   // The declaration of the command
-    CharacterExecutor() // All executors related to that command, this argument is a vararg!
+    CharacterCommand()
 )
 
 // And now we will create our command registry!
-// You may be wondering: "Why this can't be in the CommandManager?"
-// Because CommandManager does not know what platform we are using, we may be using another lib that isn't Kord!
-// So we need to create the command registry with our command manager!
 val registry = KordCommandRegistry(
     Snowflake(12345L), // Your application ID, get it from the Discord Developers' dashboard!
     interactionsServer.rest,
@@ -296,14 +284,10 @@ suspend fun main() {
     // Register the command...
     // Keep in mind that you need to register all the executors used in the declarations!
     commandManager.register(
-        CharacterCommand,   // The declaration of the command
-        CharacterExecutor() // All executors related to that command, this argument is a vararg!
+        CharacterCommand()
     )
 
     // And now we will create our command registry!
-    // You may be wondering: "Why this can't be in the CommandManager?"
-    // Because CommandManager does not know what platform we are using, we may be using another lib that isn't Kord!
-    // So we need to create the command registry with our command manager!
     val registry = KordCommandRegistry(
         Snowflake(12345L), // Your application ID, get it from the Discord Developers' dashboard!
         client.rest,

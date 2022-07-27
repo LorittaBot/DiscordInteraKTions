@@ -1,17 +1,15 @@
 package net.perfectdreams.discordinteraktions.common.commands
 
-interface ApplicationCommandDeclarationWrapper {
-    fun declaration(): ApplicationCommandDeclaration
-}
+interface ApplicationCommandDeclarationWrapper
 
 interface SlashCommandDeclarationWrapper : ApplicationCommandDeclarationWrapper {
-    override fun declaration(): SlashCommandDeclaration
+    fun declaration(): SlashCommandDeclarationBuilder
 }
 
-interface UserCommandDeclarationWrapper : ApplicationCommandDeclarationWrapper{
-    override fun declaration(): UserCommandDeclaration
+interface UserCommandDeclarationWrapper : ApplicationCommandDeclarationWrapper {
+    fun declaration(): UserCommandDeclarationBuilder
 }
 
-interface MessageCommandDeclarationWrapper : ApplicationCommandDeclarationWrapper{
-    override fun declaration(): MessageCommandDeclaration
+interface MessageCommandDeclarationWrapper : ApplicationCommandDeclarationWrapper {
+    fun declaration(): MessageCommandDeclarationBuilder
 }

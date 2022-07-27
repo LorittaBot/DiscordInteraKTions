@@ -2,36 +2,38 @@ package net.perfectdreams.discordinteraktions.common.commands
 
 import dev.kord.common.Locale
 import dev.kord.common.entity.Permissions
+import net.perfectdreams.discordinteraktions.common.utils.InteraKTionsDslMarker
 
 // ===[ SLASH COMMANDS ]===
-fun slashCommand(name: String, description: String, block: SlashCommandDeclarationBuilder.() -> (Unit)): SlashCommandDeclaration {
-    return SlashCommandDeclarationBuilder(name, description)
-        .apply(block)
-        .build()
-}
+fun slashCommand(name: String, description: String, block: SlashCommandDeclarationBuilder.() -> (Unit)) = SlashCommandDeclarationBuilder(
+    name,
+    description
+).apply(block)
 
-class SlashCommandDeclarationBuilder(val name: String, val description: String) {
+@InteraKTionsDslMarker
+class SlashCommandDeclarationBuilder(
+    val name: String,
+    val description: String
+) {
     var nameLocalizations: Map<Locale, String>? = null
     var descriptionLocalizations: Map<Locale, String>? = null
-    var executor: SlashCommandExecutorDeclaration? = null
-    val subcommands = mutableListOf<SlashCommandDeclaration>()
-    val subcommandGroups = mutableListOf<SlashCommandGroupDeclaration>()
+    var executor: SlashCommandExecutor? = null
+    val subcommands = mutableListOf<SlashCommandDeclarationBuilder>()
+    val subcommandGroups = mutableListOf<SlashCommandGroupDeclarationBuilder>()
     // Only root commands can have permissions and dmPermission
     var defaultMemberPermissions: Permissions? = null
     var dmPermission: Boolean? = null
 
     fun subcommand(name: String, description: String, block: SlashCommandDeclarationBuilder.() -> (Unit)) {
         subcommands += SlashCommandDeclarationBuilder(name, description).apply(block)
-            .build()
     }
 
     fun subcommandGroup(name: String, description: String, block: SlashCommandGroupDeclarationBuilder.() -> (Unit)) {
         subcommandGroups += SlashCommandGroupDeclarationBuilder(name, description).apply(block)
-            .build()
     }
 
     fun build(): SlashCommandDeclaration {
-        return SlashCommandDeclaration(
+        return InteraKTionsSlashCommandDeclaration(
             name,
             nameLocalizations,
             description,
@@ -39,71 +41,73 @@ class SlashCommandDeclarationBuilder(val name: String, val description: String) 
             executor,
             defaultMemberPermissions,
             dmPermission,
-            subcommands,
-            subcommandGroups
+            subcommands.map { it.build() },
+            subcommandGroups.map { it.build() }
         )
     }
 }
 
-class SlashCommandGroupDeclarationBuilder(val name: String, val description: String) {
+@InteraKTionsDslMarker
+class SlashCommandGroupDeclarationBuilder(
+    val name: String,
+    val description: String
+) {
     var nameLocalizations: Map<Locale, String>? = null
     var descriptionLocalizations: Map<Locale, String>? = null
     // Groups can't have executors!
-    val subcommands = mutableListOf<SlashCommandDeclaration>()
+    val subcommands = mutableListOf<SlashCommandDeclarationBuilder>()
 
     fun subcommand(name: String, description: String, block: SlashCommandDeclarationBuilder.() -> (Unit)) {
-        subcommands += SlashCommandDeclarationBuilder(name, description).apply(block).build()
+        subcommands += SlashCommandDeclarationBuilder(name, description).apply(block)
     }
 
     fun build(): SlashCommandGroupDeclaration {
-        return SlashCommandGroupDeclaration(
+        return InteraKTionsSlashCommandGroupDeclaration(
             name,
             nameLocalizations,
             description,
             descriptionLocalizations,
-            subcommands
+            subcommands.map { it.build() }
         )
     }
 }
 
 // ===[ USER COMMANDS ]===
-fun userCommand(name: String, executor: UserCommandExecutorDeclaration): UserCommandDeclaration {
-    return UserCommandDeclarationBuilder(name, executor).build()
-}
+fun userCommand(name: String, executor: UserCommandExecutor) = UserCommandDeclarationBuilder(name, executor)
 
-class UserCommandDeclarationBuilder(val name: String, val executor: UserCommandExecutorDeclaration) {
+@InteraKTionsDslMarker
+class UserCommandDeclarationBuilder(val name: String, val executor: UserCommandExecutor) {
     var nameLocalizations: Map<Locale, String>? = null
     var defaultMemberPermissions: Permissions? = null
     var dmPermission: Boolean? = null
 
     fun build(): UserCommandDeclaration {
-        return UserCommandDeclaration(
+        return InteraKTionsUserCommandDeclaration(
             name,
             nameLocalizations,
+            executor,
             defaultMemberPermissions,
-            dmPermission,
-            executor
+            dmPermission
         )
     }
 }
 
 // ===[ MESSAGE COMMANDS ]===
-fun messageCommand(name: String, executor: MessageCommandExecutorDeclaration): MessageCommandDeclaration {
-    return MessageCommandDeclarationBuilder(name, executor).build()
-}
+fun messageCommand(name: String, executor: MessageCommandExecutor) = MessageCommandDeclarationBuilder(name, executor)
 
-class MessageCommandDeclarationBuilder(val name: String, val executor: MessageCommandExecutorDeclaration) {
+@InteraKTionsDslMarker
+class MessageCommandDeclarationBuilder(val name: String, val executor: MessageCommandExecutor) {
     var nameLocalizations: Map<Locale, String>? = null
     var defaultMemberPermissions: Permissions? = null
     var dmPermission: Boolean? = null
 
     fun build(): MessageCommandDeclaration {
-        return MessageCommandDeclaration(
+        return InteraKTionsMessageCommandDeclaration(
             name,
             nameLocalizations,
+            executor,
             defaultMemberPermissions,
-            dmPermission,
-            executor
+            dmPermission
         )
     }
 }

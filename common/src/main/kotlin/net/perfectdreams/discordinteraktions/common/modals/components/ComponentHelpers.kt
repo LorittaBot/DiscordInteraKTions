@@ -1,20 +1,25 @@
 package net.perfectdreams.discordinteraktions.common.modals.components
 
-import dev.kord.common.entity.TextInputStyle
 import dev.kord.rest.builder.component.ActionRowBuilder
-import dev.kord.rest.builder.component.TextInputBuilder
 
-fun ActionRowBuilder.textInput(
-    option: TextInputModalComponent<*>,
-    style: TextInputStyle,
+fun <T : String?> ActionRowBuilder.textInput(
+    reference: ComponentReference<T>,
     label: String,
-    block: TextInputComponentBuilder.() -> (Unit) = {}
+    block: TextInputComponentAppearanceBuilder.() -> (Unit) = {}
 ) {
-    val builder = TextInputComponentBuilder().apply(block)
+    val componentBehavior = reference.components.registeredComponents.first { it.customId == reference.customId }
+            as TextInputModalComponent
 
-   this.textInput(style, option.customId, label) {
-       required = option.required
-       placeholder = builder.placeholder
-       allowedLength = builder.allowedLength
-   }
+    val builder = TextInputComponentAppearanceBuilder().apply(block)
+
+    val minRange = componentBehavior.minLength ?: 0
+    val maxRange = componentBehavior.maxLength ?: 4000
+
+    this.textInput(componentBehavior.style, componentBehavior.customId, label) {
+        this.required = componentBehavior.required
+        this.placeholder = builder.placeholder
+        this.allowedLength = minRange..maxRange
+        this.placeholder = builder.placeholder
+        this.value = builder.value
+    }
 }

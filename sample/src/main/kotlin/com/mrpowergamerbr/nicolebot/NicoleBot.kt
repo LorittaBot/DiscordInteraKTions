@@ -1,21 +1,13 @@
 package com.mrpowergamerbr.nicolebot
 
-import com.mrpowergamerbr.nicolebot.commands.AutocompleteFunExecutor
-import com.mrpowergamerbr.nicolebot.commands.ButtonsExecutor
-import com.mrpowergamerbr.nicolebot.commands.CounterButtonClickExecutor
-import com.mrpowergamerbr.nicolebot.commands.CounterExecutor
-import com.mrpowergamerbr.nicolebot.commands.FancyButtonClickExecutor
-import com.mrpowergamerbr.nicolebot.commands.SendModalExecutor
-import com.mrpowergamerbr.nicolebot.commands.HelloWorldExecutor
-import com.mrpowergamerbr.nicolebot.commands.ModalSubmitYayExecutor
-import com.mrpowergamerbr.nicolebot.commands.SendYourAttachmentExecutor
-import com.mrpowergamerbr.nicolebot.commands.AutocompleteFunAutocompleteExecutor
-import com.mrpowergamerbr.nicolebot.commands.declarations.AutocompleteFunCommand
-import com.mrpowergamerbr.nicolebot.commands.declarations.CounterCommand
-import com.mrpowergamerbr.nicolebot.commands.declarations.HelloWorldCommand
-import com.mrpowergamerbr.nicolebot.commands.declarations.InteractivityCommand
-import com.mrpowergamerbr.nicolebot.commands.declarations.SendYourAttachmentCommand
+import com.mrpowergamerbr.nicolebot.commands.message.declarations.ContentLengthMessageCommand
+import com.mrpowergamerbr.nicolebot.commands.slash.CounterButtonExecutor
+import com.mrpowergamerbr.nicolebot.commands.slash.FancyButtonClickExecutor
+import com.mrpowergamerbr.nicolebot.commands.slash.ModalYayExecutor
+import com.mrpowergamerbr.nicolebot.commands.slash.declarations.*
+import com.mrpowergamerbr.nicolebot.commands.user.declarations.ViewAvatarUserCommand
 import com.mrpowergamerbr.nicolebot.utils.Counter
+import com.mrpowergamerbr.nicolebot.utils.LanguageManager
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
@@ -27,63 +19,47 @@ class NicoleBot(
     val commandManager: CommandManager
 ) {
     companion object {
-        val APPLICATION_ID = Snowflake(744361365724069898L)
-        val GUILD_ID = Snowflake(297732013006389252L)
+        val APPLICATION_ID = Snowflake(680539524400676977L)
+        val GUILD_ID = Snowflake(936391274951503873L)
     }
 
     val counter = Counter(0)
+    private val languageManager = LanguageManager()
 
     suspend fun registerCommands() {
         // ===[ /helloworld ]===
-        commandManager.register(
-            HelloWorldCommand,
-            HelloWorldExecutor()
-        )
+        commandManager.register(HelloWorldCommand)
+
+        // ===[ /options ]===
+        commandManager.register(OptionsCommand)
 
         // ===[ /interactivity ]===
-        commandManager.register(
-            InteractivityCommand,
-            ButtonsExecutor(),
-            SendModalExecutor()
-        )
+        commandManager.register(InteractivityCommand)
+        commandManager.register(FancyButtonClickExecutor())
 
         commandManager.register(
-            FancyButtonClickExecutor,
-            FancyButtonClickExecutor()
-        )
-
-        commandManager.register(
-            ModalSubmitYayExecutor,
-            ModalSubmitYayExecutor()
+            ModalYayExecutor,
+            ModalYayExecutor()
         )
 
         // ===[ /counter ]===
-        commandManager.register(
-            CounterCommand,
-            CounterExecutor(counter)
-        )
-
-        commandManager.register(
-            CounterButtonClickExecutor,
-            CounterButtonClickExecutor(counter)
-        )
+        commandManager.register(CounterCommand(counter))
+        commandManager.register(CounterButtonExecutor(counter))
 
         // ===[ /sendyourattachment ]===
-        commandManager.register(
-            SendYourAttachmentCommand,
-            SendYourAttachmentExecutor()
-        )
+        commandManager.register(SendYourAttachmentCommand)
 
         // ===[ /autocompletefun ]===
-        commandManager.register(
-            AutocompleteFunCommand,
-            AutocompleteFunExecutor()
-        )
+        commandManager.register(AutocompleteFunCommand)
 
-        commandManager.register(
-            AutocompleteFunAutocompleteExecutor,
-            AutocompleteFunAutocompleteExecutor()
-        )
+        // ===[ /externallyprovidedstring ]===
+        commandManager.register(ExternallyProvidedStringCommand(languageManager))
+
+        // ===[ "View avatar" ]===
+        commandManager.register(ViewAvatarUserCommand)
+
+        // ===[ "View content length" ]===
+        commandManager.register(ContentLengthMessageCommand)
 
         val registry = KordCommandRegistry(
             APPLICATION_ID,

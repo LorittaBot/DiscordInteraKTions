@@ -1,27 +1,42 @@
 package net.perfectdreams.discordinteraktions.common.modals.components
 
+import dev.kord.common.entity.TextInputStyle
+import net.perfectdreams.discordinteraktions.common.commands.options.OptionReference
+import net.perfectdreams.discordinteraktions.common.commands.options.InteraKTionsCommandOption
+
 open class ModalComponents {
-    val arguments = mutableListOf<ModalComponent<*>>()
+    val registeredComponents = mutableListOf<InteraKTionsModalComponent<*>>()
+    val references = mutableListOf<ComponentReference<*>>()
 
-    fun textInput(customId: String, block: StringModalComponentBuilder.() -> (Unit) = {}) =
-        TextInputModalComponent<String>(customId).apply(block).also {
-            it.register()
-        }
+    fun textInput(customId: String, style: TextInputStyle, block: TextInputModalComponentBehaviorBuilder.() -> (Unit) = {}) =
+        TextInputModalComponentBehaviorBuilder(customId, style)
+            .apply(block)
+            .let {
+                register(it)
+            }
 
-    fun optionalTextInput(customId: String, block: StringModalComponentBuilder.() -> (Unit) = {}) =
-        TextInputModalComponent<String?>(customId).apply(block).also {
-            it.register()
-        }
+    fun optionalTextInput(customId: String, style: TextInputStyle, block: NullableTextInputModalComponentBehaviorBuilder.() -> (Unit) = {}) =
+        NullableTextInputModalComponentBehaviorBuilder(customId, style)
+            .apply(block)
+            .let {
+                register(it)
+            }
+}
 
-    private inline fun <reified T> ModalComponent<T>.register(): ModalComponent<T> {
-        if (arguments.any { it.customId == this.customId })
-            throw IllegalArgumentException("Duplicate argument \"${this.customId}\"!")
 
-        this.apply {
-            required = null !is T
-        }
+/**
+ * Registers a [componentBuilder] to an [ModalComponents]
+ *
+ * @param componentBuilder the option builder
+ * @return an [OptionReference]
+ */
+inline fun <reified T, ChoiceableType> ModalComponents.register(componentBuilder: ModalComponentBehaviorBuilder<T, ChoiceableType>): ComponentReference<T> {
+    if (registeredComponents.any { it.customId == componentBuilder.id })
+        throw IllegalArgumentException("Duplicate argument \"${componentBuilder.id}\"!")
 
-        arguments.add(this)
-        return this
-    }
+    val componentReference = ComponentReference<T>(this, componentBuilder.id, componentBuilder.required)
+    registeredComponents.add(componentBuilder.build())
+    references.add(componentReference)
+
+    return componentReference
 }

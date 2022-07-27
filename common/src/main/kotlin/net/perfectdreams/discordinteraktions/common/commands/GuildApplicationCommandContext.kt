@@ -13,8 +13,9 @@ open class GuildApplicationCommandContext(
     channelId: Snowflake,
     data: InteractionData,
     discordInteractionData: DiscordInteraction,
+    applicationCommandDeclaration: ApplicationCommandDeclaration,
     val guildId: Snowflake,
     val member: InteractionMember
-) : ApplicationCommandContext(bridge, sender, channelId, data, discordInteractionData) {
+) : ApplicationCommandContext(bridge, sender, channelId, data, discordInteractionData, applicationCommandDeclaration) {
     val appPermissions = discordInteractionData.appPermissions.value ?: error("App Permissions field is null on a Guild Interaction! Bug?")
 }

@@ -7,7 +7,7 @@ import dev.kord.rest.builder.component.SelectMenuBuilder
 
 fun ActionRowBuilder.interactiveButton(
     style: ButtonStyle,
-    executor: ButtonClickExecutorDeclaration,
+    executor: ButtonExecutorDeclaration,
     builder: ButtonBuilder.InteractionButtonBuilder.() -> Unit
 ) {
     require(style != ButtonStyle.Link) { "You cannot use a ButtonStyle.Link style in a interactive button! Please use \"linkButton(...)\" if you want to create a button with a link" }
@@ -23,7 +23,7 @@ fun ActionRowBuilder.interactiveButton(
 fun ActionRowBuilder.interactiveButton(
     style: ButtonStyle,
     label: String,
-    executor: ButtonClickExecutorDeclaration,
+    executor: ButtonExecutorDeclaration,
     builder: ButtonBuilder.InteractionButtonBuilder.() -> Unit = {}
 ) {
     require(style != ButtonStyle.Link) { "You cannot use a ButtonStyle.Link style in a interactive button! Please use \"linkButton(...)\" if you want to create a button with a link" }
@@ -39,7 +39,7 @@ fun ActionRowBuilder.interactiveButton(
 
 fun ActionRowBuilder.interactiveButton(
     style: ButtonStyle,
-    executor: ButtonClickExecutorDeclaration,
+    executor: ButtonExecutorDeclaration,
     data: String,
     builder: ButtonBuilder.InteractionButtonBuilder.() -> Unit
 ) {
@@ -56,7 +56,7 @@ fun ActionRowBuilder.interactiveButton(
 fun ActionRowBuilder.interactiveButton(
     style: ButtonStyle,
     label: String,
-    executor: ButtonClickExecutorDeclaration,
+    executor: ButtonExecutorDeclaration,
     data: String,
     builder: ButtonBuilder.InteractionButtonBuilder.() -> Unit = {}
 ) {

@@ -13,24 +13,12 @@ sealed interface ComponentExecutor {
     fun signature(): Any = this::class
 }
 
-// ===[ BUTTON CLICK ]===
-sealed interface ButtonClickBaseExecutor : ComponentExecutor
-
-interface ButtonClickExecutor : ButtonClickBaseExecutor {
+// ===[ BUTTONS ]===
+interface ButtonExecutor : ComponentExecutor {
     suspend fun onClick(user: User, context: ComponentContext)
 }
 
-interface ButtonClickWithDataExecutor : ButtonClickBaseExecutor {
-    suspend fun onClick(user: User, context: ComponentContext, data: String)
-}
-
 // ===[ SELECT MENUS ]===
-sealed interface SelectMenuBaseExecutor : ComponentExecutor
-
-interface SelectMenuExecutor : SelectMenuBaseExecutor {
+interface SelectMenuExecutor : ComponentExecutor {
     suspend fun onSelect(user: User, context: ComponentContext, values: List<String>)
-}
-
-interface SelectMenuWithDataExecutor : SelectMenuBaseExecutor {
-    suspend fun onSelect(user: User, context: ComponentContext, data: String, values: List<String>)
 }

@@ -1,7 +1,6 @@
 package net.perfectdreams.discordinteraktions.platforms.kord.commands
 
 import dev.kord.common.entity.Snowflake
-import dev.kord.common.entity.optional.optional
 import dev.kord.rest.builder.interaction.*
 import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.common.commands.*
@@ -82,11 +81,11 @@ class KordCommandRegistry(
                             options?.add(convertSubcommandGroupDeclarationToKord(it))
                         }
                     } else {
-                        val executor = declaration.executor ?: error("Root command without a executor!")
+                        val executor = declaration.executor
 
-                        val options = executor.options
+                        require(executor != null) { "Root command without a executor!" }
 
-                        options.arguments.forEach {
+                        executor.options.registeredOptions.forEach {
                             convertCommandOptionToKord(it, this)
                         }
                     }
@@ -103,11 +102,12 @@ class KordCommandRegistry(
             options = mutableListOf() // Initialize a empty list so we can use it
         }
 
-        // This is a subcommand, so we only have a executor anyway
-        val executor = declaration.executor ?: error("Subcommand without a executor!")
-        val options = executor.options
+        // This is a subcommand, so we SHOUlD have an non-null executor
+        val executor = declaration.executor
 
-        options.arguments.forEach {
+        require(executor != null) { "Subcommand without a executor!" }
+
+        executor.options.registeredOptions.forEach {
             convertCommandOptionToKord(it, commandData)
         }
 
@@ -129,78 +129,7 @@ class KordCommandRegistry(
         return commandData
     }
 
-    private fun convertCommandOptionToKord(cmdOption: CommandOption<*>, builder: BaseInputChatBuilder) {
-        when (cmdOption) {
-            is IntegerCommandOption ->
-                builder.int(cmdOption.name, cmdOption.description) {
-                    this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
-                    this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
-                    this.required = cmdOption.required
-                    this.autocomplete = cmdOption.autocomplete != null
-                    this.minValue = cmdOption.minValue
-                    this.maxValue = cmdOption.maxValue
-
-                    cmdOption.choices?.forEach { choice ->
-                        choice(choice.name, choice.value, choice.nameLocalizations.optional())
-                    }
-                }
-            is NumberCommandOption ->
-                builder.number(cmdOption.name, cmdOption.description) {
-                    this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
-                    this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
-                    this.required = cmdOption.required
-                    this.autocomplete = cmdOption.autocomplete != null
-                    this.minValue = cmdOption.minValue
-                    this.maxValue = cmdOption.maxValue
-
-                    cmdOption.choices?.forEach { choice ->
-                        choice(choice.name, choice.value, choice.nameLocalizations.optional())
-                    }
-                }
-            is StringCommandOption ->
-                builder.string(cmdOption.name, cmdOption.description) {
-                    this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
-                    this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
-                    this.required = cmdOption.required
-                    this.autocomplete = cmdOption.autocomplete != null
-                    this.minLength = cmdOption.minLength
-                    this.maxLength = cmdOption.maxLength
-
-                    cmdOption.choices?.forEach { choice ->
-                        choice(choice.name, choice.value, choice.nameLocalizations.optional())
-                    }
-                }
-            is BooleanCommandOption ->
-                builder.boolean(cmdOption.name, cmdOption.description) {
-                    this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
-                    this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
-                    this.required = cmdOption.required
-                }
-            is UserCommandOption ->
-                builder.user(cmdOption.name, cmdOption.description) {
-                    this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
-                    this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
-                    this.required = cmdOption.required
-                }
-            is ChannelCommandOption ->
-                builder.channel(cmdOption.name, cmdOption.description) {
-                    this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
-                    this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
-                    this.required = cmdOption.required
-                    this.channelTypes = cmdOption.channelTypes
-                }
-            is RoleCommandOption ->
-                builder.role(cmdOption.name, cmdOption.description) {
-                    this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
-                    this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
-                    this.required = cmdOption.required
-                }
-            is AttachmentCommandOption ->
-                builder.attachment(cmdOption.name, cmdOption.description) {
-                    this.nameLocalizations = cmdOption.nameLocalizations?.toMutableMap()
-                    this.descriptionLocalizations = cmdOption.descriptionLocalizations?.toMutableMap()
-                    this.required = cmdOption.required
-                }
-        }
+    private fun convertCommandOptionToKord(cmdOption: InteraKTionsCommandOption<*>, builder: BaseInputChatBuilder) {
+        cmdOption.register(builder)
     }
 }

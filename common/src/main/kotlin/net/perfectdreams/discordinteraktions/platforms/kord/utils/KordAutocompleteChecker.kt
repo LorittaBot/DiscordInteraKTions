@@ -10,7 +10,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteContext
-import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteExecutor
 import net.perfectdreams.discordinteraktions.common.autocomplete.FocusedCommandOption
 import net.perfectdreams.discordinteraktions.common.autocomplete.GuildAutocompleteContext
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
@@ -79,22 +78,18 @@ class KordAutocompleteChecker(val commandManager: CommandManager) {
         val command = CommandDeclarationUtils.getApplicationCommandDeclarationFromLabel<SlashCommandDeclaration>(commandManager, commandLabels)
             ?: InteraKTionsExceptions.missingDeclaration("slash command")
 
-        val slashCommandExecutorDeclaration = command.executor ?: return
-
         val focusedDiscordOption = relativeOptions.filterIsInstance<CommandArgument.AutoCompleteArgument>()
             .firstOrNull() ?: error("There isn't any autocomplete option on the autocomplete request! Bug?")
 
         require(focusedDiscordOption.focused.discordBoolean) { "Autocomplete argument is not set to focused! Bug?" }
 
-        val option = slashCommandExecutorDeclaration.options.arguments.firstOrNull {
+        val slashCommandExecutor = command.executor ?: return
+
+        val option = slashCommandExecutor.options.registeredOptions.firstOrNull {
             it.name == focusedDiscordOption.name
         } ?: error("I couldn't find a matching option for ${focusedDiscordOption.name}! Did you update the application command body externally?")
 
-        require(option is ChoiceableCommandOption<*, *>) { "Command option is not choiceable, so it can't be autocompleted! Bug?" }
-
-        val autocompleteDeclaration = option.autocomplete ?: error("Received autocomplete request for ${focusedDiscordOption.name}, but there isn't any autocomplete executor declaration set on the option! Did you update the application command body externally?")
-        val autocompleteExecutor = commandManager.autocompleteExecutors
-            .firstOrNull { it.signature() == autocompleteDeclaration.parent } ?: InteraKTionsExceptions.missingExecutor("autocomplete")
+        require(option is ChoiceableCommandOption<*>) { "Command option is not choiceable, so it can't be autocompleted! Bug?" }
 
         GlobalScope.launch {
             val focusedCommandOption = FocusedCommandOption(
@@ -104,8 +99,9 @@ class KordAutocompleteChecker(val commandManager: CommandManager) {
 
             when (option) {
                 is StringCommandOption -> {
-                    autocompleteExecutor as AutocompleteExecutor<String>
-                    val autocompleteResult = autocompleteExecutor.onAutocomplete(autocompleteContext, focusedCommandOption)
+                    val autocompleteExecutor = option.autocompleteExecutor ?: error("Received autocomplete request for ${focusedDiscordOption.name}, but there isn't any autocomplete executor declaration set on the option! Did you update the application command body externally?")
+
+                    val autocompleteResult = autocompleteExecutor.handle(autocompleteContext, focusedCommandOption)
                     bridge.manager.sendStringAutocomplete(
                         (StringChoiceBuilder("<auto-complete>", "")
                             .apply {
@@ -117,8 +113,9 @@ class KordAutocompleteChecker(val commandManager: CommandManager) {
                 }
 
                 is IntegerCommandOption -> {
-                    autocompleteExecutor as AutocompleteExecutor<Long>
-                    val autocompleteResult = autocompleteExecutor.onAutocomplete(autocompleteContext, focusedCommandOption)
+                    val autocompleteExecutor = option.autocompleteExecutor ?: error("Received autocomplete request for ${focusedDiscordOption.name}, but there isn't any autocomplete executor declaration set on the option! Did you update the application command body externally?")
+
+                    val autocompleteResult = autocompleteExecutor.handle(autocompleteContext, focusedCommandOption)
                     bridge.manager.sendIntegerAutocomplete(
                         (IntegerOptionBuilder("<auto-complete>", "")
                             .apply {
@@ -130,8 +127,9 @@ class KordAutocompleteChecker(val commandManager: CommandManager) {
                 }
 
                 is NumberCommandOption -> {
-                    autocompleteExecutor as AutocompleteExecutor<Double>
-                    val autocompleteResult = autocompleteExecutor.onAutocomplete(autocompleteContext, focusedCommandOption)
+                    val autocompleteExecutor = option.autocompleteExecutor ?: error("Received autocomplete request for ${focusedDiscordOption.name}, but there isn't any autocomplete executor declaration set on the option! Did you update the application command body externally?")
+
+                    val autocompleteResult = autocompleteExecutor.handle(autocompleteContext, focusedCommandOption)
                     bridge.manager.sendNumberAutocomplete(
                         NumberOptionBuilder("<auto-complete>", "")
                             .apply {
