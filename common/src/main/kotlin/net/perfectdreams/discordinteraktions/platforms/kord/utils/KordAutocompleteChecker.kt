@@ -98,7 +98,7 @@ class KordAutocompleteChecker(val commandManager: CommandManager) {
             )
 
             when (option) {
-                is StringCommandOption -> {
+                is DefaultStringCommandOption -> {
                     val autocompleteExecutor = option.autocompleteExecutor ?: error("Received autocomplete request for ${focusedDiscordOption.name}, but there isn't any autocomplete executor declaration set on the option! Did you update the application command body externally?")
 
                     val autocompleteResult = autocompleteExecutor.handle(autocompleteContext, focusedCommandOption)
@@ -112,7 +112,7 @@ class KordAutocompleteChecker(val commandManager: CommandManager) {
                     )
                 }
 
-                is IntegerCommandOption -> {
+                is DefaultIntegerCommandOption -> {
                     val autocompleteExecutor = option.autocompleteExecutor ?: error("Received autocomplete request for ${focusedDiscordOption.name}, but there isn't any autocomplete executor declaration set on the option! Did you update the application command body externally?")
 
                     val autocompleteResult = autocompleteExecutor.handle(autocompleteContext, focusedCommandOption)
@@ -126,7 +126,7 @@ class KordAutocompleteChecker(val commandManager: CommandManager) {
                     )
                 }
 
-                is NumberCommandOption -> {
+                is DefaultNumberCommandOption -> {
                     val autocompleteExecutor = option.autocompleteExecutor ?: error("Received autocomplete request for ${focusedDiscordOption.name}, but there isn't any autocomplete executor declaration set on the option! Did you update the application command body externally?")
 
                     val autocompleteResult = autocompleteExecutor.handle(autocompleteContext, focusedCommandOption)
