@@ -26,7 +26,7 @@ class DelayedSuspendableCommandOption(
     override val description: String,
     override val nameLocalizations: Map<Locale, String>?,
     override val descriptionLocalizations: Map<Locale, String>?
-) : NameableCommandOption<SuspendableData>() {
+) : NameableCommandOption<SuspendableData> {
     override fun register(builder: BaseInputChatBuilder) {
         builder.string(name, description) {
             this.nameLocalizations = this@DelayedSuspendableCommandOption.nameLocalizations?.toMutableMap()

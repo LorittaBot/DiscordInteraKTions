@@ -18,7 +18,7 @@ class StringListCommandOption(
     override val descriptionLocalizations: Map<Locale, String>?,
     val minimum: Int, // How many options are required
     val maximum: Int // Maximum options generated
-) : NameableCommandOption<List<String>>() {
+) : NameableCommandOption<List<String>> {
     override fun register(builder: BaseInputChatBuilder) {
         for (it in 1..maximum) {
             builder.string("${name}$it", description) {
