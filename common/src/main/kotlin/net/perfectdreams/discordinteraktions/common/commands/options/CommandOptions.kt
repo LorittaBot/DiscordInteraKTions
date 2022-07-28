@@ -13,36 +13,24 @@ import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordChannel
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordRole
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
 
-abstract class InteraKTionsCommandOption<T>(
+interface InteraKTionsCommandOption<T> {
     val name: String
-) {
-    abstract fun register(builder: BaseInputChatBuilder)
 
-    abstract fun parse(args: List<CommandArgument<*>>, interaction: DiscordInteraction): T?
+    fun register(builder: BaseInputChatBuilder)
+    fun parse(args: List<CommandArgument<*>>, interaction: DiscordInteraction): T?
 }
 
-abstract class NameableCommandOption<T>(
-    name: String,
-    val description: String,
-    val nameLocalizations: Map<Locale, String>?,
-    val descriptionLocalizations: Map<Locale, String>?,
-) : InteraKTionsCommandOption<T>(name)
+interface NameableCommandOption<T> : InteraKTionsCommandOption<T> {
+    val description: String
+    val nameLocalizations: Map<Locale, String>?
+    val descriptionLocalizations: Map<Locale, String>?
+}
 
-abstract class DiscordCommandOption<T>(
-    name: String,
-    description: String,
-    nameLocalizations: Map<Locale, String>?,
-    descriptionLocalizations: Map<Locale, String>?,
+interface DiscordCommandOption<T> : NameableCommandOption<T> {
     val required: Boolean
-) : NameableCommandOption<T>(name, description, nameLocalizations, descriptionLocalizations)
+}
 
-abstract class GenericCommandOption<T>(
-    name: String,
-    description: String,
-    nameLocalizations: Map<Locale, String>?,
-    descriptionLocalizations: Map<Locale, String>?,
-    required: Boolean
-) : DiscordCommandOption<T>(name, description, nameLocalizations, descriptionLocalizations, required) {
+interface GenericCommandOption<T> : DiscordCommandOption<T> {
     override fun parse(args: List<CommandArgument<*>>, interaction: DiscordInteraction): T? {
         return args.firstOrNull { it.name == name }?.value as T
     }
@@ -54,17 +42,10 @@ interface ChoiceableCommandOption<T> {
 }
 
 // ===[ STRING ]===
-class StringCommandOption(
-    name: String,
-    description: String,
-    nameLocalizations: Map<Locale, String>?,
-    descriptionLocalizations: Map<Locale, String>?,
-    required: Boolean,
-    override val choices: List<CommandChoice<String>>?,
-    val minLength: Int?,
-    val maxLength: Int?,
-    override val autocompleteExecutor: AutocompleteHandler<String>?
-) : GenericCommandOption<String>(name, description, nameLocalizations, descriptionLocalizations, required), ChoiceableCommandOption<String> {
+interface StringCommandOption : GenericCommandOption<String>, ChoiceableCommandOption<String> {
+    val minLength: Int?
+    val maxLength: Int?
+
     override fun register(builder: BaseInputChatBuilder) {
         builder.string(this@StringCommandOption.name, this@StringCommandOption.description) {
             this.nameLocalizations = this@StringCommandOption.nameLocalizations?.toMutableMap()
@@ -81,17 +62,23 @@ class StringCommandOption(
     }
 }
 
-class IntegerCommandOption(
-    name: String,
-    description: String,
-    nameLocalizations: Map<Locale, String>?,
-    descriptionLocalizations: Map<Locale, String>?,
-    required: Boolean,
-    override val choices: List<CommandChoice<Long>>?,
-    val minValue: Long?,
-    val maxValue: Long?,
-    override val autocompleteExecutor: AutocompleteHandler<Long>?
-) : GenericCommandOption<Long>(name, description, nameLocalizations, descriptionLocalizations, required), ChoiceableCommandOption<Long> {
+data class DefaultStringCommandOption(
+    override val name: String,
+    override val description: String,
+    override val nameLocalizations: Map<Locale, String>?,
+    override val descriptionLocalizations: Map<Locale, String>?,
+    override val required: Boolean,
+    override val choices: List<CommandChoice<String>>?,
+    override val minLength: Int?,
+    override val maxLength: Int?,
+    override val autocompleteExecutor: AutocompleteHandler<String>?
+) : StringCommandOption
+
+// ===[ INTEGER ]===
+interface IntegerCommandOption : GenericCommandOption<Long>, ChoiceableCommandOption<Long> {
+    val minValue: Long?
+    val maxValue: Long?
+
     override fun register(builder: BaseInputChatBuilder) {
         builder.int(this@IntegerCommandOption.name, this@IntegerCommandOption.description) {
             this.nameLocalizations = this@IntegerCommandOption.nameLocalizations?.toMutableMap()
@@ -108,17 +95,23 @@ class IntegerCommandOption(
     }
 }
 
-class NumberCommandOption(
-    name: String,
-    description: String,
-    nameLocalizations: Map<Locale, String>?,
-    descriptionLocalizations: Map<Locale, String>?,
-    required: Boolean,
-    override val choices: List<CommandChoice<Double>>?,
-    val minValue: Double?,
-    val maxValue: Double?,
-    override val autocompleteExecutor: AutocompleteHandler<Double>?
-) : GenericCommandOption<Double>(name, description, nameLocalizations, descriptionLocalizations, required), ChoiceableCommandOption<Double> {
+data class DefaultIntegerCommandOption(
+    override val name: String,
+    override val description: String,
+    override val nameLocalizations: Map<Locale, String>?,
+    override val descriptionLocalizations: Map<Locale, String>?,
+    override val required: Boolean,
+    override val choices: List<CommandChoice<Long>>?,
+    override val minValue: Long?,
+    override val maxValue: Long?,
+    override val autocompleteExecutor: AutocompleteHandler<Long>?
+) : IntegerCommandOption
+
+// ===[ NUMBER ]===
+interface NumberCommandOption : GenericCommandOption<Double>, ChoiceableCommandOption<Double> {
+    val minValue: Double?
+    val maxValue: Double?
+
     override fun register(builder: BaseInputChatBuilder) {
         builder.number(this@NumberCommandOption.name, this@NumberCommandOption.description) {
             this.nameLocalizations = this@NumberCommandOption.nameLocalizations?.toMutableMap()
@@ -135,13 +128,20 @@ class NumberCommandOption(
     }
 }
 
-class BooleanCommandOption(
-    name: String,
-    description: String,
-    nameLocalizations: Map<Locale, String>?,
-    descriptionLocalizations: Map<Locale, String>?,
-    required: Boolean
-) : GenericCommandOption<Boolean>(name, description, nameLocalizations, descriptionLocalizations, required) {
+data class DefaultNumberCommandOption(
+    override val name: String,
+    override val description: String,
+    override val nameLocalizations: Map<Locale, String>?,
+    override val descriptionLocalizations: Map<Locale, String>?,
+    override val required: Boolean,
+    override val choices: List<CommandChoice<Double>>?,
+    override val minValue: Double?,
+    override val maxValue: Double?,
+    override val autocompleteExecutor: AutocompleteHandler<Double>?
+) : NumberCommandOption
+
+// ===[ BOOLEAN ]===
+interface BooleanCommandOption : GenericCommandOption<Boolean> {
     override fun register(builder: BaseInputChatBuilder) {
         builder.boolean(this@BooleanCommandOption.name, this@BooleanCommandOption.description) {
             this.nameLocalizations = this@BooleanCommandOption.nameLocalizations?.toMutableMap()
@@ -151,13 +151,16 @@ class BooleanCommandOption(
     }
 }
 
-class UserCommandOption(
-    name: String,
-    description: String,
-    nameLocalizations: Map<Locale, String>?,
-    descriptionLocalizations: Map<Locale, String>?,
-    required: Boolean
-) : DiscordCommandOption<User>(name, description, nameLocalizations, descriptionLocalizations, required) {
+data class DefaultBooleanCommandOption(
+    override val name: String,
+    override val description: String,
+    override val nameLocalizations: Map<Locale, String>?,
+    override val descriptionLocalizations: Map<Locale, String>?,
+    override val required: Boolean
+) : BooleanCommandOption
+
+// ===[ USER ]===
+interface UserCommandOption : DiscordCommandOption<User> {
     override fun register(builder: BaseInputChatBuilder) {
         builder.user(this@UserCommandOption.name, this@UserCommandOption.description) {
             this.nameLocalizations = this@UserCommandOption.nameLocalizations?.toMutableMap()
@@ -167,20 +170,23 @@ class UserCommandOption(
     }
 
     override fun parse(args: List<CommandArgument<*>>, interaction: DiscordInteraction): User? {
-        val userId = args?.firstOrNull { it.name == name }?.value as Snowflake?
+        val userId = args.firstOrNull { it.name == name }?.value as Snowflake?
         val resolved = interaction.data.resolved.value?.users?.value
 
         return resolved?.get(userId)?.let { KordUser(it) }
     }
 }
 
-class RoleCommandOption(
-    name: String,
-    description: String,
-    nameLocalizations: Map<Locale, String>?,
-    descriptionLocalizations: Map<Locale, String>?,
-    required: Boolean
-) : DiscordCommandOption<Role>(name, description, nameLocalizations, descriptionLocalizations, required) {
+data class DefaultUserCommandOption(
+    override val name: String,
+    override val description: String,
+    override val nameLocalizations: Map<Locale, String>?,
+    override val descriptionLocalizations: Map<Locale, String>?,
+    override val required: Boolean
+) : UserCommandOption
+
+// ===[ ROLE ]===
+interface RoleCommandOption : DiscordCommandOption<Role> {
     override fun register(builder: BaseInputChatBuilder) {
         builder.role(this@RoleCommandOption.name, this@RoleCommandOption.description) {
             this.nameLocalizations = this@RoleCommandOption.nameLocalizations?.toMutableMap()
@@ -190,21 +196,25 @@ class RoleCommandOption(
     }
 
     override fun parse(args: List<CommandArgument<*>>, interaction: DiscordInteraction): Role? {
-        val roleId = args?.firstOrNull { it.name == name }?.value as Snowflake?
+        val roleId = args.firstOrNull { it.name == name }?.value as Snowflake?
         val resolved = interaction.data.resolved.value?.roles?.value
 
         return resolved?.get(roleId)?.let { KordRole(it) }
     }
 }
 
-class ChannelCommandOption(
-    name: String,
-    description: String,
-    nameLocalizations: Map<Locale, String>?,
-    descriptionLocalizations: Map<Locale, String>?,
-    required: Boolean,
+data class DefaultRoleCommandOption(
+    override val name: String,
+    override val description: String,
+    override val nameLocalizations: Map<Locale, String>?,
+    override val descriptionLocalizations: Map<Locale, String>?,
+    override val required: Boolean
+) : RoleCommandOption
+
+// ===[ CHANNEL ]===
+interface ChannelCommandOption : DiscordCommandOption<Channel> {
     val channelTypes: List<ChannelType>?
-) : DiscordCommandOption<Channel>(name, description, nameLocalizations, descriptionLocalizations, required) {
+
     override fun register(builder: BaseInputChatBuilder) {
         builder.channel(this@ChannelCommandOption.name, this@ChannelCommandOption.description) {
             this.nameLocalizations = this@ChannelCommandOption.nameLocalizations?.toMutableMap()
@@ -215,20 +225,24 @@ class ChannelCommandOption(
     }
 
     override fun parse(args: List<CommandArgument<*>>, interaction: DiscordInteraction): Channel? {
-        val channelId = args?.firstOrNull { it.name == name }?.value as Snowflake?
+        val channelId = args.firstOrNull { it.name == name }?.value as Snowflake?
         val resolved = interaction.data.resolved.value?.channels?.value
 
         return resolved?.get(channelId)?.let { KordChannel(it) }
     }
 }
 
-class MentionableCommandOption(
-    name: String,
-    description: String,
-    nameLocalizations: Map<Locale, String>?,
-    descriptionLocalizations: Map<Locale, String>?,
-    required: Boolean
-) : DiscordCommandOption<Mentionable>(name, description, nameLocalizations, descriptionLocalizations, required) {
+data class DefaultChannelCommandOption(
+    override val name: String,
+    override val description: String,
+    override val nameLocalizations: Map<Locale, String>?,
+    override val descriptionLocalizations: Map<Locale, String>?,
+    override val required: Boolean,
+    override val channelTypes: List<ChannelType>?
+) : ChannelCommandOption
+
+// ===[ MENTIONABLE ]===
+interface MentionableCommandOption : DiscordCommandOption<Mentionable> {
     override fun register(builder: BaseInputChatBuilder) {
         builder.mentionable(this@MentionableCommandOption.name, this@MentionableCommandOption.description) {
             this.nameLocalizations = this@MentionableCommandOption.nameLocalizations?.toMutableMap()
@@ -242,27 +256,30 @@ class MentionableCommandOption(
         interaction: DiscordInteraction
     ): Mentionable? {
         // Mentionable objects can be User OR Role
-        val userId = args?.firstOrNull { it.name == name }?.value as Snowflake?
+        val userId = args.firstOrNull { it.name == name }?.value as Snowflake?
         val resolvedUser = interaction.data.resolved.value?.users?.value
 
         val kordUser = resolvedUser?.get(userId)?.let { KordUser(it) }
         if (kordUser != null)
             return kordUser
 
-        val roleId = args?.firstOrNull { it.name == name }?.value as Snowflake?
+        val roleId = args.firstOrNull { it.name == name }?.value as Snowflake?
         val resolvedRole = interaction.data.resolved.value?.roles?.value
 
         return resolvedRole?.get(roleId)?.let { KordRole(it) }
     }
 }
 
-class AttachmentCommandOption(
-    name: String,
-    description: String,
-    nameLocalizations: Map<Locale, String>?,
-    descriptionLocalizations: Map<Locale, String>?,
-    required: Boolean
-) : DiscordCommandOption<DiscordAttachment>(name, description, nameLocalizations, descriptionLocalizations, required) {
+data class DefaultMentionableCommandOption(
+    override val name: String,
+    override val description: String,
+    override val nameLocalizations: Map<Locale, String>?,
+    override val descriptionLocalizations: Map<Locale, String>?,
+    override val required: Boolean
+) : MentionableCommandOption
+
+// ===[ ATTACHMENT ]===
+interface AttachmentCommandOption : DiscordCommandOption<DiscordAttachment> {
     override fun register(builder: BaseInputChatBuilder) {
         builder.attachment(this@AttachmentCommandOption.name, this@AttachmentCommandOption.description) {
             this.nameLocalizations = this@AttachmentCommandOption.nameLocalizations?.toMutableMap()
@@ -275,7 +292,15 @@ class AttachmentCommandOption(
         args: List<CommandArgument<*>>,
         interaction: DiscordInteraction
     ): DiscordAttachment? {
-        val attachmentId = args?.firstOrNull { it.name == name }?.value as Snowflake?
+        val attachmentId = args.firstOrNull { it.name == name }?.value as Snowflake?
         return interaction.data.resolved.value?.attachments?.value?.get(attachmentId)
     }
 }
+
+data class DefaultAttachmentCommandOption(
+    override val name: String,
+    override val description: String,
+    override val nameLocalizations: Map<Locale, String>?,
+    override val descriptionLocalizations: Map<Locale, String>?,
+    override val required: Boolean
+) : AttachmentCommandOption

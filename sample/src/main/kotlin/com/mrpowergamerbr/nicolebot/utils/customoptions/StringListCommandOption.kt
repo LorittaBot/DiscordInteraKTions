@@ -12,13 +12,13 @@ import net.perfectdreams.discordinteraktions.common.commands.options.*
 
 // ===[ OPTION ]===
 class StringListCommandOption(
-    name: String,
-    description: String,
-    nameLocalizations: Map<Locale, String>?,
-    descriptionLocalizations: Map<Locale, String>?,
+    override val name: String,
+    override val description: String,
+    override val nameLocalizations: Map<Locale, String>?,
+    override val descriptionLocalizations: Map<Locale, String>?,
     val minimum: Int, // How many options are required
     val maximum: Int // Maximum options generated
-) : NameableCommandOption<List<String>>(name, description, nameLocalizations, descriptionLocalizations) {
+) : NameableCommandOption<List<String>>() {
     override fun register(builder: BaseInputChatBuilder) {
         for (it in 1..maximum) {
             builder.string("${name}$it", description) {
@@ -41,11 +41,13 @@ class StringListCommandOption(
 
 // ===[ BUILDER ]===
 class StringListCommandOptionBuilder(
-    name: String,
-    description: String,
+    override val name: String,
+    override val description: String,
     private val minimum: Int,
     private val maximum: Int
-) : CommandOptionBuilder<List<String>, List<String>>(name, description, true) {
+) : DiscordCommandOptionBuilder<List<String>, List<String>>() {
+    override val required = true
+
     override fun build() = StringListCommandOption(
         name,
         description,

@@ -6,10 +6,7 @@ import dev.kord.common.entity.DiscordInteraction
 import dev.kord.rest.builder.interaction.BaseInputChatBuilder
 import dev.kord.rest.builder.interaction.string
 import kotlinx.coroutines.delay
-import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
-import net.perfectdreams.discordinteraktions.common.commands.options.CommandOptionBuilder
-import net.perfectdreams.discordinteraktions.common.commands.options.NameableCommandOption
-import net.perfectdreams.discordinteraktions.common.commands.options.register
+import net.perfectdreams.discordinteraktions.common.commands.options.*
 
 // A custom "Delayed Suspendable" command option, showing off how you can parse options that may require a "suspend" call
 // This is useful if you need to pull information from the CommandContext, or if you need to call a suspend method
@@ -24,16 +21,16 @@ data class SuspendableData(val text: String) {
 }
 
 // ===[ OPTION ]===
-class ImageReferenceCommandOption(
-    name: String,
-    description: String,
-    nameLocalizations: Map<Locale, String>?,
-    descriptionLocalizations: Map<Locale, String>?
-) : NameableCommandOption<SuspendableData>(name, description, nameLocalizations, descriptionLocalizations) {
+class DelayedSuspendableCommandOption(
+    override val name: String,
+    override val description: String,
+    override val nameLocalizations: Map<Locale, String>?,
+    override val descriptionLocalizations: Map<Locale, String>?
+) : NameableCommandOption<SuspendableData>() {
     override fun register(builder: BaseInputChatBuilder) {
         builder.string(name, description) {
-            this.nameLocalizations = this@ImageReferenceCommandOption.nameLocalizations?.toMutableMap()
-            this.descriptionLocalizations = this@ImageReferenceCommandOption.descriptionLocalizations?.toMutableMap()
+            this.nameLocalizations = this@DelayedSuspendableCommandOption.nameLocalizations?.toMutableMap()
+            this.descriptionLocalizations = this@DelayedSuspendableCommandOption.descriptionLocalizations?.toMutableMap()
             this.required = true
         }
     }
@@ -49,10 +46,12 @@ class ImageReferenceCommandOption(
 
 // ===[ BUILDER ]===
 class DelayedSuspendableCommandOptionBuilder(
-    name: String,
-    description: String
-) : CommandOptionBuilder<SuspendableData, SuspendableData>(name, description, true) {
-    override fun build() = ImageReferenceCommandOption(
+    override val name: String,
+    override val description: String
+) : DiscordCommandOptionBuilder<SuspendableData, SuspendableData>() {
+    override val required = true
+
+    override fun build() = DelayedSuspendableCommandOption(
         name,
         description,
         nameLocalizations,
