@@ -2,10 +2,9 @@ package net.perfectdreams.discordinteraktions.common.entities.messages
 
 import dev.kord.common.entity.DiscordAttachment
 import dev.kord.common.entity.Snowflake
+import dev.kord.core.entity.Member
+import dev.kord.core.entity.User
 import kotlinx.datetime.Instant
-import net.perfectdreams.discordinteraktions.common.entities.InteractionMember
-import net.perfectdreams.discordinteraktions.common.entities.Member
-import net.perfectdreams.discordinteraktions.common.entities.User
 
 interface Message {
     val id: Snowflake

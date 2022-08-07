@@ -8,19 +8,17 @@ object NicoleBotWebServerLauncher {
     @JvmStatic
     fun main(args: Array<String>) {
         runBlocking {
+            val token = File("token.txt").readText()
+            val publicKey = File("public-key.txt").readText()
+
+            val nicoleBot = NicoleBot(token)
+            nicoleBot.registerCommands()
+
             val interactionsServer = InteractionsServer(
-                NicoleBot.APPLICATION_ID,
-                File("public-key.txt").readText(),
-                File("token.txt").readText(),
+                nicoleBot.interaKTions,
+                publicKey,
                 12212
             )
-
-            val nicoleBot = NicoleBot(
-                interactionsServer.rest,
-                interactionsServer.commandManager
-            )
-
-            nicoleBot.registerCommands()
 
             interactionsServer.start()
         }

@@ -5,6 +5,7 @@ import dev.kord.common.entity.CommandGroup
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Option
 import dev.kord.common.entity.SubCommand
+import dev.kord.core.Kord
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.*
 import net.perfectdreams.discordinteraktions.common.commands.options.OptionReference
@@ -171,11 +172,11 @@ object CommandDeclarationUtils {
      *
      * @see getLabelsConnectedToSlashCommandDeclaration
      *
-     * @param commandManager the command manager
+     * @param interactionsManager the command manager
      * @param commandLabels  the command labels
      * @return the matched declaration
      */
-    inline fun <reified T : ApplicationCommandDeclaration> getApplicationCommandDeclarationFromLabel(commandManager: CommandManager, commandLabels: List<CommandLabel>): T? = commandManager.applicationCommandsDeclarations
+    inline fun <reified T : ApplicationCommandDeclaration> getApplicationCommandDeclarationFromLabel(interactionsManager: InteractionsManager, commandLabels: List<CommandLabel>): T? = interactionsManager.applicationCommandsDeclarations
         .asSequence()
         .filterIsInstance<T>()
         .mapNotNull {
@@ -192,6 +193,7 @@ object CommandDeclarationUtils {
     class CommandGroupLabel(label: String) : CommandLabel(label)
 
     fun convertOptions(
+        kord: Kord,
         request: DiscordInteraction,
         executor: SlashCommandExecutor,
         relativeOptions: List<Option>
@@ -203,7 +205,7 @@ object CommandDeclarationUtils {
             val optionReference = executor.options.references
                 .firstOrNull { it.name == declarationOption.name } ?: continue
 
-            arguments[optionReference] = declarationOption.parse(options, request)
+            arguments[optionReference] = declarationOption.parse(kord, options, request)
         }
 
         return arguments

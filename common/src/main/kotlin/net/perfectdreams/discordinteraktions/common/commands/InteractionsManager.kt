@@ -4,7 +4,7 @@ import net.perfectdreams.discordinteraktions.common.components.*
 import net.perfectdreams.discordinteraktions.common.modals.ModalExecutor
 import net.perfectdreams.discordinteraktions.common.modals.ModalExecutorDeclaration
 
-open class CommandManager {
+open class InteractionsManager {
     val applicationCommandsDeclarations = mutableListOf<ApplicationCommandDeclaration>()
     val applicationCommandsExecutors: List<ApplicationCommandExecutor>
         get() = userCommandsExecutors + messageCommandsExecutors + slashCommandsExecutors

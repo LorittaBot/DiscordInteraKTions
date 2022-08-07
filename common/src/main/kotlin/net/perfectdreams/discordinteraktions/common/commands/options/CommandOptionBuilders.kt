@@ -3,11 +3,10 @@ package net.perfectdreams.discordinteraktions.common.commands.options
 import dev.kord.common.Locale
 import dev.kord.common.entity.ChannelType
 import dev.kord.common.entity.DiscordAttachment
+import dev.kord.core.entity.Role
+import dev.kord.core.entity.User
+import dev.kord.core.entity.channel.Channel
 import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteHandler
-import net.perfectdreams.discordinteraktions.common.entities.Channel
-import net.perfectdreams.discordinteraktions.common.entities.Mentionable
-import net.perfectdreams.discordinteraktions.common.entities.Role
-import net.perfectdreams.discordinteraktions.common.entities.User
 
 abstract class CommandOptionBuilder<T, ChoiceableType> {
     abstract val name: String
@@ -272,7 +271,7 @@ class NullableChannelCommandOptionBuilder(
 }
 
 // ===[ MENTIONABLE ]===
-abstract class MentionableCommandOptionBuilderBase<T> : DiscordCommandOptionBuilder<T, Mentionable>() {
+abstract class MentionableCommandOptionBuilderBase<T> : DiscordCommandOptionBuilder<T, Any>() {
     override fun build(): MentionableCommandOption = DefaultMentionableCommandOption(
         name,
         description,
@@ -285,14 +284,14 @@ abstract class MentionableCommandOptionBuilderBase<T> : DiscordCommandOptionBuil
 class MentionableCommandOptionBuilder(
     override val name: String,
     override val description: String
-) : MentionableCommandOptionBuilderBase<Mentionable>() {
+) : MentionableCommandOptionBuilderBase<Any>() {
     override val required = true
 }
 
 class NullableMentionableCommandOptionBuilder(
     override val name: String,
     override val description: String
-) : MentionableCommandOptionBuilderBase<Mentionable?>() {
+) : MentionableCommandOptionBuilderBase<Any?>() {
     override val required = false
 }
 

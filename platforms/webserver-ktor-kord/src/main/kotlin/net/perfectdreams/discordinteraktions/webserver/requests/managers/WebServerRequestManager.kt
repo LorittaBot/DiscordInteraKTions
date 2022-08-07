@@ -2,6 +2,7 @@ package net.perfectdreams.discordinteraktions.webserver.requests.managers
 
 import dev.kord.common.entity.*
 import dev.kord.common.entity.optional.*
+import dev.kord.core.Kord
 import dev.kord.rest.builder.interaction.ModalBuilder
 import dev.kord.rest.json.request.AutoCompleteResponseCreateRequest
 import dev.kord.rest.json.request.InteractionApplicationCommandCallbackData
@@ -38,7 +39,7 @@ import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.Ko
  */
 class WebServerRequestManager(
     bridge: RequestBridge,
-    val rest: RestClient,
+    val kord: Kord,
     val applicationId: Snowflake,
     val interactionToken: String,
     val call: ApplicationCall,
@@ -63,7 +64,7 @@ class WebServerRequestManager(
 
         bridge.manager = HttpRequestManager(
             bridge,
-            rest,
+            kord,
             applicationId,
             interactionToken
         )
@@ -85,7 +86,7 @@ class WebServerRequestManager(
 
         bridge.manager = HttpRequestManager(
             bridge,
-            rest,
+            kord,
             applicationId,
             interactionToken
         )
@@ -115,13 +116,13 @@ class WebServerRequestManager(
 
         bridge.manager = HttpRequestManager(
             bridge,
-            rest,
+            kord,
             applicationId,
             interactionToken
         )
 
         return KordOriginalInteractionPublicMessage(
-            rest,
+            kord,
             applicationId,
             interactionToken
         )
@@ -153,13 +154,13 @@ class WebServerRequestManager(
 
         bridge.manager = HttpRequestManager(
             bridge,
-            rest,
+            kord,
             applicationId,
             interactionToken
         )
 
         return KordOriginalInteractionEphemeralMessage(
-            rest,
+            kord,
             applicationId,
             interactionToken
         )
@@ -177,7 +178,7 @@ class WebServerRequestManager(
 
         bridge.manager = HttpRequestManager(
             bridge,
-            rest,
+            kord,
             applicationId,
             interactionToken
         )
@@ -206,13 +207,13 @@ class WebServerRequestManager(
 
         bridge.manager = HttpRequestManager(
             bridge,
-            rest,
+            kord,
             applicationId,
             interactionToken
         )
 
         return KordOriginalInteractionPublicMessage(
-            rest,
+            kord,
             applicationId,
             interactionToken
         )

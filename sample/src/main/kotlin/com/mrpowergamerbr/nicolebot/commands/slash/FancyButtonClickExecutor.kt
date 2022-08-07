@@ -1,9 +1,9 @@
 package com.mrpowergamerbr.nicolebot.commands.slash
 
+import dev.kord.core.entity.User
 import net.perfectdreams.discordinteraktions.common.components.ButtonExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.components.ButtonExecutor
 import net.perfectdreams.discordinteraktions.common.components.ComponentContext
-import net.perfectdreams.discordinteraktions.common.entities.User
 
 class FancyButtonClickExecutor : ButtonExecutor {
     // All buttons must have unique IDs!

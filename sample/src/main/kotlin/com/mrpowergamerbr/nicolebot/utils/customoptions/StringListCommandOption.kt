@@ -3,6 +3,7 @@ package com.mrpowergamerbr.nicolebot.utils.customoptions
 import dev.kord.common.Locale
 import dev.kord.common.entity.CommandArgument
 import dev.kord.common.entity.DiscordInteraction
+import dev.kord.core.Kord
 import dev.kord.rest.builder.interaction.BaseInputChatBuilder
 import dev.kord.rest.builder.interaction.string
 import net.perfectdreams.discordinteraktions.common.commands.options.*
@@ -30,6 +31,7 @@ class StringListCommandOption(
     }
 
     override fun parse(
+        kord: Kord,
         args: List<CommandArgument<*>>,
         interaction: DiscordInteraction
     ): List<String> {

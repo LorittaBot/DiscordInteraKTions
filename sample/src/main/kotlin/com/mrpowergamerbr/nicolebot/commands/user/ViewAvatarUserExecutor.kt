@@ -1,20 +1,20 @@
 package com.mrpowergamerbr.nicolebot.commands.user
 
+import dev.kord.core.entity.Member
+import dev.kord.core.entity.User
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.commands.UserCommandExecutor
-import net.perfectdreams.discordinteraktions.common.entities.InteractionMember
-import net.perfectdreams.discordinteraktions.common.entities.User
 
 class ViewAvatarUserExecutor : UserCommandExecutor() {
     override suspend fun execute(
         context: ApplicationCommandContext,
         targetUser: User,
-        targetMember: InteractionMember?
+        targetMember: Member?
     ) {
         context.sendEphemeralMessage {
             embed {
-                image = targetUser.avatar.cdnUrl.toUrl()
+                image = (targetUser.avatar ?: targetUser.defaultAvatar).cdnUrl.toUrl()
             }
         }
     }

@@ -1,11 +1,9 @@
 package net.perfectdreams.discordinteraktions.common.requests.managers
 
-import dev.kord.common.annotation.KordPreview
 import dev.kord.common.entity.Choice
-import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Snowflake
+import dev.kord.core.Kord
 import dev.kord.rest.builder.interaction.ModalBuilder
-import dev.kord.rest.service.RestClient
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.modify.InteractionOrFollowupMessageModifyBuilder
@@ -26,7 +24,7 @@ import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.Ko
  */
 class HttpRequestManager(
     bridge: RequestBridge,
-    val rest: RestClient,
+    val kord: Kord,
     val applicationId: Snowflake,
     val interactionToken: String
 ) : RequestManager(bridge) {
@@ -44,7 +42,7 @@ class HttpRequestManager(
 
     override suspend fun sendPublicMessage(message: InteractionOrFollowupMessageCreateBuilder): EditableMessage {
         // *Technically* we can respond to the initial interaction via HTTP too
-        val kordMessage = rest.interaction.createFollowupMessage(
+        val kordMessage = kord.rest.interaction.createFollowupMessage(
             applicationId,
             interactionToken,
             message.toFollowupMessageCreateBuilder().toRequest()
@@ -53,7 +51,7 @@ class HttpRequestManager(
         bridge.state.value = InteractionRequestState.ALREADY_REPLIED
 
         return KordPublicFollowupMessage(
-            rest,
+            kord,
             applicationId,
             interactionToken,
             kordMessage
@@ -62,7 +60,7 @@ class HttpRequestManager(
 
     override suspend fun sendEphemeralMessage(message: InteractionOrFollowupMessageCreateBuilder): EditableMessage {
         // *Technically* we can respond to the initial interaction via HTTP too
-        val kordMessage = rest.interaction.createFollowupMessage(
+        val kordMessage = kord.rest.interaction.createFollowupMessage(
             applicationId,
             interactionToken,
             message.toFollowupMessageCreateBuilder().toRequest()
@@ -71,7 +69,7 @@ class HttpRequestManager(
         bridge.state.value = InteractionRequestState.ALREADY_REPLIED
 
         return KordEphemeralFollowupMessage(
-            rest,
+            kord,
             applicationId,
             interactionToken,
             kordMessage
@@ -82,7 +80,7 @@ class HttpRequestManager(
 
     override suspend fun updateMessage(message: InteractionOrFollowupMessageModifyBuilder): EditableMessage {
         val interactionMessage = KordOriginalInteractionPublicMessage(
-            rest,
+            kord,
             applicationId,
             interactionToken
         )

@@ -3,6 +3,11 @@ package net.perfectdreams.discordinteraktions.platforms.kord.utils
 import dev.kord.common.entity.ApplicationCommandType
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Snowflake
+import dev.kord.core.Kord
+import dev.kord.core.cache.data.MemberData
+import dev.kord.core.cache.data.UserData
+import dev.kord.core.entity.Member
+import dev.kord.core.entity.User
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
@@ -13,13 +18,11 @@ import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 import net.perfectdreams.discordinteraktions.common.requests.RequestBridge
 import net.perfectdreams.discordinteraktions.common.utils.InteraKTionsExceptions
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.CommandDeclarationUtils
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordInteractionMember
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
 
 /**
  * Checks, matches and executes commands, this is a class because we share code between the `gateway-kord` and `webserver-ktor-kord` modules
  */
-class KordCommandChecker(val commandManager: CommandManager) {
+class KordCommandChecker(val kord: Kord, val interactionsManager: InteractionsManager) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -35,10 +38,14 @@ class KordCommandChecker(val commandManager: CommandManager) {
 
         val applicationCommandType = request.data.type.value ?: error("Application Command Type is null, so we don't know what it is going to be used for!")
 
-        val kordUser = KordUser(request.member.value?.user?.value ?: request.user.value ?: error("oh no"))
+        val kordUser = User(
+            UserData.from(request.member.value?.user?.value ?: request.user.value ?: error("oh no")),
+            kord
+        )
+
         val guildId = request.guildId.value
 
-        val interactionData = InteractionData(request.data.resolved.value?.toDiscordInteraKTionsResolvedObjects(guildId))
+        val interactionData = InteractionData(request.data.resolved.value?.toDiscordInteraKTionsResolvedObjects(kord, guildId))
 
         when (applicationCommandType) {
             is ApplicationCommandType.Unknown -> {
@@ -47,13 +54,14 @@ class KordCommandChecker(val commandManager: CommandManager) {
             ApplicationCommandType.ChatInput -> {
                 logger.debug { "Subcommand Labels: $commandLabels; Root Options: $relativeOptions" }
 
-                val command = CommandDeclarationUtils.getApplicationCommandDeclarationFromLabel<SlashCommandDeclaration>(commandManager, commandLabels)
+                val command = CommandDeclarationUtils.getApplicationCommandDeclarationFromLabel<SlashCommandDeclaration>(interactionsManager, commandLabels)
                     ?: InteraKTionsExceptions.missingDeclaration("slash command")
 
                 val executor = command.executor ?: InteraKTionsExceptions.missingExecutor("slash command")
 
                 // Convert the Nested Options into a map, then we can access them with our Discord InteraKTion options!
                 val arguments = CommandDeclarationUtils.convertOptions(
+                    kord,
                     request,
                     executor,
                     relativeOptions ?: listOf()
@@ -76,7 +84,7 @@ class KordCommandChecker(val commandManager: CommandManager) {
             }
 
             ApplicationCommandType.User -> {
-                val command = CommandDeclarationUtils.getApplicationCommandDeclarationFromLabel<UserCommandDeclaration>(commandManager, commandLabels)
+                val command = CommandDeclarationUtils.getApplicationCommandDeclarationFromLabel<UserCommandDeclaration>(interactionsManager, commandLabels)
                     ?: InteraKTionsExceptions.missingDeclaration("user command")
 
                 val executor = command.executor
@@ -103,7 +111,7 @@ class KordCommandChecker(val commandManager: CommandManager) {
             }
 
             ApplicationCommandType.Message -> {
-                val command = CommandDeclarationUtils.getApplicationCommandDeclarationFromLabel<MessageCommandDeclaration>(commandManager, commandLabels)
+                val command = CommandDeclarationUtils.getApplicationCommandDeclarationFromLabel<MessageCommandDeclaration>(interactionsManager, commandLabels)
                     ?: InteraKTionsExceptions.missingDeclaration("message command")
 
                 val executor = command.executor
@@ -132,18 +140,17 @@ class KordCommandChecker(val commandManager: CommandManager) {
     private fun createContext(
         declaration: ApplicationCommandDeclaration,
         bridge: RequestBridge,
-        kordUser: KordUser,
+        kordUser: User,
         request: DiscordInteraction,
         interactionData: InteractionData,
         guildId: Snowflake?
     ): ApplicationCommandContext {
         // If the guild ID is not null, then it means that the interaction happened in a guild!
         return if (guildId != null) {
-            val member = request.member.value!! // Should NEVER be null!
-            val kordMember = KordInteractionMember(
-                guildId,
-                member,
-                KordUser(member.user.value!!) // Also should NEVER be null!
+            val kordMember = Member(
+                MemberData.from(kordUser.id, guildId, request.member.value!!), // Should NEVER be null!
+                kordUser.data,
+                kord
             )
 
             GuildApplicationCommandContext(
@@ -159,9 +166,7 @@ class KordCommandChecker(val commandManager: CommandManager) {
         } else {
             ApplicationCommandContext(
                 bridge,
-                KordUser(
-                    request.member.value?.user?.value ?: request.user.value ?: error("oh no")
-                ),
+                kordUser,
                 request.channelId,
                 interactionData,
                 request,

@@ -3,6 +3,7 @@ package com.mrpowergamerbr.nicolebot.utils.customoptions
 import dev.kord.common.Locale
 import dev.kord.common.entity.CommandArgument
 import dev.kord.common.entity.DiscordInteraction
+import dev.kord.core.Kord
 import dev.kord.rest.builder.interaction.BaseInputChatBuilder
 import dev.kord.rest.builder.interaction.string
 import kotlinx.coroutines.delay
@@ -36,6 +37,7 @@ class DelayedSuspendableCommandOption(
     }
 
     override fun parse(
+        kord: Kord,
         args: List<CommandArgument<*>>,
         interaction: DiscordInteraction
     ): SuspendableData {

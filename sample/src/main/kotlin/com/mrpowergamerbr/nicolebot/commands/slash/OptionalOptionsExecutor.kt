@@ -42,23 +42,24 @@ class OptionalOptionsExecutor : SlashCommandExecutor() {
             content = buildString {
                 append("**Options:**")
                 append("\n")
-                append("${options.example.name}: ${args[options.example]}")
+                // We are going to limit to 100 characters each option to avoid overflowing the message length
+                append("${options.example.name}: ${args[options.example]}".take(100))
                 append("\n")
-                append("${options.integer.name}: ${args[options.integer]}")
+                append("${options.integer.name}: ${args[options.integer]}".take(100))
                 append("\n")
-                append("${options.number.name}: ${args[options.number]}")
+                append("${options.number.name}: ${args[options.number]}".take(100))
                 append("\n")
-                append("${options.boolean.name}: ${args[options.boolean]}")
+                append("${options.boolean.name}: ${args[options.boolean]}".take(100))
                 append("\n")
-                append("${options.user.name}: ${args[options.user]}")
+                append("${options.user.name}: ${args[options.user]}".take(100))
                 append("\n")
-                append("${options.role.name}: ${args[options.role]}")
+                append("${options.role.name}: ${args[options.role]}".take(100))
                 append("\n")
-                append("${options.channel.name}: ${args[options.channel]}")
+                append("${options.channel.name}: ${args[options.channel]}".take(100))
                 append("\n")
-                append("${options.mentionable.name}: ${args[options.mentionable]}")
+                append("${options.mentionable.name}: ${args[options.mentionable]}".take(100))
                 append("\n")
-                append("${options.attachment.name}: ${args[options.attachment]}")
+                append("${options.attachment.name}: ${args[options.attachment]}".take(100))
             }
         }
     }

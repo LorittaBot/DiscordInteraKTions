@@ -9,7 +9,8 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
-import net.perfectdreams.discordinteraktions.common.commands.CommandManager
+import net.perfectdreams.discordinteraktions.common.DiscordInteraKTions
+import net.perfectdreams.discordinteraktions.common.commands.InteractionsManager
 
 /**
  * Class represents an Rest Interactions Server, which'll connect
@@ -21,9 +22,8 @@ import net.perfectdreams.discordinteraktions.common.commands.CommandManager
  * @param port HTTP server port to bind
  */
 class InteractionsServer(
-    val applicationId: Snowflake,
+    val interaKTions: DiscordInteraKTions,
     val publicKey: String,
-    val token: String,
     val port: Int = 12212,
 ) {
     companion object {
@@ -34,13 +34,8 @@ class InteractionsServer(
         private val logger = KotlinLogging.logger {}
     }
 
-    val rest = RestClient(token)
-    val commandManager = CommandManager()
-    val interactionRequestHandler: InteractionRequestHandler = DefaultInteractionRequestHandler(
-        applicationId,
-        commandManager,
-        rest
-    )
+    val interactionsManager = InteractionsManager()
+    val interactionRequestHandler: InteractionRequestHandler = DefaultInteractionRequestHandler(interaKTions)
 
     /**
      * You can use this method to start the interactions server,

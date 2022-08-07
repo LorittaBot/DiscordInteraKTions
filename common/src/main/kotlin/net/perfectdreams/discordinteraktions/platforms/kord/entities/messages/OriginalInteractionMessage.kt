@@ -2,9 +2,9 @@ package net.perfectdreams.discordinteraktions.platforms.kord.entities.messages
 
 import dev.kord.common.entity.DiscordAttachment
 import dev.kord.common.entity.Snowflake
+import dev.kord.core.entity.Member
+import dev.kord.core.entity.User
 import kotlinx.datetime.Instant
-import net.perfectdreams.discordinteraktions.common.entities.InteractionMember
-import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.discordinteraktions.common.entities.messages.Message
 
 open class OriginalInteractionMessage : Message {
@@ -16,7 +16,7 @@ open class OriginalInteractionMessage : Message {
         get() = fail()
     override val author: User
         get() = fail()
-    override val member: InteractionMember?
+    override val member: Member?
         get() = fail()
     override val content: String
         get() = fail()

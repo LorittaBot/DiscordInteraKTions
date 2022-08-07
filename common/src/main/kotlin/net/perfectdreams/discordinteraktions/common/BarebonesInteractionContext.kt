@@ -1,6 +1,7 @@
 package net.perfectdreams.discordinteraktions.common
 
 import dev.kord.common.entity.Snowflake
+import dev.kord.core.Kord
 import dev.kord.rest.builder.interaction.ModalBuilder
 import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
@@ -95,7 +96,7 @@ open class BarebonesInteractionContext(
  * This is useful if you are trying to reply to an interaction where you only have its essential information (like the interaction token).
  */
 fun BarebonesInteractionContext(
-    rest: RestClient,
+    kord: Kord,
     applicationId: Snowflake,
     interactionToken: String,
     requestState: InteractionRequestState = InteractionRequestState.ALREADY_REPLIED
@@ -104,7 +105,7 @@ fun BarebonesInteractionContext(
 
     bridge.manager = HttpRequestManager(
         bridge,
-        rest,
+        kord,
         applicationId,
         interactionToken
     )

@@ -1,17 +1,28 @@
-package net.perfectdreams.discordinteraktions.platforms.kord.commands
+package net.perfectdreams.discordinteraktions.common
 
 import dev.kord.common.entity.Snowflake
+import dev.kord.core.Kord
 import dev.kord.rest.builder.interaction.*
-import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.common.commands.*
-import net.perfectdreams.discordinteraktions.common.commands.options.*
+import net.perfectdreams.discordinteraktions.common.commands.options.InteraKTionsCommandOption
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordAutocompleteChecker
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordCommandChecker
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordComponentChecker
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordModalChecker
 
-class KordCommandRegistry(
-    private val applicationId: Snowflake,
-    private val rest: RestClient,
-    private val manager: CommandManager
-) : CommandRegistry {
-    override suspend fun updateAllCommandsInGuild(guildId: Snowflake) {
+class DiscordInteraKTions(
+    val kord: Kord,
+    val applicationId: Snowflake,
+) {
+    val rest = kord.rest
+    val manager = InteractionsManager()
+
+    val autocompleteChecker = KordAutocompleteChecker(kord, manager)
+    val commandChecker = KordCommandChecker(kord, manager)
+    val componentChecker = KordComponentChecker(kord, manager)
+    val modalChecker = KordModalChecker(kord, manager)
+
+    suspend fun updateAllCommandsInGuild(guildId: Snowflake) {
         rest.interaction.createGuildApplicationCommands(
             applicationId,
             guildId
@@ -22,7 +33,7 @@ class KordCommandRegistry(
         }
     }
 
-    override suspend fun updateAllGlobalCommands() {
+    suspend fun updateAllGlobalCommands() {
         val kordApplicationId = applicationId
 
         rest.interaction.createGlobalApplicationCommands(
@@ -68,7 +79,7 @@ class KordCommandRegistry(
 
                     if (builder is GlobalMultiApplicationCommandBuilder)
                         (this as GlobalChatInputCreateBuilder).dmPermission = declaration.dmPermission
-                    
+
                     options = mutableListOf() // Initialize an empty list so we can use it
 
                     // We can only have (subcommands OR subcommand groups) OR arguments
@@ -133,3 +144,8 @@ class KordCommandRegistry(
         cmdOption.register(builder)
     }
 }
+
+fun DiscordInteraKTions(token: String, applicationId: Snowflake) = DiscordInteraKTions(
+    Kord.restOnly(token),
+    applicationId
+)

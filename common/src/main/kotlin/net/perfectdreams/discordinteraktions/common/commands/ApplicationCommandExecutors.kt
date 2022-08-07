@@ -1,8 +1,8 @@
 package net.perfectdreams.discordinteraktions.common.commands
 
+import dev.kord.core.entity.Member
+import dev.kord.core.entity.User
 import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
-import net.perfectdreams.discordinteraktions.common.entities.InteractionMember
-import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.entities.messages.Message
 
@@ -36,7 +36,7 @@ abstract class SlashCommandExecutor : ApplicationCommandExecutor() {
  * want to create an User Command.
  */
 abstract class UserCommandExecutor : ApplicationCommandExecutor() {
-    abstract suspend fun execute(context: ApplicationCommandContext, targetUser: User, targetMember: InteractionMember?)
+    abstract suspend fun execute(context: ApplicationCommandContext, targetUser: User, targetMember: Member?)
 }
 
 /**

@@ -2,8 +2,8 @@ package net.perfectdreams.discordinteraktions.common.commands
 
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Snowflake
-import net.perfectdreams.discordinteraktions.common.entities.InteractionMember
-import net.perfectdreams.discordinteraktions.common.entities.User
+import dev.kord.core.entity.Member
+import dev.kord.core.entity.User
 import net.perfectdreams.discordinteraktions.common.requests.RequestBridge
 import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 
@@ -15,7 +15,7 @@ open class GuildApplicationCommandContext(
     discordInteractionData: DiscordInteraction,
     applicationCommandDeclaration: ApplicationCommandDeclaration,
     val guildId: Snowflake,
-    val member: InteractionMember
+    val member: Member
 ) : ApplicationCommandContext(bridge, sender, channelId, data, discordInteractionData, applicationCommandDeclaration) {
     val appPermissions = discordInteractionData.appPermissions.value ?: error("App Permissions field is null on a Guild Interaction! Bug?")
 }

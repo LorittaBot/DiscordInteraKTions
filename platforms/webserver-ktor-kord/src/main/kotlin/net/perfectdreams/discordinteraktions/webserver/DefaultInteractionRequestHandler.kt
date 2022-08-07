@@ -12,14 +12,15 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import mu.KotlinLogging
-import net.perfectdreams.discordinteraktions.common.commands.CommandManager
+import net.perfectdreams.discordinteraktions.common.DiscordInteraKTions
+import net.perfectdreams.discordinteraktions.common.commands.InteractionsManager
 import net.perfectdreams.discordinteraktions.common.requests.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.requests.RequestBridge
 import net.perfectdreams.discordinteraktions.common.utils.Observable
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordAutocompleteChecker
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordCommandChecker
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordComponentChecker
-import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordModalSubmitChecker
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordModalChecker
 import net.perfectdreams.discordinteraktions.webserver.requests.managers.WebServerRequestManager
 
 /**
@@ -28,20 +29,10 @@ import net.perfectdreams.discordinteraktions.webserver.requests.managers.WebServ
  *
  * @param m The server that we'll handle the requests for.
  */
-@OptIn(KordPreview::class, ExperimentalCoroutinesApi::class)
-class DefaultInteractionRequestHandler(
-    val applicationId: Snowflake,
-    val commandManager: CommandManager,
-    val rest: RestClient,
-) : InteractionRequestHandler() {
+class DefaultInteractionRequestHandler(val interaKTions: DiscordInteraKTions) : InteractionRequestHandler() {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
-
-    private val kordCommandChecker = KordCommandChecker(commandManager)
-    private val kordComponentChecker = KordComponentChecker(commandManager)
-    private val kordAutocompleteChecker = KordAutocompleteChecker(commandManager)
-    private val kordModalChecker = KordModalSubmitChecker(commandManager)
 
     override suspend fun onPing(call: ApplicationCall) {
         logger.info { "Ping Request Received!" }
@@ -59,15 +50,15 @@ class DefaultInteractionRequestHandler(
 
         val requestManager = WebServerRequestManager(
             bridge,
-            rest,
-            applicationId,
+            interaKTions.kord,
+            interaKTions.applicationId,
             request.token,
             call
         )
 
         bridge.manager = requestManager
 
-        kordCommandChecker.checkAndExecute(
+        interaKTions.commandChecker.checkAndExecute(
             request,
             requestManager
         )
@@ -82,15 +73,15 @@ class DefaultInteractionRequestHandler(
 
         val requestManager = WebServerRequestManager(
             bridge,
-            rest,
-            applicationId,
+            interaKTions.kord,
+            interaKTions.applicationId,
             request.token,
             call
         )
 
         bridge.manager = requestManager
 
-        kordComponentChecker.checkAndExecute(
+        interaKTions.componentChecker.checkAndExecute(
             request,
             requestManager
         )
@@ -105,15 +96,15 @@ class DefaultInteractionRequestHandler(
 
         val requestManager = WebServerRequestManager(
             bridge,
-            rest,
-            applicationId,
+            interaKTions.kord,
+            interaKTions.applicationId,
             request.token,
             call
         )
 
         bridge.manager = requestManager
 
-        kordAutocompleteChecker.checkAndExecute(
+        interaKTions.autocompleteChecker.checkAndExecute(
             request,
             requestManager
         )
@@ -128,15 +119,15 @@ class DefaultInteractionRequestHandler(
 
         val requestManager = WebServerRequestManager(
             bridge,
-            rest,
-            applicationId,
+            interaKTions.kord,
+            interaKTions.applicationId,
             request.token,
             call
         )
 
         bridge.manager = requestManager
 
-        kordModalChecker.checkAndExecute(
+        interaKTions.modalChecker.checkAndExecute(
             request,
             requestManager
         )

@@ -3,9 +3,14 @@ package net.perfectdreams.discordinteraktions.platforms.kord.utils
 import dev.kord.common.entity.ComponentType
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Snowflake
+import dev.kord.core.Kord
+import dev.kord.core.cache.data.MemberData
+import dev.kord.core.cache.data.UserData
+import dev.kord.core.entity.Member
+import dev.kord.core.entity.User
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import net.perfectdreams.discordinteraktions.common.commands.CommandManager
+import net.perfectdreams.discordinteraktions.common.commands.InteractionsManager
 import net.perfectdreams.discordinteraktions.common.components.ComponentContext
 import net.perfectdreams.discordinteraktions.common.components.ComponentExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.components.GuildComponentContext
@@ -14,14 +19,12 @@ import net.perfectdreams.discordinteraktions.common.requests.managers.RequestMan
 import net.perfectdreams.discordinteraktions.common.interactions.InteractionData
 import net.perfectdreams.discordinteraktions.common.requests.RequestBridge
 import net.perfectdreams.discordinteraktions.common.utils.InteraKTionsExceptions
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordInteractionMember
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.KordPublicMessage
 
 /**
  * Checks, matches and executes commands, this is a class because we share code between the `gateway-kord` and `webserver-ktor-kord` modules
  */
-class KordComponentChecker(val commandManager: CommandManager) {
+class KordComponentChecker(val kord: Kord, val interactionsManager: InteractionsManager) {
     fun checkAndExecute(request: DiscordInteraction, requestManager: RequestManager) {
         val bridge = requestManager.bridge
 
@@ -33,26 +36,30 @@ class KordComponentChecker(val commandManager: CommandManager) {
         val executorId = componentCustomId.substringBefore(":")
         val data = componentCustomId.substringAfter(":")
 
-        val kordUser = KordUser(request.member.value?.user?.value ?: request.user.value ?: error("oh no"))
-        val kordPublicMessage = KordPublicMessage(request.message.value!!)
+        val kordUser = User(
+            UserData.from(request.member.value?.user?.value ?: request.user.value ?: error("oh no")),
+            kord
+        )
+
+        val kordPublicMessage = KordPublicMessage(kord, request.message.value!!)
 
         val guildId = request.guildId.value
 
-        val interactionData = InteractionData(request.data.resolved.value?.toDiscordInteraKTionsResolvedObjects(guildId))
+        val interactionData = InteractionData(request.data.resolved.value?.toDiscordInteraKTionsResolvedObjects(kord, guildId))
 
         // Now this changes a bit depending on what we are trying to execute
         when (componentType) {
             is ComponentType.Unknown -> error("Unknown Component Type!")
             ComponentType.ActionRow -> error("Received a ActionRow component interaction... but that's impossible!")
             ComponentType.Button -> {
-                val executorDeclaration = commandManager.componentExecutorDeclarations
+                val executorDeclaration = interactionsManager.componentExecutorDeclarations
                     .asSequence()
                     .filter {
                         it.id == executorId
                     }
                     .firstOrNull() ?: InteraKTionsExceptions.missingDeclaration("button")
 
-                val executor = commandManager.buttonExecutors.firstOrNull {
+                val executor = interactionsManager.buttonExecutors.firstOrNull {
                     it.signature() == executorDeclaration.parent
                 } ?: InteraKTionsExceptions.missingExecutor("button")
 
@@ -73,14 +80,14 @@ class KordComponentChecker(val commandManager: CommandManager) {
                 }
             }
             ComponentType.SelectMenu -> {
-                val executorDeclaration = commandManager.componentExecutorDeclarations
+                val executorDeclaration = interactionsManager.componentExecutorDeclarations
                     .asSequence()
                     .filter {
                         it.id == executorId
                     }
                     .firstOrNull() ?: InteraKTionsExceptions.missingDeclaration("select menu")
 
-                val executor = commandManager.selectMenusExecutors.firstOrNull {
+                val executor = interactionsManager.selectMenusExecutors.firstOrNull {
                     it.signature() == executorDeclaration.parent
                 } ?: InteraKTionsExceptions.missingExecutor("select menu")
 
@@ -108,7 +115,7 @@ class KordComponentChecker(val commandManager: CommandManager) {
     private fun createContext(
         declaration: ComponentExecutorDeclaration,
         bridge: RequestBridge,
-        kordUser: KordUser,
+        kordUser: User,
         request: DiscordInteraction,
         interactionData: InteractionData,
         guildId: Snowflake?,
@@ -117,11 +124,10 @@ class KordComponentChecker(val commandManager: CommandManager) {
     ): ComponentContext {
         // If the guild ID is not null, then it means that the interaction happened in a guild!
         return if (guildId != null) {
-            val member = request.member.value!! // Should NEVER be null!
-            val kordMember = KordInteractionMember(
-                guildId,
-                member,
-                KordUser(member.user.value!!) // Also should NEVER be null!
+            val kordMember = Member(
+                MemberData.from(kordUser.id, guildId, request.member.value!!), // Should NEVER be null!
+                kordUser.data,
+                kord
             )
 
             GuildComponentContext(

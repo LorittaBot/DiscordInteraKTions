@@ -9,65 +9,55 @@ import com.mrpowergamerbr.nicolebot.commands.user.declarations.ViewAvatarUserCom
 import com.mrpowergamerbr.nicolebot.utils.Counter
 import com.mrpowergamerbr.nicolebot.utils.LanguageManager
 import dev.kord.common.entity.Snowflake
-import dev.kord.rest.service.RestClient
-import net.perfectdreams.discordinteraktions.common.commands.CommandManager
-import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
+import net.perfectdreams.discordinteraktions.common.DiscordInteraKTions
 
 // "Nicole" is an easter egg: Loritta's (https://loritta.website/) name was planned to be "Nicole" at one point
-class NicoleBot(
-    val rest: RestClient,
-    val commandManager: CommandManager
-) {
+class NicoleBot(token: String) {
     companion object {
         val APPLICATION_ID = Snowflake(680539524400676977L)
         val GUILD_ID = Snowflake(936391274951503873L)
     }
 
+    val interaKTions = DiscordInteraKTions(token, APPLICATION_ID)
     val counter = Counter(0)
     private val languageManager = LanguageManager()
 
     suspend fun registerCommands() {
         // ===[ /helloworld ]===
-        commandManager.register(HelloWorldCommand)
+        interaKTions.manager.register(HelloWorldCommand)
 
         // ===[ /options ]===
-        commandManager.register(OptionsCommand)
+        interaKTions.manager.register(OptionsCommand)
 
         // ===[ /interactivity ]===
-        commandManager.register(InteractivityCommand)
-        commandManager.register(FancyButtonClickExecutor())
+        interaKTions.manager.register(InteractivityCommand)
+        interaKTions.manager.register(FancyButtonClickExecutor())
 
-        commandManager.register(
+        interaKTions.manager.register(
             ModalYayExecutor,
             ModalYayExecutor()
         )
 
         // ===[ /counter ]===
-        commandManager.register(CounterCommand(counter))
-        commandManager.register(CounterButtonExecutor(counter))
+        interaKTions.manager.register(CounterCommand(counter))
+        interaKTions.manager.register(CounterButtonExecutor(counter))
 
         // ===[ /sendyourattachment ]===
-        commandManager.register(SendYourAttachmentCommand)
+        interaKTions.manager.register(SendYourAttachmentCommand)
 
         // ===[ /autocompletefun ]===
-        commandManager.register(AutocompleteFunCommand)
+        interaKTions.manager.register(AutocompleteFunCommand)
 
         // ===[ /externallyprovidedstring ]===
-        commandManager.register(ExternallyProvidedStringCommand(languageManager))
+        interaKTions.manager.register(ExternallyProvidedStringCommand(languageManager))
 
         // ===[ "View avatar" ]===
-        commandManager.register(ViewAvatarUserCommand)
+        interaKTions.manager.register(ViewAvatarUserCommand)
 
         // ===[ "View content length" ]===
-        commandManager.register(ContentLengthMessageCommand)
+        interaKTions.manager.register(ContentLengthMessageCommand)
 
-        val registry = KordCommandRegistry(
-            APPLICATION_ID,
-            rest,
-            commandManager
-        )
-
-        registry.updateAllCommandsInGuild(GUILD_ID)
+        interaKTions.updateAllCommandsInGuild(GUILD_ID)
         // registry.updateAllGlobalCommands()
     }
 }

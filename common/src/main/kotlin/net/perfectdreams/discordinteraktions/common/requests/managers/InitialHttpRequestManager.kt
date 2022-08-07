@@ -12,6 +12,7 @@ import dev.kord.common.entity.TextInputStyle
 import dev.kord.common.entity.optional.Optional
 import dev.kord.common.entity.optional.coerceToMissing
 import dev.kord.common.entity.optional.optional
+import dev.kord.core.Kord
 import dev.kord.rest.builder.interaction.ModalBuilder
 import dev.kord.rest.json.request.InteractionApplicationCommandCallbackData
 import dev.kord.rest.json.request.InteractionResponseCreateRequest
@@ -36,7 +37,7 @@ import net.perfectdreams.discordinteraktions.platforms.kord.entities.messages.Ko
  */
 class InitialHttpRequestManager(
     bridge: RequestBridge,
-    val rest: RestClient,
+    val kord: Kord,
     val applicationId: Snowflake,
     val interactionId: Snowflake,
     val interactionToken: String
@@ -50,7 +51,7 @@ class InitialHttpRequestManager(
     }
 
     override suspend fun deferChannelMessage() {
-        rest.interaction.createInteractionResponse(
+        kord.rest.interaction.createInteractionResponse(
             interactionId,
             interactionToken,
             InteractionResponseCreateRequest(
@@ -63,14 +64,14 @@ class InitialHttpRequestManager(
 
         bridge.manager = HttpRequestManager(
             bridge,
-            rest,
+            kord,
             applicationId,
             interactionToken
         )
     }
 
     override suspend fun deferChannelMessageEphemerally() {
-        rest.interaction.createInteractionResponse(
+        kord.rest.interaction.createInteractionResponse(
             interactionId,
             interactionToken,
             InteractionResponseCreateRequest(
@@ -87,7 +88,7 @@ class InitialHttpRequestManager(
 
         bridge.manager = HttpRequestManager(
             bridge,
-            rest,
+            kord,
             applicationId,
             interactionToken
         )
@@ -95,7 +96,7 @@ class InitialHttpRequestManager(
 
     override suspend fun sendPublicMessage(message: InteractionOrFollowupMessageCreateBuilder): EditableMessage {
         // *Technically* we can respond to the initial interaction via HTTP too
-        rest.interaction.createInteractionResponse(
+        kord.rest.interaction.createInteractionResponse(
             interactionId,
             interactionToken,
             message.toInteractionMessageResponseCreateBuilder().toRequest()
@@ -105,13 +106,13 @@ class InitialHttpRequestManager(
 
         bridge.manager = HttpRequestManager(
             bridge,
-            rest,
+            kord,
             applicationId,
             interactionToken
         )
 
         return KordOriginalInteractionPublicMessage(
-            rest,
+            kord,
             applicationId,
             interactionToken
         )
@@ -119,7 +120,7 @@ class InitialHttpRequestManager(
 
     override suspend fun sendEphemeralMessage(message: InteractionOrFollowupMessageCreateBuilder): EditableMessage {
         // *Technically* we can respond to the initial interaction via HTTP too
-        rest.interaction.createInteractionResponse(
+        kord.rest.interaction.createInteractionResponse(
             interactionId,
             interactionToken,
             message.toInteractionMessageResponseCreateBuilder().toRequest()
@@ -129,20 +130,20 @@ class InitialHttpRequestManager(
 
         bridge.manager = HttpRequestManager(
             bridge,
-            rest,
+            kord,
             applicationId,
             interactionToken
         )
 
         return KordOriginalInteractionEphemeralMessage(
-            rest,
+            kord,
             applicationId,
             interactionToken
         )
     }
 
     override suspend fun deferUpdateMessage() {
-        rest.interaction.createInteractionResponse(
+        kord.rest.interaction.createInteractionResponse(
             interactionId,
             interactionToken,
             InteractionResponseCreateRequest(
@@ -155,14 +156,14 @@ class InitialHttpRequestManager(
 
         bridge.manager = HttpRequestManager(
             bridge,
-            rest,
+            kord,
             applicationId,
             interactionToken
         )
     }
 
     override suspend fun updateMessage(message: InteractionOrFollowupMessageModifyBuilder): EditableMessage {
-        rest.interaction.createInteractionResponse(
+        kord.rest.interaction.createInteractionResponse(
             interactionId,
             interactionToken,
             InteractionResponseCreateRequest(
@@ -183,20 +184,20 @@ class InitialHttpRequestManager(
 
         bridge.manager = HttpRequestManager(
             bridge,
-            rest,
+            kord,
             applicationId,
             interactionToken
         )
 
         return KordOriginalInteractionPublicMessage(
-            rest,
+            kord,
             applicationId,
             interactionToken
         )
     }
 
     override suspend fun sendStringAutocomplete(list: List<Choice<String>>) {
-        rest.interaction.createAutoCompleteInteractionResponse(
+        kord.rest.interaction.createAutoCompleteInteractionResponse(
             interactionId,
             interactionToken,
             DiscordAutoComplete(list)
@@ -204,7 +205,7 @@ class InitialHttpRequestManager(
     }
 
     override suspend fun sendIntegerAutocomplete(list: List<Choice<Long>>) {
-        rest.interaction.createAutoCompleteInteractionResponse(
+        kord.rest.interaction.createAutoCompleteInteractionResponse(
             interactionId,
             interactionToken,
             DiscordAutoComplete(list)
@@ -212,7 +213,7 @@ class InitialHttpRequestManager(
     }
 
     override suspend fun sendNumberAutocomplete(list: List<Choice<Double>>) {
-        rest.interaction.createAutoCompleteInteractionResponse(
+        kord.rest.interaction.createAutoCompleteInteractionResponse(
             interactionId,
             interactionToken,
             DiscordAutoComplete(list)
@@ -220,7 +221,7 @@ class InitialHttpRequestManager(
     }
 
     override suspend fun sendModal(title: String, customId: String, builder: ModalBuilder.() -> Unit) {
-        rest.interaction.createModalInteractionResponse(
+        kord.rest.interaction.createModalInteractionResponse(
             interactionId,
             interactionToken,
             title,

@@ -6,7 +6,8 @@ import dev.kord.gateway.Gateway
 import dev.kord.gateway.InteractionCreate
 import dev.kord.gateway.on
 import dev.kord.rest.service.RestClient
-import net.perfectdreams.discordinteraktions.common.commands.CommandManager
+import net.perfectdreams.discordinteraktions.common.DiscordInteraKTions
+import net.perfectdreams.discordinteraktions.common.commands.InteractionsManager
 import net.perfectdreams.discordinteraktions.common.requests.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.requests.RequestBridge
 import net.perfectdreams.discordinteraktions.common.utils.Observable
@@ -14,18 +15,9 @@ import net.perfectdreams.discordinteraktions.common.requests.managers.InitialHtt
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordAutocompleteChecker
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordCommandChecker
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordComponentChecker
-import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordModalSubmitChecker
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordModalChecker
 
-fun Gateway.installDiscordInteraKTions(
-    applicationId: Snowflake,
-    rest: RestClient,
-    commandManager: CommandManager
-) {
-    val kordCommandChecker = KordCommandChecker(commandManager)
-    val kordComponentChecker = KordComponentChecker(commandManager)
-    val kordAutocompleteChecker = KordAutocompleteChecker(commandManager)
-    val kordModalSubmitChecker = KordModalSubmitChecker(commandManager)
-
+fun Gateway.installDiscordInteraKTions(interaKTions: DiscordInteraKTions) {
     on<InteractionCreate> {
         val request = this.interaction
 
@@ -34,33 +26,32 @@ fun Gateway.installDiscordInteraKTions(
 
         val requestManager = InitialHttpRequestManager(
             bridge,
-            rest,
-            applicationId,
+            interaKTions.kord,
+            interaKTions.applicationId,
             request.id,
             request.token
         )
 
         bridge.manager = requestManager
 
-        if (request.type == InteractionType.ApplicationCommand)
-            kordCommandChecker.checkAndExecute(
+        when (request.type) {
+            InteractionType.ApplicationCommand -> interaKTions.commandChecker.checkAndExecute(
                 request,
                 requestManager
             )
-        else if (request.type == InteractionType.Component)
-            kordComponentChecker.checkAndExecute(
+            InteractionType.Component -> interaKTions.componentChecker.checkAndExecute(
                 request,
                 requestManager
             )
-        else if (request.type == InteractionType.AutoComplete)
-            kordAutocompleteChecker.checkAndExecute(
+            InteractionType.AutoComplete -> interaKTions.autocompleteChecker.checkAndExecute(
                 request,
                 requestManager
             )
-        else if (request.type == InteractionType.ModalSubmit)
-            kordModalSubmitChecker.checkAndExecute(
+            InteractionType.ModalSubmit -> interaKTions.modalChecker.checkAndExecute(
                 request,
                 requestManager
             )
+            else -> {}
+        }
     }
 }

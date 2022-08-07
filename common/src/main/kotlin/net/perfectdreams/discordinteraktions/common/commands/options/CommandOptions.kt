@@ -3,21 +3,21 @@ package net.perfectdreams.discordinteraktions.common.commands.options
 import dev.kord.common.Locale
 import dev.kord.common.entity.*
 import dev.kord.common.entity.optional.optional
+import dev.kord.core.Kord
+import dev.kord.core.cache.data.ChannelData
+import dev.kord.core.cache.data.RoleData
+import dev.kord.core.cache.data.UserData
+import dev.kord.core.entity.Role
+import dev.kord.core.entity.User
+import dev.kord.core.entity.channel.Channel
 import dev.kord.rest.builder.interaction.*
 import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteHandler
-import net.perfectdreams.discordinteraktions.common.entities.Channel
-import net.perfectdreams.discordinteraktions.common.entities.Mentionable
-import net.perfectdreams.discordinteraktions.common.entities.Role
-import net.perfectdreams.discordinteraktions.common.entities.User
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordChannel
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordRole
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
 
 interface InteraKTionsCommandOption<T> {
     val name: String
 
     fun register(builder: BaseInputChatBuilder)
-    fun parse(args: List<CommandArgument<*>>, interaction: DiscordInteraction): T?
+    fun parse(kord: Kord, args: List<CommandArgument<*>>, interaction: DiscordInteraction): T?
 }
 
 interface NameableCommandOption<T> : InteraKTionsCommandOption<T> {
@@ -31,7 +31,7 @@ interface DiscordCommandOption<T> : NameableCommandOption<T> {
 }
 
 interface GenericCommandOption<T> : DiscordCommandOption<T> {
-    override fun parse(args: List<CommandArgument<*>>, interaction: DiscordInteraction): T? {
+    override fun parse(kord: Kord, args: List<CommandArgument<*>>, interaction: DiscordInteraction): T? {
         return args.firstOrNull { it.name == name }?.value as T
     }
 }
@@ -169,11 +169,11 @@ interface UserCommandOption : DiscordCommandOption<User> {
         }
     }
 
-    override fun parse(args: List<CommandArgument<*>>, interaction: DiscordInteraction): User? {
+    override fun parse(kord: Kord, args: List<CommandArgument<*>>, interaction: DiscordInteraction): User? {
         val userId = args.firstOrNull { it.name == name }?.value as Snowflake?
         val resolved = interaction.data.resolved.value?.users?.value
 
-        return resolved?.get(userId)?.let { KordUser(it) }
+        return resolved?.get(userId)?.let { User(UserData.from(it), kord) }
     }
 }
 
@@ -195,11 +195,14 @@ interface RoleCommandOption : DiscordCommandOption<Role> {
         }
     }
 
-    override fun parse(args: List<CommandArgument<*>>, interaction: DiscordInteraction): Role? {
+    override fun parse(kord: Kord, args: List<CommandArgument<*>>, interaction: DiscordInteraction): Role? {
         val roleId = args.firstOrNull { it.name == name }?.value as Snowflake?
         val resolved = interaction.data.resolved.value?.roles?.value
 
-        return resolved?.get(roleId)?.let { KordRole(it) }
+        return resolved?.get(roleId)?.let {
+            val guildId = interaction.guildId.value ?: error("Trying to parse a role reference on a interaction that didn't happen in a guild! Because we don't know the guild ID, we can't create a role ID instance!")
+            Role(RoleData.from(guildId, it), kord)
+        }
     }
 }
 
@@ -224,11 +227,13 @@ interface ChannelCommandOption : DiscordCommandOption<Channel> {
         }
     }
 
-    override fun parse(args: List<CommandArgument<*>>, interaction: DiscordInteraction): Channel? {
+    override fun parse(kord: Kord, args: List<CommandArgument<*>>, interaction: DiscordInteraction): Channel? {
         val channelId = args.firstOrNull { it.name == name }?.value as Snowflake?
         val resolved = interaction.data.resolved.value?.channels?.value
 
-        return resolved?.get(channelId)?.let { KordChannel(it) }
+        return resolved?.get(channelId)?.let {
+            Channel.from(ChannelData.from(it), kord)
+        }
     }
 }
 
@@ -242,7 +247,7 @@ data class DefaultChannelCommandOption(
 ) : ChannelCommandOption
 
 // ===[ MENTIONABLE ]===
-interface MentionableCommandOption : DiscordCommandOption<Mentionable> {
+interface MentionableCommandOption : DiscordCommandOption<Any> {
     override fun register(builder: BaseInputChatBuilder) {
         builder.mentionable(this@MentionableCommandOption.name, this@MentionableCommandOption.description) {
             this.nameLocalizations = this@MentionableCommandOption.nameLocalizations?.toMutableMap()
@@ -252,21 +257,25 @@ interface MentionableCommandOption : DiscordCommandOption<Mentionable> {
     }
 
     override fun parse(
+        kord: Kord,
         args: List<CommandArgument<*>>,
         interaction: DiscordInteraction
-    ): Mentionable? {
+    ): Any? {
         // Mentionable objects can be User OR Role
         val userId = args.firstOrNull { it.name == name }?.value as Snowflake?
         val resolvedUser = interaction.data.resolved.value?.users?.value
 
-        val kordUser = resolvedUser?.get(userId)?.let { KordUser(it) }
+        val kordUser = resolvedUser?.get(userId)?.let { User(UserData.from(it), kord) }
         if (kordUser != null)
             return kordUser
 
         val roleId = args.firstOrNull { it.name == name }?.value as Snowflake?
         val resolvedRole = interaction.data.resolved.value?.roles?.value
 
-        return resolvedRole?.get(roleId)?.let { KordRole(it) }
+        return resolvedRole?.get(roleId)?.let {
+            val guildId = interaction.guildId.value ?: error("Trying to parse a role reference on a interaction that didn't happen in a guild! Because we don't know the guild ID, we can't create a role ID instance!")
+            Role(RoleData.from(guildId, it), kord)
+        }
     }
 }
 
@@ -288,7 +297,7 @@ interface AttachmentCommandOption : DiscordCommandOption<DiscordAttachment> {
         }
     }
 
-    override fun parse(
+    override fun parse(kord: Kord, 
         args: List<CommandArgument<*>>,
         interaction: DiscordInteraction
     ): DiscordAttachment? {
