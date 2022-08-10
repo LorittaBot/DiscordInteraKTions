@@ -22,28 +22,52 @@ class DiscordInteraKTions(
     val componentChecker = KordComponentChecker(kord, manager)
     val modalChecker = KordModalChecker(kord, manager)
 
+    /**
+     * Upserts all commands in the guild [guildId]
+     */
     suspend fun updateAllCommandsInGuild(guildId: Snowflake) {
         rest.interaction.createGuildApplicationCommands(
             applicationId,
-            guildId
-        ) {
-            manager.applicationCommandsDeclarations.forEach {
-                convertCommandDeclarationToKord(this, it)
-            }
-        }
+            guildId,
+            createGuildApplicationCommandCreateRequests()
+        )
     }
 
+    /**
+     * Upserts all global commands
+     */
     suspend fun updateAllGlobalCommands() {
         val kordApplicationId = applicationId
 
         rest.interaction.createGlobalApplicationCommands(
-            kordApplicationId
-        ) {
-            manager.applicationCommandsDeclarations.forEach {
-                convertCommandDeclarationToKord(this, it)
-            }
-        }
+            kordApplicationId,
+            createGlobalApplicationCommandCreateRequests()
+        )
     }
+
+    /**
+     * Creates a list of guild [ApplicationCommandCreateRequest], which can be used with Kord to register the command on Discord.
+     *
+     * Because [ApplicationCommandCreateRequest] is [Serializable], you can create a hash of the requests and track if your bot needs to send an upsert request do Discord or not,
+     * which can be useful to avoid ratelimits.
+     */
+    fun createGuildApplicationCommandCreateRequests() = GuildMultiApplicationCommandBuilder().apply {
+        manager.applicationCommandsDeclarations.forEach {
+            convertCommandDeclarationToKord(this, it)
+        }
+    }.build()
+
+    /**
+     * Creates a list of global [ApplicationCommandCreateRequest], which can be used with Kord to register the command on Discord.
+     *
+     * Because [ApplicationCommandCreateRequest] is [Serializable], you can create a hash of the requests and track if your bot needs to send an upsert request do Discord or not,
+     * which can be useful to avoid ratelimits.
+     */
+    fun createGlobalApplicationCommandCreateRequests() = GlobalMultiApplicationCommandBuilder().apply {
+        manager.applicationCommandsDeclarations.forEach {
+            convertCommandDeclarationToKord(this, it)
+        }
+    }.build()
 
     private fun convertCommandDeclarationToKord(
         builder: MultiApplicationCommandBuilder,
