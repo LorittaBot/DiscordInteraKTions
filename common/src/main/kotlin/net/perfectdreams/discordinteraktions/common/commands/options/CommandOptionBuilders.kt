@@ -259,14 +259,14 @@ abstract class ChannelCommandOptionBuilderBase<T> : DiscordCommandOptionBuilder<
 class ChannelCommandOptionBuilder(
     override val name: String,
     override val description: String
-) : ChannelCommandOptionBuilderBase<Role>() {
+) : ChannelCommandOptionBuilderBase<Channel>() {
     override val required = true
 }
 
 class NullableChannelCommandOptionBuilder(
     override val name: String,
     override val description: String
-) : ChannelCommandOptionBuilderBase<Role?>() {
+) : ChannelCommandOptionBuilderBase<Channel?>() {
     override val required = false
 }
 
