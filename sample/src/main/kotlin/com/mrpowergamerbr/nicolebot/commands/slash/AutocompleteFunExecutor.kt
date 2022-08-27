@@ -14,9 +14,8 @@ class AutocompleteFunExecutor : SlashCommandExecutor() {
                 val filledValue = focused.value
 
                 // We can get the value that the user has already filled in other options
-                val textOptionValue = context.getArgument(options.text)
-                if (textOptionValue == null)
-                    return@autocomplete mapOf() // If the user didn't fill the "text" option yet, we will return an empty choice map
+                // If the user didn't fill the "text" option yet, we will return an empty choice map
+                val textOptionValue = context.getArgument(options.text) ?: return@autocomplete mapOf()
 
                 // Description -> Value
                 // You can send 25 autocomplete fields
