@@ -25,25 +25,19 @@ class DiscordInteraKTions(
     /**
      * Upserts all commands in the guild [guildId]
      */
-    suspend fun updateAllCommandsInGuild(guildId: Snowflake) {
-        rest.interaction.createGuildApplicationCommands(
-            applicationId,
-            guildId,
-            createGuildApplicationCommandCreateRequests()
-        )
-    }
+    suspend fun updateAllCommandsInGuild(guildId: Snowflake) = rest.interaction.createGuildApplicationCommands(
+        applicationId,
+        guildId,
+        createGuildApplicationCommandCreateRequests()
+    )
 
     /**
      * Upserts all global commands
      */
-    suspend fun updateAllGlobalCommands() {
-        val kordApplicationId = applicationId
-
-        rest.interaction.createGlobalApplicationCommands(
-            kordApplicationId,
-            createGlobalApplicationCommandCreateRequests()
-        )
-    }
+    suspend fun updateAllGlobalCommands() = rest.interaction.createGlobalApplicationCommands(
+        applicationId,
+        createGlobalApplicationCommandCreateRequests()
+    )
 
     /**
      * Creates a list of guild [ApplicationCommandCreateRequest], which can be used with Kord to register the command on Discord.
