@@ -5,8 +5,10 @@ import dev.kord.common.entity.*
 import dev.kord.common.entity.optional.optional
 import dev.kord.core.Kord
 import dev.kord.core.cache.data.ChannelData
+import dev.kord.core.cache.data.MemberData
 import dev.kord.core.cache.data.RoleData
 import dev.kord.core.cache.data.UserData
+import dev.kord.core.entity.Member
 import dev.kord.core.entity.Role
 import dev.kord.core.entity.User
 import dev.kord.core.entity.channel.Channel
@@ -170,10 +172,27 @@ interface UserCommandOption : DiscordCommandOption<User> {
     }
 
     override fun parse(kord: Kord, args: List<CommandArgument<*>>, interaction: DiscordInteraction): User? {
-        val userId = args.firstOrNull { it.name == name }?.value as Snowflake?
-        val resolved = interaction.data.resolved.value?.users?.value
+        val userId = args.firstOrNull { it.name == name }?.value as Snowflake? ?: return null
+        val resolvedMembers = interaction.data.resolved.value?.members?.value
+        val resolvedUsers = interaction.data.resolved.value?.users?.value
 
-        return resolved?.get(userId)?.let { User(UserData.from(it), kord) }
+        val guildId = interaction.guildId.value
+        val resolvedMember = resolvedMembers?.get(userId)
+        // If the user is null, then let's get out of here!
+        val resolvedUser = resolvedUsers?.get(userId) ?: return null
+
+        val userData = UserData.from(resolvedUser)
+
+        // Maybe it is a member, hmmm :kurama_imitando_emojis:
+        if (guildId != null && resolvedMember != null) {
+            // If the guildId isn't null, and the resolvedMember is also not null, let's return a Member object instead!
+            val memberData = MemberData.from(userId, userData.id, resolvedMember)
+
+            return Member(memberData, userData, kord)
+        }
+
+        // Sadly we don't have a member reference, so let's pass a User object instead...
+        return User(userData, kord)
     }
 }
 
