@@ -88,7 +88,7 @@ class NullableStringCommandOptionBuilder(
     override val name: String,
     override val description: String
 ) : StringCommandOptionBuilderBase<String?>() {
-    override val required = true
+    override val required = false
 }
 
 // ===[ INTEGER ]===
