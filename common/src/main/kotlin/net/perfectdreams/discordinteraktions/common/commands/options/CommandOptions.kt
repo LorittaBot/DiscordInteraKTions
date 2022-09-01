@@ -186,7 +186,7 @@ interface UserCommandOption : DiscordCommandOption<User> {
         // Maybe it is a member, hmmm :kurama_imitando_emojis:
         if (guildId != null && resolvedMember != null) {
             // If the guildId isn't null, and the resolvedMember is also not null, let's return a Member object instead!
-            val memberData = MemberData.from(userId, userData.id, resolvedMember)
+            val memberData = MemberData.from(userId, guildId, resolvedMember)
 
             return Member(memberData, userData, kord)
         }
