@@ -101,7 +101,7 @@ class WebServerRequestManager(
                         InteractionApplicationCommandCallbackData(
                             content = Optional(message.content).coerceToMissing(),
                             tts = Optional(message.tts).coerceToMissing().toPrimitive(),
-                            embeds = message.embeds?.map { it.toRequest() }.optional().coerceToMissing(),,
+                            embeds = message.embeds?.map { it.toRequest() }.optional().coerceToMissing(),
                             allowedMentions = Optional(message.allowedMentions).coerceToMissing().map { it.build() },
                             components = message.components?.map { it.build() }.optional().coerceToMissing(),
                             flags = MessageFlags {}.optional()
@@ -192,7 +192,7 @@ class WebServerRequestManager(
                     data = Optional(
                         InteractionApplicationCommandCallbackData(
                             content = Optional(message.content).coerceToMissing(),
-                            embeds = message.embeds?.map { it.toRequest() }.optional().coerceToMissing(),,
+                            embeds = message.embeds?.map { it.toRequest() }.optional().coerceToMissing(),
                             allowedMentions = Optional(message.allowedMentions?.build()).coerceToMissing(),
                             components = message.components?.map { it.build() }.optional().coerceToMissing(),
                             flags = MessageFlags {}.optional()
