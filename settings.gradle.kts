@@ -14,7 +14,7 @@ dependencyResolutionManagement {
         create("libs") {
             version("discordinteraktions", "0.0.17-SNAPSHOT")
             version("kotlin", "1.7.10")
-            version("kord", "0.8.x-20220904.172633-243")
+            version("kord", "0.8.x-20220915.153617-252")
             alias("kord-common").to("dev.kord", "kord-common").versionRef("kord")
             alias("kord-rest").to("dev.kord", "kord-rest").versionRef("kord")
             alias("kord-gateway").to("dev.kord", "kord-gateway").versionRef("kord")
