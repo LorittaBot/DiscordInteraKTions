@@ -171,7 +171,7 @@ class InitialHttpRequestManager(
                 data = Optional(
                     InteractionApplicationCommandCallbackData(
                         content = Optional(message.content).coerceToMissing(),
-                        embeds = Optional(message.embeds?.map { it.toRequest() } ?: listOf()),
+                        embeds = message.embeds?.map { it.toRequest() }.optional().coerceToMissing(),
                         allowedMentions = Optional(message.allowedMentions?.build()).coerceToMissing(),
                         components = message.components?.map { it.build() }.optional().coerceToMissing(),
                         flags = MessageFlags {}.optional()
