@@ -1,5 +1,18 @@
 <h1 align="center">👩‍💻 Discord InteraKTions 👩‍💻</h1>
 
+## 😭 This project is deprecated!
+
+Discord InteraKTions was created for my own bot, [Loritta](https://github.com/LorittaBot/Loritta), to make creating slash commands over HTTP with Kord a breeze.
+
+However, after heavily using Kord in production, and encountering a lot of issues that needed patches and modifications to Kord's source code, I've decided to migrate back to JDA until Kord is mature and battle tested enough. While I *love* Kord, I also *love* not banging my head against the wall trying to figure hard to debug and to reproduce issues.
+
+Originally my plan to migrate to Kord was to allow low downtime restarts for my bot, and during one of my "banging my head against the wall" sessions, I thought about forking JDA to support session checkpoints + gateway resume after a restart. After all, I was already forking Kord anyway, so why not try to implement it in JDA?
+
+And that's what happened. I spent ~2 months trying to migrate Loritta to Kord, ended up replacing [everything with something that I spent ~5 days making](https://github.com/LorittaBot/DeviousJDA/blob/master/src/examples/java/SessionCheckpointAndGatewayResumeExample.kt) (heck, it was even less than 5 days, I made the first working proof of concept in only a few hours!).
+
+Maybe in the future I will create a public "spiritual successor" to Discord InteraKTions. But for now, that spiritual successor lives in Loritta's source code, while I thinker and play around with how to improve the current Discord InteraKTions design. 😊
+
+
 **🚧 Experiemental Project 🚧** / **Not finished yet so you shouldn't use it!!**
 
 Discord InteraKTions allows you to create, receive and process [Discord's Application Commands](https://discord.com/developers/docs/interactions/application-commands) and [Message Components](https://discord.com/developers/docs/interactions/message-components) via a HTTP Web Server or via the Gateway. Built on top of [Kord](https://github.com/kordlib/kord), using interactions is easy and fun!
